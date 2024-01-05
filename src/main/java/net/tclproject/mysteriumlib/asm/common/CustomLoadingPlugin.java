@@ -3,7 +3,7 @@ package net.tclproject.mysteriumlib.asm.common;
 import am2.LogHelper;
 import cpw.mods.fml.common.asm.transformers.DeobfuscationTransformer;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.classloading.FMLForgePlugin;
 import net.tclproject.mysteriumlib.asm.core.ASMFix;
 import net.tclproject.mysteriumlib.asm.core.MetaReader;
 import net.tclproject.mysteriumlib.asm.core.TargetClassTransformer;
@@ -22,10 +22,6 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
 	/**A DeobfuscationTransformer instance for use inside this class.*/
 	private static DeobfuscationTransformer deobfuscationTransformer;
 	/**If we have checked if we're running inside an obfuscated environment.*/
-	private static boolean checkedObfuscation;
-	/**If we're running inside an obfuscated environment.*/
-	private static boolean obfuscated;
-	/**A Metadata Reader instance for use inside this class.*/
     private static MetaReader mcMetaReader;
 
 	public static boolean foundThaumcraft = false;
@@ -85,12 +81,7 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
      * @return If the mod is run in an obfuscated environment.
      * */
     public static boolean isObfuscated() {
-        if (!checkedObfuscation) {
-			// IDK why I CAN'T just use this, so I will just use this.
-			obfuscated = !(Boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment");
-            checkedObfuscation = true;
-        }
-        return obfuscated;
+        return !FMLForgePlugin.RUNTIME_DEOBF;
     }
 	
 	// For further methods, forge has way better documentation than what I could ever write.
