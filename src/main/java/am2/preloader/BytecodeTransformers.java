@@ -2,29 +2,25 @@ package am2.preloader;
 
 import am2.LogHelper;
 import net.minecraft.launchwrapper.IClassTransformer;
-
 import net.tclproject.mysteriumlib.asm.common.CustomLoadingPlugin;
-import net.tclproject.mysteriumlib.asm.fixes.MysteriumPatchesFixLoaderMagicka;
 import org.apache.logging.log4j.Level;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import java.lang.reflect.Field;
-import java.util.Iterator;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.function.Consumer;
+import java.lang.reflect.Field;
+import java.util.Iterator;
 
 public class BytecodeTransformers implements IClassTransformer{
 	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes){
 		boolean is_obfuscated = !CustomLoadingPlugin.isDevEnvironment;
-		
-		if (transformedName.equals("am2.armor.ItemMageHood") && (CustomLoadingPlugin.foundThaumcraft || checkIsThaumcraftFilePresent())){
+		if (transformedName.equals("am2.armor.ItemMageHood") && CustomLoadingPlugin.foundThaumcraft){
 			LogHelper.info("Core: Altering definition of " + transformedName + " to be thaumcraft compatible.");
 			ClassReader cr = new ClassReader(bytes);
 			ClassNode cn = new ClassNode();
@@ -72,20 +68,20 @@ public class BytecodeTransformers implements IClassTransformer{
 		}else if (transformedName.equals("net.minecraft.world.World")){
 			LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 			bytes = alterWorld(bytes, is_obfuscated);
-		}else if (transformedName.equals("net.minecraft.potion.PotionEffect") && !(CustomLoadingPlugin.foundDragonAPI || checkIsDragonApiFilePresent())){
+		}else if (transformedName.equals("net.minecraft.potion.PotionEffect") && !CustomLoadingPlugin.foundDragonAPI){
 			// DragonAPI already has its own way to handle potion list ID extension
 			// you get horrible crashes when the two extensions are applied at the same time
 			// also, there's no sense in duplicating effort, so we'll do nothing in that situation
 			LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 			bytes = alterPotionEffect(bytes, is_obfuscated);
-		}else if (transformedName.equals("net.minecraft.network.play.server.S1DPacketEntityEffect") && !(CustomLoadingPlugin.foundDragonAPI || checkIsDragonApiFilePresent())){
+		}else if (transformedName.equals("net.minecraft.network.play.server.S1DPacketEntityEffect") && !CustomLoadingPlugin.foundDragonAPI){
 			LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 			String passedname = name.replace(".", "/");
 			bytes = alterS1DPacketEntityEffect(bytes, is_obfuscated, passedname);
-		}else if (transformedName.equals("net.minecraft.client.network.NetHandlerPlayClient") && !(CustomLoadingPlugin.foundDragonAPI || checkIsDragonApiFilePresent())){
+		}else if (transformedName.equals("net.minecraft.client.network.NetHandlerPlayClient") && !CustomLoadingPlugin.foundDragonAPI){
 		  LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 		  bytes = alterNetHandlerPlayClient(bytes, is_obfuscated);
-		}else if (transformedName.equals("net.minecraft.network.play.server.S1EPacketRemoveEntityEffect") && !(CustomLoadingPlugin.foundDragonAPI || checkIsDragonApiFilePresent())){
+		}else if (transformedName.equals("net.minecraft.network.play.server.S1EPacketRemoveEntityEffect") && !CustomLoadingPlugin.foundDragonAPI){
 			LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 			bytes = alterS1EPacketRemoveEntityEffect(bytes, is_obfuscated);
 		}
@@ -99,12 +95,11 @@ public class BytecodeTransformers implements IClassTransformer{
 		ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 
-		Iterator<MethodNode> methods = classNode.methods.iterator();
-		while(methods.hasNext()) {
-			MethodNode method = methods.next();
+		for(MethodNode method: classNode.methods) {
 			if((method.name.equals("run")) && (method.desc.equals("()V"))) {
 				InsnList list = new InsnList();
-				intrucLoop: for(AbstractInsnNode node : method.instructions.toArray()) {
+				intrucLoop:
+				for(AbstractInsnNode node: method.instructions.toArray()) {
 
 					if(node instanceof LdcInsnNode) {
 						LdcInsnNode ldcNode = (LdcInsnNode)node;
@@ -320,7 +315,7 @@ public class BytecodeTransformers implements IClassTransformer{
 				}
 
 				if (target != null){
-					int iRegister = (MysteriumPatchesFixLoaderMagicka.isOptiFinePresent() || checkIsOptifineFilePresent()) ? 3 : 2;
+					int iRegister = (CustomLoadingPlugin.foundOptifine) ? 3 : 2;
 
 					VarInsnNode aLoad = new VarInsnNode(Opcodes.ALOAD, 0);
 					VarInsnNode fLoad = new VarInsnNode(Opcodes.FLOAD, 1);
@@ -343,54 +338,7 @@ public class BytecodeTransformers implements IClassTransformer{
 
 		return cw.toByteArray();
 	}
-
-	private boolean checkIsOptifineFilePresent() {
-		File file = new File(".");
-		fetchFiles(file, f -> checkForOpt(f.getAbsolutePath()));
-		return isOptifineFilePresent;
-	}
-
-	private boolean checkIsThaumcraftFilePresent() {
-		File file = new File(".");
-		fetchFiles(file, f -> checkForOpt(f.getAbsolutePath()));
-		return isThaumcraftFilePresent;
-	}
-
-	private boolean checkIsDragonApiFilePresent() {
-		File file = new File(".");
-		fetchFiles(file, f -> checkForOpt(f.getAbsolutePath()));
-		return isDragonApiFilePresent;
-	}
-
-	private void checkForOpt(String path) {
-		if ((path.contains("optifine") && path.endsWith(".jar")) || (path.contains("OptiFine") && path.endsWith(".jar")) || (path.contains("Optifine") && path.endsWith(".jar"))) {
-			System.out.println("Optifine detected! Attempting compatibility. If you do not have optifine, this is an error; report it.");
-			isOptifineFilePresent = true;
-		}
-		if ((path.contains("DragonAPI") && path.endsWith(".jar")) || (path.contains("dragonapi") && path.endsWith(".jar")) || (path.contains("Dragonapi") && path.endsWith(".jar"))) {
-			System.out.println("DragonAPI detected! Attempting compatibility. If you do not have DragonAPI, this is an error; report it.");
-			isDragonApiFilePresent = true;
-		}
-		if ((path.contains("Thaumcraft") && path.endsWith(".jar")) || (path.contains("thaumcraft") && path.endsWith(".jar")) || (path.contains("ThaumCraft") && path.endsWith(".jar"))) {
-			System.out.println("Thaumcraft detected! Attempting compatibility. If you do not have Thaumcraft, this is an error; report it.");
-			isThaumcraftFilePresent = true;
-		}
-	}
-
-	public boolean isOptifineFilePresent = false;
-	public boolean isDragonApiFilePresent = false;
-	public boolean isThaumcraftFilePresent = false;
-
-	public static void fetchFiles(File dir, Consumer<File> fileConsumer) {
-		if (dir.isDirectory()) {
-			for (File file1 : dir.listFiles()) {
-				fetchFiles(file1, fileConsumer);
-			}
-		} else {
-			fileConsumer.accept(dir);
-		}
-	}
-
+	
 	private byte[] alterEntityPlayerSP(byte[] bytes, boolean is_obfuscated){
 		ClassReader cr = new ClassReader(bytes);
 		ClassNode cn = new ClassNode();

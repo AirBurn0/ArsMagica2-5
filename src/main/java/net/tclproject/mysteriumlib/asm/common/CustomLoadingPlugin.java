@@ -1,23 +1,16 @@
 package net.tclproject.mysteriumlib.asm.common;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-
 import am2.LogHelper;
-import am2.preloader.BytecodeTransformers;
-import net.tclproject.mysteriumlib.asm.fixes.MysteriumPatchesFixLoaderMagicka;
-import org.apache.logging.log4j.Level;
-
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.asm.transformers.DeobfuscationTransformer;
-import cpw.mods.fml.relauncher.CoreModManager;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraft.launchwrapper.Launch;
 import net.tclproject.mysteriumlib.asm.core.ASMFix;
 import net.tclproject.mysteriumlib.asm.core.MetaReader;
 import net.tclproject.mysteriumlib.asm.core.TargetClassTransformer;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Custom IFMLLoadingPlugin implementation.
@@ -36,7 +29,11 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
     private static MetaReader mcMetaReader;
 
 	public static boolean foundThaumcraft = false;
+
 	public static boolean foundDragonAPI = false;
+
+	public static boolean foundOptifine = false;
+
 	public static boolean isDevEnvironment = false;
     
     public static File debugOutputLocation;
@@ -89,15 +86,8 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
      * */
     public static boolean isObfuscated() {
         if (!checkedObfuscation) {
-            try {
-                Field deobfuscatedField = CoreModManager.class.getDeclaredField("deobfuscatedEnvironment");
-                deobfuscatedField.setAccessible(true);
-                obfuscated = !deobfuscatedField.getBoolean(null);
-            } catch (Exception e) {
-            	FMLLog.log("Mysterium Patches", Level.ERROR, "Error occured when checking obfuscation.");
-    			FMLLog.log("Mysterium Patches", Level.ERROR, "THIS IS MOST LIKELY HAPPENING BECAUSE OF MOD CONFLICTS. PLEASE CONTACT ME TO LET ME KNOW.");
-    			FMLLog.log("Mysterium Patches", Level.ERROR, e.getMessage());
-            }
+			// IDK why I CAN'T just use this, so I will just use this.
+			obfuscated = !(Boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment");
             checkedObfuscation = true;
         }
         return obfuscated;
@@ -135,46 +125,32 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
 		LogHelper.info("Core initializing...stand back!  I'm going to try MAGIC!");
     	debugOutputLocation = new File(data.get("mcLocation").toString(), "bg edited classes");
-        if (((ArrayList)data.get("coremodList")).contains("DragonAPIASMHandler")) {
-			foundDragonAPI = true;
+		isDevEnvironment = isObfuscated(); // reference for the same var
+		// we can falk Launch.classLoader.getSources() to search for all needed mods and then scan *mod.info
+		// but DragonAPI just... scrap that idea (modid = ""). Optifine even doesn't have one.
+		// So scan entire tree only for Thaumcraft? Don't think so.
+
+		// bruteforce
+		try {
+			Class.forName("optifine.InstallerFrame"); // should be here, that's the entrypoint
+			foundOptifine = true;
+			LogHelper.info("OptiFine detected!\nIf you do not have OptiFine, this is an error. Report it.");
 		}
-
-		// This is very crude check for mods presence using filename.
-		// Some mods may refer to others in their name, so we'll to confirm those assumption with class presence check.
-		File loc = (File)data.get("mcLocation");
-
-		isDevEnvironment = !(Boolean)data.get("runtimeDeobfuscationEnabled");
-
-		File mcFolder = new File(loc.getAbsolutePath() + File.separatorChar + "mods");
-		File mcVersionFolder = new File(mcFolder.getAbsolutePath() + File.separatorChar + "1.7.10");
-		ArrayList<File> subfiles = new ArrayList<>();
-		if (mcFolder.listFiles() != null){
-			subfiles = new ArrayList<>(Arrays.asList(mcFolder.listFiles()));
-			if (mcVersionFolder.listFiles() != null){
-				subfiles.addAll(Arrays.asList(mcVersionFolder.listFiles()));
+		catch(ClassNotFoundException ignored) {
+			LogHelper.info("OptiFine not detected!\n If you do have OptiFine, this is an error. Report it.");
+		}
+		// scan for coremods - faster, easier, works.
+		for(Object mod : (ArrayList<?>)data.get("coremodList")) {
+			if(mod.toString().contains("DepLoader")) {
+				foundThaumcraft = true;
+				LogHelper.info("Thaumcraft detected!\nIf you do not have Thaumcraft, this is an error. Report it.");
 			}
-		}
-		for (File file : subfiles){
-			String name = file.getName();
-			if (name != null) {
-				name = name.toLowerCase();
-				if (name.endsWith(".jar") || name.endsWith(".zip")){
-					if (name.contains("thaumcraft")){
-						LogHelper.info("Core: Located Thaumcraft in " + file.getName());
-						foundThaumcraft = true;
-					}else if (name.contains("optifine")){
-						LogHelper.info("Core: Located OptiFine in " + file.getName() + ". We'll to confirm that...");
-						MysteriumPatchesFixLoaderMagicka.foundOptiFine = true;
-					}else if (name.contains("dragonapi")){
-						LogHelper.info("Core: Located DragonAPI in " + file.getName());
-						foundDragonAPI = true;
-					}
-					// Can look for if certain mods are loaded here
-					
-				}
+			if(mod.toString().contains("DragonAPIASMHandler")) {
+				foundDragonAPI = true;
+				LogHelper.info("DragonAPI detected!\nIf you do not have DragonAPI, this is an error. Report it.");
 			}
-		}
-        registerFixes();
+		}		
+		registerFixes();
     }
     
     public void registerFixes() {
