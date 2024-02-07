@@ -254,6 +254,7 @@ public class BytecodeTransformers implements IClassTransformer {
 		method2_insertinstruction_desc.setVal("(Lblt;FZ)Z", true);
 
 		for(MethodNode mn: cn.methods) {
+			// TCLProject handles this case
 			if(mn.name.equals(method1_name.getVal(is_obfuscated)) && mn.desc.equals(method1_desc)) { // setupCameraTransform
 				AbstractInsnNode orientCameraNode = null;
 				AbstractInsnNode gluPerspectiveNode = null;
@@ -296,6 +297,7 @@ public class BytecodeTransformers implements IClassTransformer {
 				}
 
 			}
+			// but TCLProject don'tt handles this case.
 			else if(mn.name.equals(method2_name.getVal(is_obfuscated)) && mn.desc.equals(method2_desc)) {  //updateCameraAndRender
 				AbstractInsnNode target = null;
 				LogHelper.debug("Core: Located target method " + mn.name + mn.desc);
@@ -343,6 +345,10 @@ public class BytecodeTransformers implements IClassTransformer {
 					mn.instructions.insert(target, aLoad);
 					LogHelper.debug("Core: Success!  Inserted opcodes!");
 				}
+			}
+			// so maybe... thats' kinda... the point.
+			else if(mn.name.equals("func_78480_b") && mn.desc.equals(method2_desc)) {  //updateCameraAndRender
+				LogHelper.info("[TEMP_DEBUG] Method " + mn.name + " was detected, but ASM was never called. Sad Mithion's code.");
 			}
 		}
 
