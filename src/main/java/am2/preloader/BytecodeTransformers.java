@@ -19,7 +19,7 @@ public class BytecodeTransformers implements IClassTransformer {
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
-		boolean is_obfuscated = !CustomLoadingPlugin.isDevEnvironment;
+		boolean is_obfuscated = CustomLoadingPlugin.isObfuscated();
 		if(transformedName.equals("am2.armor.ItemMageHood") && CustomLoadingPlugin.foundThaumcraft) {
 			LogHelper.info("Core: Altering definition of " + transformedName + " to be thaumcraft compatible.");
 			ClassReader cr = new ClassReader(bytes);
@@ -35,7 +35,6 @@ public class BytecodeTransformers implements IClassTransformer {
 			bytes = cw.toByteArray();
 		}
 		else if(transformedName.equals("net.minecraft.client.renderer.EntityRenderer")) {
-			// does nothing due to deobf names
 			LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 			bytes = alterEntityRenderer(bytes, is_obfuscated);
 		}
@@ -254,7 +253,6 @@ public class BytecodeTransformers implements IClassTransformer {
 		method2_insertinstruction_desc.setVal("(Lblt;FZ)Z", true);
 
 		for(MethodNode mn: cn.methods) {
-			// TCLProject handles this case
 			if(mn.name.equals(method1_name.getVal(is_obfuscated)) && mn.desc.equals(method1_desc)) { // setupCameraTransform
 				AbstractInsnNode orientCameraNode = null;
 				AbstractInsnNode gluPerspectiveNode = null;
@@ -297,7 +295,6 @@ public class BytecodeTransformers implements IClassTransformer {
 				}
 
 			}
-			// but TCLProject don'tt handles this case.
 			else if(mn.name.equals(method2_name.getVal(is_obfuscated)) && mn.desc.equals(method2_desc)) {  //updateCameraAndRender
 				AbstractInsnNode target = null;
 				LogHelper.debug("Core: Located target method " + mn.name + mn.desc);
@@ -326,12 +323,9 @@ public class BytecodeTransformers implements IClassTransformer {
 						}
 					}
 				}
-
 				if(target != null) {
 					int iRegister = (CustomLoadingPlugin.foundOptifine) ? 3 : 2;
-					LogHelper.info("[TEMP_DEBUG] Seems like some dead code was invoked...");
-					LogHelper.info("[TEMP_DEBUG] And Optifine is " + (CustomLoadingPlugin.foundOptifine ? "" : "not ") + "found.");
-					LogHelper.info("[TEMP_DEBUG] And ILOAD index is " + iRegister);
+					
 					VarInsnNode aLoad = new VarInsnNode(Opcodes.ALOAD, 0);
 					VarInsnNode fLoad = new VarInsnNode(Opcodes.FLOAD, 1);
 					VarInsnNode iLoad = new VarInsnNode(Opcodes.ILOAD, iRegister);
@@ -345,10 +339,6 @@ public class BytecodeTransformers implements IClassTransformer {
 					mn.instructions.insert(target, aLoad);
 					LogHelper.debug("Core: Success!  Inserted opcodes!");
 				}
-			}
-			// so maybe... thats' kinda... the point.
-			else if(mn.name.equals("func_78480_b") && mn.desc.equals(method2_desc)) {  //updateCameraAndRender
-				LogHelper.info("[TEMP_DEBUG] Method " + mn.name + " was detected, but ASM was never called. Sad Mithion's code.");
 			}
 		}
 

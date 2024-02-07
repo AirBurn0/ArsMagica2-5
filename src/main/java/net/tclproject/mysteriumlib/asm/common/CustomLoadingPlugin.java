@@ -24,7 +24,7 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
 	/**If we have checked if we're running inside an obfuscated environment.*/
 	private static boolean checkedObfuscation;
 	/**If we're running inside an obfuscated environment.*/
-	private static boolean obfuscated;
+	private static boolean isObfuscated = false;
 	/**A Metadata Reader instance for use inside this class.*/
     private static MetaReader mcMetaReader;
 
@@ -33,8 +33,6 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
 	public static boolean foundDragonAPI = false;
 
 	public static boolean foundOptifine = false;
-
-	public static boolean isDevEnvironment = false;
     
     public static File debugOutputLocation;
 
@@ -88,10 +86,10 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
 		if (!checkedObfuscation) {
 			// IDK why I CAN'T just use this, so I will just use this.
 			// but FMLForgePlugin.RUNTIME_DEOBF is not init yet (maybe)
-			obfuscated = !(Boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment");
+			isObfuscated = !(Boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment");
 			checkedObfuscation = true;
 		}
-		return obfuscated;
+		return isObfuscated;
 	}
 	
 	// For further methods, forge has way better documentation than what I could ever write.
@@ -126,7 +124,6 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
 		LogHelper.info("Core initializing...stand back!  I'm going to try MAGIC!");
     	debugOutputLocation = new File(data.get("mcLocation").toString(), "bg edited classes");
-		isDevEnvironment = isObfuscated(); // reference for the same var
 		// we can falk Launch.classLoader.getSources() to search for all needed mods and then scan *mod.info
 		// but DragonAPI just... scrap that idea (modid = ""). Optifine even doesn't have one.
 		// So scan entire tree only for Thaumcraft? Don't think so.
