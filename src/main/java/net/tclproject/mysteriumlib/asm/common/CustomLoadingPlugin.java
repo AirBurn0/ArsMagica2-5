@@ -135,20 +135,20 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
 		try {
 			Class.forName("optifine.InstallerFrame"); // should be here, that's the entrypoint
 			foundOptifine = true;
-			LogHelper.info("OptiFine detected!\nIf you do not have OptiFine, this is an error. Report it.");
+			LogHelper.info("OptiFine detected! If you do not have OptiFine, this is an error. Report it.");
 		}
 		catch(ClassNotFoundException ignored) {
-			LogHelper.info("OptiFine not detected!\n If you do have OptiFine, this is an error. Report it.");
+			LogHelper.info("OptiFine not detected! If you do have OptiFine, this is an error. Report it.");
 		}
 		// scan for coremods - faster, easier, works.
 		for(Object mod : (ArrayList<?>)data.get("coremodList")) {
-			if(mod.toString().contains("DepLoader")) {
+			if(!foundThaumcraft &&  mod.toString().contains("DepLoader")) {
 				foundThaumcraft = true;
-				LogHelper.info("Thaumcraft detected!\nIf you do not have Thaumcraft, this is an error. Report it.");
+				LogHelper.info("Thaumcraft detected! If you do not have Thaumcraft, this is an error. Report it.");
 			}
-			if(mod.toString().contains("DragonAPIASMHandler")) {
+			else if(!foundDragonAPI && mod.toString().contains("DragonAPIASMHandler")) {
 				foundDragonAPI = true;
-				LogHelper.info("DragonAPI detected!\nIf you do not have DragonAPI, this is an error. Report it.");
+				LogHelper.info("DragonAPI detected! If you do not have DragonAPI, this is an error. Report it.");
 			}
 		}		
 		registerFixes();

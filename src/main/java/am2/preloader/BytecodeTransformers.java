@@ -34,6 +34,7 @@ public class BytecodeTransformers implements IClassTransformer{
 
 			bytes = cw.toByteArray();
 		}else if (transformedName.equals("net.minecraft.client.renderer.EntityRenderer")) {
+			// does nothing due to deobf names
 			LogHelper.info("Core: Altering definition of " + transformedName + ", " + (is_obfuscated ? " (obfuscated)" : "(not obfuscated)"));
 			bytes = alterEntityRenderer(bytes, is_obfuscated);
 		}else if(name.equals("net.minecraft.server.MinecraftServer") || transformedName.equals("net.minecraft.server.MinecraftServer")) {
@@ -316,7 +317,9 @@ public class BytecodeTransformers implements IClassTransformer{
 
 				if (target != null){
 					int iRegister = (CustomLoadingPlugin.foundOptifine) ? 3 : 2;
-
+					LogHelper.info("[TEMP_DEBUG] Seems like some dead code was invoked...");
+					LogHelper.info("[TEMP_DEBUG] And Optifine is " + (CustomLoadingPlugin.foundOptifine ? "" : "not ") + "found.");
+					LogHelper.info("[TEMP_DEBUG] And ILOAD index is " + iRegister);
 					VarInsnNode aLoad = new VarInsnNode(Opcodes.ALOAD, 0);
 					VarInsnNode fLoad = new VarInsnNode(Opcodes.FLOAD, 1);
 					VarInsnNode iLoad = new VarInsnNode(Opcodes.ILOAD, iRegister);
@@ -371,9 +374,9 @@ public class BytecodeTransformers implements IClassTransformer{
 				//this.movementInput.updatePlayerMoveState();
 				while (instructions.hasNext()){
 					AbstractInsnNode node = instructions.next();
-					if (node instanceof VarInsnNode && ((VarInsnNode)node).getOpcode() == Opcodes.ALOAD){ //this.
+					if (node instanceof VarInsnNode && node.getOpcode() == Opcodes.ALOAD){ //this.
 						node = instructions.next();
-						if (node instanceof FieldInsnNode && ((FieldInsnNode)node).getOpcode() == Opcodes.GETFIELD){ //movementInput.
+						if (node instanceof FieldInsnNode && node.getOpcode() == Opcodes.GETFIELD){ //movementInput.
 							node = instructions.next();
 							if (node instanceof MethodInsnNode){
 								MethodInsnNode method = (MethodInsnNode)node;
@@ -432,12 +435,12 @@ public class BytecodeTransformers implements IClassTransformer{
 				while (instructions.hasNext()){
 					AbstractInsnNode node = instructions.next();
 					if (node instanceof VarInsnNode &&
-							((VarInsnNode)node).getOpcode() == Opcodes.ALOAD &&
+							node.getOpcode() == Opcodes.ALOAD &&
 							((VarInsnNode)node).var == 5){
 						AbstractInsnNode potentialMatch = node;
 						node = instructions.next();
 						if (node instanceof FieldInsnNode &&
-								((FieldInsnNode)node).getOpcode() == Opcodes.GETFIELD &&
+								node.getOpcode() == Opcodes.GETFIELD &&
 								((FieldInsnNode)node).name.equals("name") &&
 								((FieldInsnNode)node).desc.equals("Ljava/lang/String;") &&
 								((FieldInsnNode)node).owner.equals("net/minecraftforge/event/entity/PlaySoundAtEntityEvent")){
@@ -579,17 +582,17 @@ public class BytecodeTransformers implements IClassTransformer{
 				//in MC r1.6.4, d4 = par1Packet10Flying.stance - par1Packet10Flying.yPosition;
 				while (instructions.hasNext()){
 					AbstractInsnNode node = instructions.next();
-					if (node instanceof VarInsnNode && ((VarInsnNode)node).var == 1 && ((VarInsnNode)node).getOpcode() == Opcodes.ALOAD){ //ALOAD 1
+					if (node instanceof VarInsnNode && ((VarInsnNode)node).var == 1 && node.getOpcode() == Opcodes.ALOAD){ //ALOAD 1
 						node = instructions.next();
 						if (node instanceof MethodInsnNode && matchMethodNode((MethodInsnNode)node, Opcodes.INVOKEVIRTUAL, method1_searchinstruction_class.getVal(is_obfuscated), method1_searchinstruction_function1.getVal(is_obfuscated), method1_searchinstructions_desc)){
 							node = instructions.next();
-							if (node instanceof VarInsnNode && ((VarInsnNode)node).var == 1 && ((VarInsnNode)node).getOpcode() == Opcodes.ALOAD){ //ALOAD 1
+							if (node instanceof VarInsnNode && ((VarInsnNode)node).var == 1 && node.getOpcode() == Opcodes.ALOAD){ //ALOAD 1
 								node = instructions.next();
 								if (node instanceof MethodInsnNode && matchMethodNode((MethodInsnNode)node, Opcodes.INVOKEVIRTUAL, method1_searchinstruction_class.getVal(is_obfuscated), method1_searchinstruction_function2.getVal(is_obfuscated), method1_searchinstructions_desc)){
 									node = instructions.next();
-									if (node instanceof InsnNode && ((InsnNode)node).getOpcode() == Opcodes.DSUB){ //DSUB
+									if (node instanceof InsnNode && node.getOpcode() == Opcodes.DSUB){ //DSUB
 										node = instructions.next();
-										if (node instanceof VarInsnNode && ((VarInsnNode)node).var == 13 && ((VarInsnNode)node).getOpcode() == Opcodes.DSTORE){ //DSTORE 13
+										if (node instanceof VarInsnNode && ((VarInsnNode)node).var == 13 && node.getOpcode() == Opcodes.DSTORE){ //DSTORE 13
 											target = node;
 											break;
 										}
@@ -950,16 +953,16 @@ public class BytecodeTransformers implements IClassTransformer{
 					      MethodInsnNode method = (MethodInsnNode)node;
 					      if (method.owner.equals(initmethod_searchinstruction_owner.getVal(is_obfuscated)) && method.name.equals(initmethod_searchinstruction_function.getVal(is_obfuscated)) && method.desc.equals(initmethod_searchinstruction_desc)){ //getPotionID
 						      node = instructions.next();
-						      if (node instanceof IntInsnNode && ((IntInsnNode)node).getOpcode() == Opcodes.SIPUSH){
+						      if (node instanceof IntInsnNode && node.getOpcode() == Opcodes.SIPUSH){
 							      toRemove1 = node;
 							      node = instructions.next();
-							      if (node instanceof InsnNode && ((InsnNode)node).getOpcode() == Opcodes.IAND){
+							      if (node instanceof InsnNode && node.getOpcode() == Opcodes.IAND){
 								      toRemove2 = node;
 								      node = instructions.next();
-								      if (node instanceof InsnNode && ((InsnNode)node).getOpcode() == Opcodes.I2B){
+								      if (node instanceof InsnNode && node.getOpcode() == Opcodes.I2B){
 									      toRemove3 = node;
 									      node = instructions.next();
-									      if (node instanceof FieldInsnNode && ((FieldInsnNode)node).getOpcode() == Opcodes.PUTFIELD && ((FieldInsnNode)node).name.equals(potionid_bytevar_name.getVal(is_obfuscated)) && ((FieldInsnNode)node).desc.equals(potionid_bytevar_origdesc)){
+									      if (node instanceof FieldInsnNode && node.getOpcode() == Opcodes.PUTFIELD && ((FieldInsnNode)node).name.equals(potionid_bytevar_name.getVal(is_obfuscated)) && ((FieldInsnNode)node).desc.equals(potionid_bytevar_origdesc)){
 										      toReplace = node;
 										      break;
 									      }
@@ -994,7 +997,7 @@ public class BytecodeTransformers implements IClassTransformer{
 					      if (method.owner.equals(method1_searchinstruction_owner.getVal(is_obfuscated)) && method.name.equals(method1_searchinstruction_function) && method.desc.equals(method1_searchinstruction_desc)){
 						      target = node;
 						      node = instructions.next();
-						      if (node instanceof FieldInsnNode && ((FieldInsnNode)node).getOpcode() == Opcodes.PUTFIELD && ((FieldInsnNode)node).name.equals(potionid_bytevar_name.getVal(is_obfuscated)) && ((FieldInsnNode)node).desc.equals(potionid_bytevar_origdesc)){
+						      if (node instanceof FieldInsnNode && node.getOpcode() == Opcodes.PUTFIELD && ((FieldInsnNode)node).name.equals(potionid_bytevar_name.getVal(is_obfuscated)) && ((FieldInsnNode)node).desc.equals(potionid_bytevar_origdesc)){
 							    target2 = node;
 							    break;
 						      }
@@ -1046,7 +1049,7 @@ public class BytecodeTransformers implements IClassTransformer{
 			      Iterator<AbstractInsnNode> instructions = mn.instructions.iterator();
 			      while (instructions.hasNext()){
 				      AbstractInsnNode node = instructions.next();
-				      if (node instanceof FieldInsnNode && ((FieldInsnNode)node).getOpcode() == Opcodes.GETFIELD && ((FieldInsnNode)node).name.equals(potionid_bytevar_name.getVal(is_obfuscated)) && ((FieldInsnNode)node).desc.equals(potionid_bytevar_origdesc)){
+				      if (node instanceof FieldInsnNode && node.getOpcode() == Opcodes.GETFIELD && ((FieldInsnNode)node).name.equals(potionid_bytevar_name.getVal(is_obfuscated)) && ((FieldInsnNode)node).desc.equals(potionid_bytevar_origdesc)){
 					      target = node;
 					      node = instructions.next();
 					      if (node instanceof MethodInsnNode && ((MethodInsnNode)node).owner.equals(method2_searchinstruction_owner.getVal(is_obfuscated)) && ((MethodInsnNode)node).name.equals(method2_searchinstruction_function) && ((MethodInsnNode)node).desc.equals(method2_searchinstruction_desc)){
@@ -1338,15 +1341,11 @@ public class BytecodeTransformers implements IClassTransformer{
 	}
 	
 	private boolean matchFieldNode(FieldInsnNode node, int opcode, String owner, String name, String desc){
-		if (node.getOpcode() == opcode && node.owner.equals(owner) && node.name.equals(name) && node.desc.equals(desc))
-			return true;
-		return false;
+		return node.getOpcode() == opcode && node.owner.equals(owner) && node.name.equals(name) && node.desc.equals(desc);
 	}
 
 	private boolean matchMethodNode(MethodInsnNode node, int opcode, String owner, String name, String desc){
-		if (node.getOpcode() == opcode && node.owner.equals(owner) && node.name.equals(name) && node.desc.equals(desc))
-			return true;
-		return false;
+		return node.getOpcode() == opcode && node.owner.equals(owner) && node.name.equals(name) && node.desc.equals(desc);
 	}
 
 	private void debugPrintInsns(MethodNode mn){
