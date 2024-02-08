@@ -124,8 +124,8 @@ public class CustomLoadingPlugin implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
 		LogHelper.info("Core initializing...stand back!  I'm going to try MAGIC!");
     	debugOutputLocation = new File(data.get("mcLocation").toString(), "bg edited classes");
-		// we can falk Launch.classLoader.getSources() to search for all needed mods and then scan *mod.info
-		// but DragonAPI just... scrap that idea (modid = ""). Optifine even doesn't have one.
+		// we can walk 'Launch.classLoader.getSources()' to search for all needed mods and then scan '*mod.info'
+		// but DragonAPI just... scraps that idea (modid == ""). Optifine even doesn't have one.
 		// So scan entire tree only for Thaumcraft? Don't think so.
 
 		// bruteforce
