@@ -183,7 +183,10 @@ public class AMEventHandler{
 	public void onEntityDeathHighPriority(LivingDeathEvent event){
 		EntityLivingBase soonToBeDead = event.entityLiving;
 
-		if (soonToBeDead instanceof EntityPlayer) { // soul fragments: die with at least 5 rare items
+		if (soonToBeDead instanceof EntityPlayer) {
+			// soulbound should be hishest priority, becouse you really don't want to lose your items, don't you?
+			storeSoulboundItemsForRespawn((EntityPlayer)soonToBeDead);
+			// soul fragments: die with at least 5 rare items
 			if (soonToBeDead.isPotionActive(BuffList.psychedelic)){
 				if (soonToBeDead.worldObj.provider.dimensionId == 1 && soonToBeDead.getActivePotionEffect(BuffList.psychedelic).getAmplifier() == 1) {
 					EntityPlayer player = (EntityPlayer)soonToBeDead;
@@ -218,10 +221,6 @@ public class AMEventHandler{
 					}
 				}
 			}
-		}
-
-		if (soonToBeDead instanceof EntityPlayer){
-			storeSoulboundItemsForRespawn((EntityPlayer)soonToBeDead);
 		}
 	}
 
@@ -539,29 +538,22 @@ public class AMEventHandler{
 		//================================================================================
 		//soulbound items
 		//================================================================================
-		if (ent instanceof EntityPlayer){
-			EntityPlayer player = (EntityPlayer)ent;
-			if (!ent.isDead){
-				if (ent.ticksExisted > 5 && ent.ticksExisted < 10 && !ent.worldObj.isRemote){
-					if (soulbound_Storage.containsKey(player.getUniqueID())){
-						HashMap<Integer, ItemStack> soulboundItems = soulbound_Storage.get(player.getUniqueID());
-						for (Integer i : soulboundItems.keySet()){
-							if (i < player.inventory.getSizeInventory()){
-								player.inventory.setInventorySlotContents(i, soulboundItems.get(i));
-							}else{
-								boolean done = false;
-								for (int l = 0; l < player.inventory.getSizeInventory(); l++){
-									if (player.inventory.getStackInSlot(l) == null){
-										player.inventory.setInventorySlotContents(l, soulboundItems.get(i));
-										done = true;
-										break;
-									}
-								}
-								if (!done) player.entityDropItem(soulboundItems.get(i), 0);
-							}
-						}
+		if (!ent.worldObj.isRemote && !ent.isDead && ent.ticksExisted > 5 && ent instanceof EntityPlayer) {
+			EntityPlayer p = (EntityPlayer)ent;
+			// suppose that soulbound_Storage is really short map (not much entries), so checking every tick will be ok.
+			HashMap<Integer, ItemStack> items = soulbound_Storage.get(p.getUniqueID()); // return null if no entry; containsKey() is redundant, becouse 'null' mapping is pointless.
+			if (items != null) {
+				for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
+					if (entry.getKey() < p.inventory.getSizeInventory()) {
+						p.inventory.setInventorySlotContents(entry.getKey(), entry.getValue());
 					}
+					else if (!p.inventory.addItemStackToInventory(entry.getValue())) {
+						p.entityDropItem(entry.getValue(), 0);
+					}
+					
 				}
+				items.clear();
+				soulbound_Storage.remove(p.getUniqueID());
 			}
 		}
 

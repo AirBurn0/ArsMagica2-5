@@ -38,32 +38,18 @@ import java.util.UUID;
 
 public class PlayerTracker{
 
-	public static HashMap<UUID, NBTTagCompound> storedExtProps_death;
-	public static HashMap<UUID, NBTTagCompound> riftStorage_death;
-	public static HashMap<UUID, NBTTagCompound> affinityStorage_death;
-	public static HashMap<UUID, NBTTagCompound> spellKnowledgeStorage_death;
+	public static HashMap<UUID, NBTTagCompound> 
+			storedExtProps_death = new HashMap<>(), 
+			riftStorage_death = new HashMap<>(),
+			affinityStorage_death = new HashMap<>(),
+			spellKnowledgeStorage_death = new HashMap<>(),
+			storedExtProps_dimension = new HashMap<>(),
+			riftStorage_dimension = new HashMap<>(),
+			affinityStorage_dimension = new HashMap<>(),
+			spellKnowledgeStorage_dimension = new HashMap<>();
 
-	public static HashMap<UUID, NBTTagCompound> storedExtProps_dimension;
-	public static HashMap<UUID, NBTTagCompound> riftStorage_dimension;
-	public static HashMap<UUID, NBTTagCompound> affinityStorage_dimension;
-	public static HashMap<UUID, NBTTagCompound> spellKnowledgeStorage_dimension;
-
-	public static HashMap<UUID, HashMap<Integer, ItemStack>> soulbound_Storage;
-
-	public PlayerTracker(){
-		storedExtProps_death = new HashMap<UUID, NBTTagCompound>();
-		storedExtProps_dimension = new HashMap<UUID, NBTTagCompound>();
-		affinityStorage_death = new HashMap<UUID, NBTTagCompound>();
-		spellKnowledgeStorage_death = new HashMap<UUID, NBTTagCompound>();
-
-		riftStorage_death = new HashMap<UUID, NBTTagCompound>();
-		riftStorage_dimension = new HashMap<UUID, NBTTagCompound>();
-		affinityStorage_dimension = new HashMap<UUID, NBTTagCompound>();
-		spellKnowledgeStorage_dimension = new HashMap<UUID, NBTTagCompound>();
-
-		soulbound_Storage = new HashMap<UUID, HashMap<Integer, ItemStack>>();
-	}
-
+	public static HashMap<UUID, HashMap<Integer, ItemStack>> soulbound_Storage = new HashMap<>();
+	
 	public void postInit(){
 	}
 
@@ -225,30 +211,28 @@ public class PlayerTracker{
 	}
 
 	public static void storeSoulboundItemsForRespawn(EntityPlayer player){
-		if (soulbound_Storage.containsKey(player.getUniqueID()))
-			soulbound_Storage.remove(player.getUniqueID());
-
-		HashMap<Integer, ItemStack> soulboundItems = new HashMap<Integer, ItemStack>();
-
-		int slotCount = 0;
-		for (ItemStack stack : player.inventory.mainInventory){
-			int soulbound_level = EnchantmentHelper.getEnchantmentLevel(AMEnchantments.soulbound.effectId, stack);
-			if (soulbound_level > 0){
-				soulboundItems.put(slotCount, stack.copy());
-				player.inventory.setInventorySlotContents(slotCount, null);
+		HashMap<Integer, ItemStack> soulboundItems = new HashMap<>();
+		
+		int slot = 0;
+		for (ItemStack stack : player.inventory.mainInventory) {
+			if (EnchantmentHelper.getEnchantmentLevel(AMEnchantments.soulbound.effectId, stack) > 0){
+				soulboundItems.put(slot, stack.copy());
+				player.inventory.setInventorySlotContents(slot, null);
 			}
-			slotCount++;
+			++slot;
 		}
-		slotCount = 0;
-		for (ItemStack stack : player.inventory.armorInventory){
-			int soulbound_level = EnchantmentHelper.getEnchantmentLevel(AMEnchantments.soulbound.effectId, stack);
-			if (soulbound_level > 0 || ArmorHelper.isInfusionPreset(stack, GenericImbuement.soulbound)){
-				soulboundItems.put(slotCount + player.inventory.mainInventory.length, stack.copy());
-				player.inventory.setInventorySlotContents(slotCount + player.inventory.mainInventory.length, null);
+		slot = 0;
+		for (ItemStack stack : player.inventory.armorInventory) {
+			if (
+					EnchantmentHelper.getEnchantmentLevel(AMEnchantments.soulbound.effectId, stack) > 0 
+					|| ArmorHelper.isInfusionPreset(stack, GenericImbuement.soulbound)
+			){
+				soulboundItems.put(slot + player.inventory.mainInventory.length, stack.copy());
+				player.inventory.setInventorySlotContents(slot + player.inventory.mainInventory.length, null);
 			}
-			slotCount++;
+			++slot;
 		}
-
+		// storing even empty map in case that sickle or arm is thrown
 		soulbound_Storage.put(player.getUniqueID(), soulboundItems);
 	}
 
