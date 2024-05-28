@@ -13,27 +13,20 @@ import am2.playerextensions.SkillData;
 import am2.proxy.tick.ServerTickHandler;
 import am2.spell.SkillTreeManager;
 import am2.utility.EntityUtilities;
-import am2.utility.WebRequestUtils;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
-import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.UUID;
 
 public class PlayerTracker{
@@ -48,7 +41,9 @@ public class PlayerTracker{
 			affinityStorage_dimension = new HashMap<>(),
 			spellKnowledgeStorage_dimension = new HashMap<>();
 
-	public static HashMap<UUID, HashMap<Integer, ItemStack>> soulbound_Storage = new HashMap<>();
+	public static HashMap<UUID, HashMap<Integer, ItemStack>> 
+			soulbound_save_Storage = new HashMap<>(), // large map with all players and mostly empty mappings
+			soulbound_load_Storage = new HashMap<>(); // small map with currently respawned players that waits for items
 	
 	public void postInit(){
 	}
@@ -107,6 +102,11 @@ public class PlayerTracker{
 	public void onPlayerRespawn(PlayerRespawnEvent event){
 		//extended properties
 		//================================================================================
+		HashMap<Integer, ItemStack> soulboundStorage = soulbound_save_Storage.get(event.player.getUniqueID());
+		if (soulboundStorage != null) {
+			// signals that loading CAN be preformed, but will be loaded later
+			soulbound_load_Storage.put(event.player.getUniqueID(), soulboundStorage);
+		}
 		if (storedExtProps_death.containsKey(event.player.getUniqueID())){
 			NBTTagCompound stored = storedExtProps_death.get(event.player.getUniqueID());
 			storedExtProps_death.remove(event.player.getUniqueID());
@@ -233,7 +233,7 @@ public class PlayerTracker{
 			++slot;
 		}
 		// storing even empty map in case that sickle or arm is thrown
-		soulbound_Storage.put(player.getUniqueID(), soulboundItems);
+		soulbound_save_Storage.put(player.getUniqueID(), soulboundItems);
 	}
 
 	public static void storeExtendedPropertiesForDimensionChange(EntityPlayer player){
@@ -288,10 +288,10 @@ public class PlayerTracker{
 	}
 
 	public static void storeSoulboundItemForRespawn(EntityPlayer player, ItemStack stack){
-		if (!soulbound_Storage.containsKey(player.getUniqueID()))
+		if (!soulbound_save_Storage.containsKey(player.getUniqueID()))
 			return;
 
-		HashMap<Integer, ItemStack> soulboundItems = soulbound_Storage.get(player.getUniqueID());
+		HashMap<Integer, ItemStack> soulboundItems = soulbound_save_Storage.get(player.getUniqueID());
 
 		int slotTest = 0;
 		while (soulboundItems.containsKey(slotTest)){

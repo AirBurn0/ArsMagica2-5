@@ -17,7 +17,6 @@ import am2.buffs.BuffEffectScrambleSynapses;
 import am2.buffs.BuffEffectTemporalAnchor;
 import am2.buffs.BuffList;
 import am2.buffs.BuffStatModifiers;
-import am2.configuration.AMConfig;
 import am2.damage.DamageSourceFire;
 import am2.damage.DamageSources;
 import am2.entities.EntityFlicker;
@@ -85,8 +84,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static am2.PlayerTracker.soulbound_Storage;
-import static am2.PlayerTracker.storeSoulboundItemsForRespawn;
+import static am2.PlayerTracker.*;
 import static am2.blocks.liquid.BlockLiquidEssence.liquidEssenceMaterial;
 
 public class AMEventHandler{
@@ -117,7 +115,8 @@ public class AMEventHandler{
 
 	@SubscribeEvent
 	public void onUnload(WorldEvent.Unload we) {
-		soulbound_Storage.clear();
+		soulbound_load_Storage.clear();
+		soulbound_save_Storage.clear();
 	}
 
 	@SubscribeEvent
@@ -540,20 +539,20 @@ public class AMEventHandler{
 		//================================================================================
 		if (!ent.worldObj.isRemote && !ent.isDead && ent.ticksExisted > 5 && ent instanceof EntityPlayer) {
 			EntityPlayer p = (EntityPlayer)ent;
-			// suppose that soulbound_Storage is really short map (not much entries), so checking every tick will be ok.
-			HashMap<Integer, ItemStack> items = soulbound_Storage.get(p.getUniqueID()); // return null if no entry; containsKey() is redundant, becouse 'null' mapping is pointless.
+			// suppose that soulbound_load_Storage is really short map (not much entries), so checking every tick will be ok.
+			HashMap<Integer, ItemStack> items = soulbound_load_Storage.get(p.getUniqueID()); // return null if no entry; containsKey() is redundant, becouse 'null' mapping is pointless.
 			if (items != null) {
 				for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
-					if (entry.getKey() < p.inventory.getSizeInventory()) {
-						p.inventory.setInventorySlotContents(entry.getKey(), entry.getValue());
+					int slot = entry.getKey();
+					if (slot < p.inventory.getSizeInventory() && p.inventory.getStackInSlot(slot) == null) { // valid AND empty
+						p.inventory.setInventorySlotContents(slot, entry.getValue());
 					}
 					else if (!p.inventory.addItemStackToInventory(entry.getValue())) {
 						p.entityDropItem(entry.getValue(), 0);
 					}
-					
 				}
 				items.clear();
-				soulbound_Storage.remove(p.getUniqueID());
+				soulbound_load_Storage.remove(p.getUniqueID());
 			}
 		}
 
