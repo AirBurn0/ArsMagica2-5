@@ -299,7 +299,7 @@ public class PowerNodeRegistry {
 		return data.getHighestPowerType();
 	}
 
-	PowerNodeEntry getPowerNodeData(IPowerNode node) {
+	public PowerNodeEntry getPowerNodeData(IPowerNode node) {
 		ChunkCoordIntPair pair = getChunkFromNode(node);
 		if(pair != null && powerNodes.containsKey(pair)) {
 			PowerNodeEntry pnd = powerNodes.get(pair).get(new AMVector3((TileEntity)node));
