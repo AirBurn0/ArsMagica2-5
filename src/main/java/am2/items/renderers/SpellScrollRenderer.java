@@ -34,7 +34,7 @@ public class SpellScrollRenderer implements IItemRenderer {
 	private final ModelBiped modelBipedMain;
 	private final Minecraft mc;
 	private final Map<Affinity, IIcon> icons;
-	private boolean setupIcons = false;
+	public boolean setupIcons = false;
 	private static final ResourceLocation rLoc = new ResourceLocation("textures/atlas/items.png");
 
 	public static SpellScrollRenderer instance = new SpellScrollRenderer();
@@ -96,8 +96,8 @@ public class SpellScrollRenderer implements IItemRenderer {
 
 		EntityLivingBase entity = (EntityLivingBase)data[1];
 		GL11.glPushMatrix();
-		GL11.glEnable(32826 /*GL_RESCALE_NORMAL_EXT*/);
-		GL11.glEnable(3042);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_BLEND);// that dude really just glEnable twice. genius.
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -148,10 +148,10 @@ public class SpellScrollRenderer implements IItemRenderer {
 			RenderByAffinity(affinity);
 		}
 
-		GL11.glDisable(32826 /*GL_RESCALE_NORMAL_EXT*/);
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(3042);
-
+		GL11.glDisable(GL11.GL_BLEND); // that dude really just glDisable twice. genius.
+		
 		GL11.glPopMatrix();
 	}
 
@@ -170,7 +170,6 @@ public class SpellScrollRenderer implements IItemRenderer {
 	}
 
 	public void RenderByAffinity(Affinity affinity) {
-
 		Minecraft.getMinecraft().renderEngine.bindTexture(rLoc);
 
 		IIcon icon = icons.get(affinity);
@@ -188,7 +187,6 @@ public class SpellScrollRenderer implements IItemRenderer {
 
 
 	private void doRender(float TLX, float TLY, float BRX, float BRY) {
-		//ItemRenderer.renderItemIn2D(Tessellator.instance, TLX, TLY, BRX, BRY, 1, 1, 0.0625F);
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
 		t.setNormal(0.0F, 0.0F, 1.0F);
