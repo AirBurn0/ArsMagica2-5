@@ -89,7 +89,7 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 	private int previousBreath = 300;
 
 	private ContingencyTypes contingencyType = ContingencyTypes.NONE;
-	private ItemStack contingencyStack = null;
+	public ItemStack contingencyStack = null;
 
 	public float TK_Distance = 8;
 
@@ -672,7 +672,7 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		this.numSummons = numSummons;
 	}
 
-	private void setUpdateFlag(int flag) {
+	public void setUpdateFlag(int flag) {
 		this.updateFlags |= flag;
 	}
 
