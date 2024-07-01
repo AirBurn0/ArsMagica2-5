@@ -30,7 +30,7 @@ public abstract class CompendiumEntry implements Comparable<CompendiumEntry>{
 		this.isLocked = true;
 	}
 
-	protected CompendiumEntry setParent(CompendiumEntry parent){
+	public CompendiumEntry setParent(CompendiumEntry parent){
 		this.parent = parent;
 		return this;
 	}
