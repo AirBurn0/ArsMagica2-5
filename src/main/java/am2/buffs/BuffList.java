@@ -56,7 +56,7 @@ public class BuffList implements IBuffHelper {
 
 	private static final int maxParticlesPerBuff = 100;
 	public static final int default_buff_duration = 600;
-	private static int potionDefaultOffset = 0;
+	public static int potionDefaultOffset = 0;
 	public static HashMap<Integer, Integer> particlesForBuffID;
 	private static HashMap<Integer, Class> classesForBuffID;
 
@@ -76,7 +76,7 @@ public class BuffList implements IBuffHelper {
 
 	}
 
-	private static ArsMagicaPotion createAMPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, Class buffEffectClass) {
+	public static ArsMagicaPotion createAMPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, Class buffEffectClass) {
 
 		String configID = name.replace(" ", "").toLowerCase().trim();
 		index = AMCore.config.getConfigurablePotionID(configID, index);
@@ -97,7 +97,7 @@ public class BuffList implements IBuffHelper {
 		return potion;
 	}
 
-	private static ManaPotion createManaPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, int colour) {
+	public static ManaPotion createManaPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, int colour) {
 		String configID = name.replace(" ", "").toLowerCase().trim();
 		index = AMCore.config.getConfigurablePotionID(configID, index);
 
@@ -115,7 +115,7 @@ public class BuffList implements IBuffHelper {
 		return potion;
 	}
 
-	private static void createDummyBuff(Class buffEffectClass, int potionID) {
+	public static void createDummyBuff(Class buffEffectClass, int potionID) {
 		try {
 			Constructor ctor = buffEffectClass.getConstructor(Integer.TYPE, Integer.TYPE);
 			BuffEffect utilityBuff = (BuffEffect)ctor.newInstance(0, 0);
