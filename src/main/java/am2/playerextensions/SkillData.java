@@ -48,10 +48,10 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 	private int ticksToSync = 0;
 	private final int syncTickDelay = 2400;
 
-	private ArrayList<Integer> shapesKnown;
-	private ArrayList<Integer> componentsKnown;
-	private ArrayList<Integer> modifiersKnown;
-	private ArrayList<Integer> talentsKnown;
+	public ArrayList<Integer> shapesKnown;
+	public ArrayList<Integer> componentsKnown;
+	public ArrayList<Integer> modifiersKnown;
+	public ArrayList<Integer> talentsKnown;
 	private SkillTrees primaryTree;
 	private final EntityPlayer player;
 
@@ -73,19 +73,19 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 		this.player = player;
 	}
 
-	private boolean isShapeKnown(int shapeID) {
+	public boolean isShapeKnown(int shapeID) {
 		return shapesKnown.contains(shapeID);
 	}
 
-	private boolean isComponentKnown(int componentID) {
+	public boolean isComponentKnown(int componentID) {
 		return componentsKnown.contains(componentID);
 	}
 
-	private boolean isModifierKnown(int modifierID) {
+	public boolean isModifierKnown(int modifierID) {
 		return modifiersKnown.contains(modifierID);
 	}
 
-	private boolean isTalentKnown(int skillID) {
+	public boolean isTalentKnown(int skillID) {
 		return talentsKnown.contains(skillID);
 	}
 
@@ -149,7 +149,7 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 		this.updateFlags |= NUM_SPELL_POINTS;
 	}
 
-	private void setShapeKnown(int shapeID) {
+	public void setShapeKnown(int shapeID) {
 		if(!isShapeKnown(shapeID)) {
 			shapesKnown.add(shapeID);
 			if(primaryTree == SkillTrees.None) {
@@ -162,7 +162,7 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 		}
 	}
 
-	private void setComponentKnown(int componentID) {
+	public void setComponentKnown(int componentID) {
 		if(!isComponentKnown(componentID)) {
 			componentsKnown.add(componentID);
 			if(primaryTree == SkillTrees.None) {
@@ -175,7 +175,7 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 		}
 	}
 
-	private void setModifierKnown(int modifierID) {
+	public void setModifierKnown(int modifierID) {
 		if(!isModifierKnown(modifierID)) {
 			modifiersKnown.add(modifierID);
 			if(primaryTree == SkillTrees.None) {
@@ -188,13 +188,13 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 		}
 	}
 
-	private void setTalentKnown(int talentID) {
+	public void setTalentKnown(int talentID) {
 		if(!isTalentKnown(talentID)) {
 			talentsKnown.add(talentID);
 		}
 	}
 
-	private void learnInternal(ISkillTreeEntry entry) {
+	public void learnInternal(ISkillTreeEntry entry) {
 		if(entry instanceof ISpellShape) {
 			setShapeKnown(entry.getID());
 		}
@@ -674,4 +674,5 @@ public class SkillData implements IExtendedEntityProperties, ISkillData {
 		this.spellPoints[1] = addPoints[1];
 		this.spellPoints[2] = addPoints[2];
 	}
+	
 }
