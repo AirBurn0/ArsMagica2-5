@@ -59,7 +59,7 @@ public class ArcaneCompendium implements ILoreHelper {
 	public static Achievement compendiumData = (new Achievement("am2_ach_data", "compendiumData", 0, 0, ItemsCommonProxy.arcaneCompendium, null));
 	public static Achievement componentUnlock = (new Achievement("am2_ach_unlock", "componentUnlock", 0, 0, ItemsCommonProxy.spellParchment, null));
 
-	private final TreeMap<String, CompendiumEntry> compendium;
+	public final TreeMap<String, CompendiumEntry> compendium;
 	private final TreeMap<String, String> aliases;
 	private final TreeMap<String, String> zeroItemTexts;
 
