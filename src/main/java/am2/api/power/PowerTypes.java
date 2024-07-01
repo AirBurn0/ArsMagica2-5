@@ -13,7 +13,7 @@ public final class PowerTypes {
 	public static final PowerTypes NEUTRAL = new PowerTypes(2, "Neutral", "\u00A71");
 	public static final PowerTypes DARK = new PowerTypes(4, "Dark", "\u00A74");
 
-	private static final ArrayList<PowerTypes> allPowerTypes = new ArrayList<PowerTypes>() {{
+	public static final ArrayList<PowerTypes> allPowerTypes = new ArrayList<PowerTypes>() {{
 		add(LIGHT);
 		add(NEUTRAL);
 		add(DARK);
@@ -23,7 +23,7 @@ public final class PowerTypes {
 	private final String _name;
 	private final String _chatColor;
 
-	private PowerTypes(int ID, String name, String chatColor) {
+	public PowerTypes(int ID, String name, String chatColor) {
 		if((ID & -ID) != ID) {
 			throw new InvalidParameterException(String.format("ID must be a bitflag that is a power of 2!  (You used %d)", ID));
 		}
