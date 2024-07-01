@@ -21,11 +21,11 @@ public class SpellCastingEvent {
 		/**
 		 The calculated mana cost of the spell
 		 */
-		public final float manaCost;
+		public float manaCost;
 		/**
 		 The calculated burnout of the spell
 		 */
-		public final float burnout;
+		public float burnout;
 		/**
 		 The itemstack representing the spell
 		 */
@@ -62,11 +62,11 @@ public class SpellCastingEvent {
 		/**
 		 The calculated mana cost of the spell
 		 */
-		public final float manaCost;
+		public float manaCost;
 		/**
 		 The calculated burnout of the spell
 		 */
-		public final float burnout;
+		public float burnout;
 		/**
 		 The itemstack representing the spell
 		 */
