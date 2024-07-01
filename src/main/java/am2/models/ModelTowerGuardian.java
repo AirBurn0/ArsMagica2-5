@@ -4,7 +4,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-public class ModelTowerGuardian extends ModelBiped{
+public class ModelTowerGuardian extends ModelBiped {
 	//fields
 	//ModelRenderer bipedBody;
 	//ModelRenderer bipedHead;
@@ -25,7 +25,7 @@ public class ModelTowerGuardian extends ModelBiped{
     public ModelRenderer bipedEars;
     public ModelRenderer bipedCloak;*/
 
-	public ModelTowerGuardian(){
+	public ModelTowerGuardian() {
 		textureWidth = 128;
 		textureHeight = 64;
 		setTextureOffset("bipedBody.body1", 60, 0);
@@ -111,7 +111,7 @@ public class ModelTowerGuardian extends ModelBiped{
 		bipedLeftLeg.addBox("lleg1", -2F, 0F, -2F, 4, 9, 4);
 	}
 
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		//super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		//bipedBody.render(f5);
@@ -131,7 +131,7 @@ public class ModelTowerGuardian extends ModelBiped{
     bipedLeftLeg.render(f5);*/
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

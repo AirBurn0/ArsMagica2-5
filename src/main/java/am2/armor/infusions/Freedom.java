@@ -15,31 +15,32 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
 
-public class Freedom implements IArmorImbuement{
+public class Freedom implements IArmorImbuement {
 
 	@Override
-	public String getID(){
+	public String getID() {
 		return "freedom";
 	}
 
 	@Override
-	public int getIconIndex(){
+	public int getIconIndex() {
 		return 29;
 	}
 
 	@Override
-	public ImbuementTiers getTier(){
+	public ImbuementTiers getTier() {
 		return ImbuementTiers.FOURTH;
 	}
 
 	@Override
-	public EnumSet<ImbuementApplicationTypes> getApplicationTypes(){
+	public EnumSet<ImbuementApplicationTypes> getApplicationTypes() {
 		return EnumSet.of(ImbuementApplicationTypes.ON_TICK);
 	}
 
 	@Override
-	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params){
-		ModifiableAttributeInstance instance = (ModifiableAttributeInstance)player.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params) {
+		ModifiableAttributeInstance instance = (ModifiableAttributeInstance)player.getAttributeMap()
+																				  .getAttributeInstance(SharedMonsterAttributes.movementSpeed);
 
 		ArrayList<AttributeModifier> toRemove = new ArrayList<AttributeModifier>();
 
@@ -47,14 +48,14 @@ public class Freedom implements IArmorImbuement{
 		ArrayList arraylist = new ArrayList(c);
 		Iterator iterator = arraylist.iterator();
 
-		while (iterator.hasNext()){
+		while(iterator.hasNext()) {
 			AttributeModifier attributemodifier = (AttributeModifier)iterator.next();
-			if (attributemodifier.getOperation() == 2 && attributemodifier.getAmount() < 0.0f){
+			if(attributemodifier.getOperation() == 2 && attributemodifier.getAmount() < 0.0f) {
 				toRemove.add(attributemodifier);
 			}
 		}
 
-		for (AttributeModifier modifier : toRemove){
+		for(AttributeModifier modifier: toRemove) {
 			instance.removeModifier(modifier);
 		}
 
@@ -62,22 +63,22 @@ public class Freedom implements IArmorImbuement{
 	}
 
 	@Override
-	public int[] getValidSlots(){
+	public int[] getValidSlots() {
 		return new int[]{ImbuementRegistry.SLOT_BOOTS};
 	}
 
 	@Override
-	public boolean canApplyOnCooldown(){
+	public boolean canApplyOnCooldown() {
 		return true;
 	}
 
 	@Override
-	public int getCooldown(){
+	public int getCooldown() {
 		return 0;
 	}
 
 	@Override
-	public int getArmorDamage(){
+	public int getArmorDamage() {
 		return 1;
 	}
 }

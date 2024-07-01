@@ -1,6 +1,7 @@
 package am2.blocks.tileentities;
 
 // import am2.api.blocks.IKeystoneLockable;
+
 import am2.api.blocks.MultiblockStructureDefinition;
 import am2.api.power.PowerTypes;
 import am2.armor.ArmorHelper;
@@ -16,29 +17,29 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraftforge.common.util.Constants;
 
 // public class TileEntityArmorImbuer extends TileEntityAMPower implements IInventory, IKeystoneLockable, IMultiblockStructureController{
-public class TileEntityArmorImbuer extends TileEntityAMPower implements IInventory, IMultiblockStructureController{
+public class TileEntityArmorImbuer extends TileEntityAMPower implements IInventory, IMultiblockStructureController {
 
 	private ItemStack[] inventory;
 	private MultiblockStructureDefinition def;
 	private boolean creativeModeAllowed;
 
-	public TileEntityArmorImbuer(){
+	public TileEntityArmorImbuer() {
 		super(5);
 		inventory = new ItemStack[getSizeInventory()];
 	}
 
-	private void setupMultiblock(){
+	private void setupMultiblock() {
 		def = new MultiblockStructureDefinition("armorInfuser");
 
 	}
 
 	@Override
-	public boolean canRelayPower(PowerTypes type){
+	public boolean canRelayPower(PowerTypes type) {
 		return false;
 	}
 
 	@Override
-	public int getChargeRate(){
+	public int getChargeRate() {
 		return 10;
 	}
 
@@ -54,7 +55,7 @@ public class TileEntityArmorImbuer extends TileEntityAMPower implements IInvento
 	*/
 
 	@Override
-	public Packet getDescriptionPacket(){
+	public Packet getDescriptionPacket() {
 		NBTTagCompound compound = new NBTTagCompound();
 		writeToNBT(compound);
 		S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), compound);
@@ -62,7 +63,7 @@ public class TileEntityArmorImbuer extends TileEntityAMPower implements IInvento
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.func_148857_g());
 	}
 
@@ -79,67 +80,70 @@ public class TileEntityArmorImbuer extends TileEntityAMPower implements IInvento
 	*/
 
 	@Override
-	public int getSizeInventory(){
+	public int getSizeInventory() {
 		return 4;
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot){
-		if (slot >= inventory.length)
+	public ItemStack getStackInSlot(int slot) {
+		if(slot >= inventory.length) {
 			return null;
+		}
 		return inventory[slot];
 	}
 
 	@Override
-	public ItemStack decrStackSize(int i, int j){
-		if (inventory[i] != null){
-			if (inventory[i].stackSize <= j){
+	public ItemStack decrStackSize(int i, int j) {
+		if(inventory[i] != null) {
+			if(inventory[i].stackSize <= j) {
 				ItemStack itemstack = inventory[i];
 				inventory[i] = null;
 				return itemstack;
 			}
 			ItemStack itemstack1 = inventory[i].splitStack(j);
-			if (inventory[i].stackSize == 0){
+			if(inventory[i].stackSize == 0) {
 				inventory[i] = null;
 			}
 			return itemstack1;
-		}else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int i){
-		if (inventory[i] != null){
+	public ItemStack getStackInSlotOnClosing(int i) {
+		if(inventory[i] != null) {
 			ItemStack itemstack = inventory[i];
 			inventory[i] = null;
 			return itemstack;
-		}else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack){
+	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		inventory[i] = itemstack;
-		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()){
+		if(itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
 			itemstack.stackSize = getInventoryStackLimit();
 		}
 	}
 
 	@Override
-	public String getInventoryName(){
+	public String getInventoryName() {
 		return "ArmorInfuserInventory";
 	}
 
 	@Override
-	public int getInventoryStackLimit(){
+	public int getInventoryStackLimit() {
 		return 64;
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer){
-		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this){
+	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+		if(worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
 
@@ -147,39 +151,39 @@ public class TileEntityArmorImbuer extends TileEntityAMPower implements IInvento
 	}
 
 	@Override
-	public void openInventory(){
+	public void openInventory() {
 	}
 
 	@Override
-	public void closeInventory(){
+	public void closeInventory() {
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack){
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		return false;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound){
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		NBTTagList nbttaglist = nbttagcompound.getTagList("ArmorInfuserInventory", Constants.NBT.TAG_COMPOUND);
 		inventory = new ItemStack[getSizeInventory()];
-		for (int i = 0; i < nbttaglist.tagCount(); i++){
+		for(int i = 0; i < nbttaglist.tagCount(); i++) {
 			String tag = String.format("ArrayIndex", i);
-			NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.getCompoundTagAt(i);
+			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
 			byte byte0 = nbttagcompound1.getByte(tag);
-			if (byte0 >= 0 && byte0 < inventory.length){
+			if(byte0 >= 0 && byte0 < inventory.length) {
 				inventory[byte0] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
 			}
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound){
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		NBTTagList nbttaglist = new NBTTagList();
-		for (int i = 0; i < inventory.length; i++){
-			if (inventory[i] != null){
+		for(int i = 0; i < inventory.length; i++) {
+			if(inventory[i] != null) {
 				String tag = String.format("ArrayIndex", i);
 				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 				nbttagcompound1.setByte(tag, (byte)i);
@@ -192,25 +196,25 @@ public class TileEntityArmorImbuer extends TileEntityAMPower implements IInvento
 	}
 
 	@Override
-	public boolean hasCustomInventoryName(){
+	public boolean hasCustomInventoryName() {
 		return false;
 	}
 
 	@Override
-	public MultiblockStructureDefinition getDefinition(){
+	public MultiblockStructureDefinition getDefinition() {
 		return def;
 	}
 
-	public void imbueCurrentArmor(String string){
+	public void imbueCurrentArmor(String string) {
 		ItemStack armorStack = inventory[0];
 		ArmorHelper.imbueArmor(armorStack, string, this.creativeModeAllowed);
 	}
 
-	public boolean isCreativeAllowed(){
+	public boolean isCreativeAllowed() {
 		return this.creativeModeAllowed;
 	}
 
-	public void setCreativeModeAllowed(boolean creative){
+	public void setCreativeModeAllowed(boolean creative) {
 		this.creativeModeAllowed = creative;
 	}
 

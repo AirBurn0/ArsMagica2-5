@@ -11,13 +11,13 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerSpellCustomization extends Container{
+public class ContainerSpellCustomization extends Container {
 
 	private final InventoryPlayer inventoryPlayer;
 	private int iconIndex = 0;
 	private String name = "";
 
-	public ContainerSpellCustomization(EntityPlayer player){
+	public ContainerSpellCustomization(EntityPlayer player) {
 		this.inventoryPlayer = player.inventory;
 		iconIndex = -1;
 
@@ -26,26 +26,26 @@ public class ContainerSpellCustomization extends Container{
 
 	}
 
-	public void setNameAndIndex(String name, int index){
+	public void setNameAndIndex(String name, int index) {
 		this.name = name;
 		this.iconIndex = index;
 
 		((Slot)this.inventorySlots.get(0)).getStack().setItemDamage(this.iconIndex);
 		((Slot)this.inventorySlots.get(0)).getStack().setStackDisplayName("\247b" + this.name);
 
-		if (inventoryPlayer.player.worldObj.isRemote){
+		if(inventoryPlayer.player.worldObj.isRemote) {
 			sendPacketToServer();
 		}
 	}
 
 	@Override
-	public void onContainerClosed(EntityPlayer par1EntityPlayer){
+	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		SpellUtils.instance.changeEnchantmentsForShapeGroup(inventoryPlayer.getCurrentItem());
 		super.onContainerClosed(par1EntityPlayer);
 	}
 
-	public boolean sendPacketToServer(){
-		if (!name.equals("") && iconIndex > -1){
+	public boolean sendPacketToServer() {
+		if(!name.equals("") && iconIndex > -1) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(inventoryPlayer.player.getEntityId());
 			writer.add(iconIndex);
@@ -57,27 +57,33 @@ public class ContainerSpellCustomization extends Container{
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer){
+	public boolean canInteractWith(EntityPlayer entityplayer) {
 		return true;
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2){
+	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
 		Slot slot = (Slot)this.inventorySlots.get(par2);
 
-		if (slot != null && slot.getHasStack()){
+		if(slot != null && slot.getHasStack()) {
 			ItemStack itemstack = slot.getStack();
 			return itemstack;
 		}
 		return null;
 	}
 
-	public String getInitialSuggestedName(){
+	public String getInitialSuggestedName() {
 		Slot slot = (Slot)this.inventorySlots.get(0);
-		if (slot == null || !slot.getHasStack()) return "";
+		if(slot == null || !slot.getHasStack()) {
+			return "";
+		}
 		ItemStack stack = slot.getStack();
-		if (!stack.hasTagCompound()) return "";
-		if (!stack.stackTagCompound.hasKey("suggestedName")) return "";
+		if(!stack.hasTagCompound()) {
+			return "";
+		}
+		if(!stack.stackTagCompound.hasKey("suggestedName")) {
+			return "";
+		}
 		return stack.stackTagCompound.getString("suggestedName");
 
 	}

@@ -5,7 +5,7 @@ import am2.particles.AMParticleIcons;
 
 import java.util.LinkedList;
 
-public class RibbonCurve{
+public class RibbonCurve {
 	float ribbonWidth;
 	float resolution;
 	AMVector3 startPt, endPt, controlPt;
@@ -13,7 +13,7 @@ public class RibbonCurve{
 	float ribbonColor = 0;
 	LinkedList quads;
 
-	RibbonCurve(AMVector3 pStartPt, AMVector3 pEndPt, AMVector3 pControlPt, float pwidth, float presolution, float pcolor){
+	RibbonCurve(AMVector3 pStartPt, AMVector3 pEndPt, AMVector3 pControlPt, float pwidth, float presolution, float pcolor) {
 		startPt = pStartPt;
 		endPt = pEndPt;
 		controlPt = pControlPt;
@@ -24,25 +24,29 @@ public class RibbonCurve{
 		quads = new LinkedList();
 	}
 
-	void draw(){
+	void draw() {
 		int size = quads.size();
-		for (int i = 0; i < size; i++){
+		for(int i = 0; i < size; i++) {
 			Quad3D q = (Quad3D)quads.get(i);
 			q.draw();
 		}
 	}
 
-	void removeSegment(){
-		if (quads.size() > 1) quads.removeFirst();
+	void removeSegment() {
+		if(quads.size() > 1) {
+			quads.removeFirst();
+		}
 	}
 
-	void addSegment(){
+	void addSegment() {
 		float t = stepId / resolution;
 		AMVector3 p0 = getOffsetPoint(t, 0);
 		AMVector3 p3 = getOffsetPoint(t, ribbonWidth);
 
 		stepId++;
-		if (stepId > resolution) return;
+		if(stepId > resolution) {
+			return;
+		}
 
 		t = stepId / resolution;
 		AMVector3 p1 = getOffsetPoint(t, 0);
@@ -53,10 +57,10 @@ public class RibbonCurve{
 	}
 
 	/**
-	 * Given a bezier curve defined by 3 points, an offset distance (k) and a time (t), returns an AMVector3
+	 Given a bezier curve defined by 3 points, an offset distance (k) and a time (t), returns an AMVector3
 	 */
 
-	AMVector3 getOffsetPoint(float t, float k){
+	AMVector3 getOffsetPoint(float t, float k) {
 		AMVector3 p0 = startPt;
 		AMVector3 p1 = controlPt;
 		AMVector3 p2 = endPt;

@@ -8,15 +8,15 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
-public class Quad3D{
+public class Quad3D {
 	AMVector3 p0, p1, p2, p3;
 	AMVector3 avg;
-	private IIcon icon;
+	private final IIcon icon;
 	private static final Random rand = new Random();
 
 	AMVector3 normal;
 
-	Quad3D(AMVector3 p0, AMVector3 p1, AMVector3 p2, AMVector3 p3, IIcon icon){
+	Quad3D(AMVector3 p0, AMVector3 p1, AMVector3 p2, AMVector3 p3, IIcon icon) {
 		this.p0 = p0;
 		this.p1 = p1;
 		this.p2 = p2;
@@ -29,7 +29,7 @@ public class Quad3D{
 		calcNormal(p0, p1, p2);
 	}
 
-	void calcNormal(AMVector3 v1, AMVector3 v2, AMVector3 v3){
+	void calcNormal(AMVector3 v1, AMVector3 v2, AMVector3 v3) {
 		float Qx, Qy, Qz, Px, Py, Pz;
 
 		Qx = v2.x - v1.x;
@@ -43,7 +43,7 @@ public class Quad3D{
 		normal = new AMVector3(Py * Qz - Pz * Qy, Pz * Qx - Px * Qz, Px * Qy - Py * Qx);
 	}
 
-	void draw(){
+	void draw() {
 		//noStroke();
 		//GL11.glBegin(GL11.GL_QUADS);
 		Tessellator t = Tessellator.instance;
@@ -54,7 +54,7 @@ public class Quad3D{
 		t.addVertexWithUV(p2.x, p2.y, p2.z, icon.getMaxU(), icon.getMaxV());
 		t.addVertexWithUV(p3.x, p3.y, p3.z, icon.getMinU(), icon.getMaxV());
 		t.draw();
-		if (AMCore.config.FullGFX()){
+		if(AMCore.config.FullGFX()) {
 			double off = 0.005;
 
 			t.startDrawingQuads();

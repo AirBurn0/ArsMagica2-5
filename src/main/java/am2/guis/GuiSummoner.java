@@ -13,12 +13,12 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-public class GuiSummoner extends GuiContainer{
+public class GuiSummoner extends GuiContainer {
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("SummonerGui.png"));
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;
@@ -26,7 +26,7 @@ public class GuiSummoner extends GuiContainer{
 		drawTexturedModalRect(l, i1, 0, 0, xSize, ySize);
 	}
 
-	public GuiSummoner(InventoryPlayer inventoryplayer, TileEntitySummoner summoner){
+	public GuiSummoner(InventoryPlayer inventoryplayer, TileEntitySummoner summoner) {
 		super(new ContainerSummoner(inventoryplayer, summoner));
 		summonerInventory = summoner;
 		xSize = 176;
@@ -34,7 +34,7 @@ public class GuiSummoner extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2){
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
@@ -43,7 +43,8 @@ public class GuiSummoner extends GuiContainer{
 		float cost = summonerInventory.getSummonCost();
 		float maintainCost = summonerInventory.getMaintainCost() * 20;
 		String essenceCostString = cost >= 0 ? String.format("%.2f/s", maintainCost) : "N/A";
-		int color = cost >= 0 ? cost <= PowerNodeRegistry.For(Minecraft.getMinecraft().theWorld).getHighestPower(summonerInventory) ? 0x007700 : 0x770000 : 0x333333;
+		int color = cost >= 0 ? cost <= PowerNodeRegistry.For(Minecraft.getMinecraft().theWorld)
+														 .getHighestPower(summonerInventory) ? 0x007700 : 0x770000 : 0x333333;
 
 		int offset = fontRendererObj.getStringWidth(essenceString) + 25;
 
@@ -52,7 +53,8 @@ public class GuiSummoner extends GuiContainer{
 		fontRendererObj.drawString(essenceCostString, xSize - offset, ySize - 120, color);
 
 		essenceCostString = cost >= 0 ? String.format("%.2f", cost) : "N/A";
-		color = cost >= 0 ? cost <= PowerNodeRegistry.For(Minecraft.getMinecraft().theWorld).getHighestPower(summonerInventory) ? 0x007700 : 0x770000 : 0x333333;
+		color = cost >= 0 ? cost <= PowerNodeRegistry.For(Minecraft.getMinecraft().theWorld)
+													 .getHighestPower(summonerInventory) ? 0x007700 : 0x770000 : 0x333333;
 
 		fontRendererObj.drawString(essenceString, 20, ySize - 130, 0x777777);
 		fontRendererObj.drawString(essenceCostString, 20, ySize - 120, color);
@@ -63,7 +65,7 @@ public class GuiSummoner extends GuiContainer{
 		fontRendererObj.drawString(readyString, xSize / 2 - (fontRendererObj.getStringWidth(readyString) / 2), ySize - 107, color);
 	}
 
-	private void drawCostString(String tip, int x, int y){
+	private void drawCostString(String tip, int x, int y) {
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);

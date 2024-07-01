@@ -5,7 +5,7 @@ import am2.items.ItemsCommonProxy;
 import am2.spell.SpellUtils;
 import net.minecraft.item.ItemStack;
 
-public class NPCSpells{
+public class NPCSpells {
 	public static final NPCSpells instance = new NPCSpells();
 
 	public final ItemStack lightMage_DiminishedAttack;
@@ -32,7 +32,7 @@ public class NPCSpells{
 	public final ItemStack lightningRune;
 	public final ItemStack scrambleSynapses;
 
-	private NPCSpells(){
+	private NPCSpells() {
 		lightMage_DiminishedAttack = new ItemStack(ItemsCommonProxy.spell);
 		SpellUtils.instance.addSpellStageToScroll(lightMage_DiminishedAttack, "Projectile", new String[]{"PhysicalDamage"}, new String[]{});
 

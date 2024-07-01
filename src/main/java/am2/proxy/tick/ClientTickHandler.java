@@ -49,7 +49,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 @SideOnly(Side.CLIENT)
-public class ClientTickHandler{
+public class ClientTickHandler {
 
 	private final AMIngameGUI inGameGui = new AMIngameGUI();
 	public static HashMap<EntityLiving, EntityLivingBase> targetsToSet = new HashMap<EntityLiving, EntityLivingBase>();
@@ -62,7 +62,7 @@ public class ClientTickHandler{
 	private boolean firstTick = true;
 	private boolean compendiumLoad;
 
-	private ArrayList<AMLineArc> arcs = new ArrayList<AMLineArc>();
+	private final ArrayList<AMLineArc> arcs = new ArrayList<AMLineArc>();
 	private int arcSpawnCounter = 0;
 	private final int arcSpawnFrequency = 95;
 
@@ -73,101 +73,107 @@ public class ClientTickHandler{
 
 	private String lastWorldName;
 
-	private void gameTick_Start(){
+	private void gameTick_Start() {
 
-		if (!CompendiumEntryTypes.instance.hasInitialized())
+		if(!CompendiumEntryTypes.instance.hasInitialized()) {
 			CompendiumEntryTypes.instance.initTextures();
+		}
 
-		if (Minecraft.getMinecraft().isIntegratedServerRunning()){
-			if (worldName == null || !worldName.equals(Minecraft.getMinecraft().getIntegratedServer().getWorldName().replace(" ", "_"))){
+		if(Minecraft.getMinecraft().isIntegratedServerRunning()) {
+			if(worldName == null || !worldName.equals(Minecraft.getMinecraft()
+															   .getIntegratedServer()
+															   .getWorldName()
+															   .replace(" ", "_"))) {
 				worldName = Minecraft.getMinecraft().getIntegratedServer().getWorldName().replace(" ", "_");
 				firstTick = true;
 			}
-		}else{
-			if (worldName != null && (lastWorldName == null || lastWorldName != worldName.replace(" ", "_"))){
+		}
+		else {
+			if(worldName != null && (lastWorldName == null || lastWorldName != worldName.replace(" ", "_"))) {
 				lastWorldName = worldName.replace(" ", "_");
 				firstTick = true;
 			}
 		}
 
-		if (firstTick){
+		if(firstTick) {
 			ItemsCommonProxy.crystalPhylactery.getSpawnableEntities(Minecraft.getMinecraft().theWorld);
 			compendiumLoad = true;
 			firstTick = false;
 		}
 
-		if (compendiumLoad){
+		if(compendiumLoad) {
 			ArcaneCompendium.instance.loadUnlockData();
 			compendiumLoad = false;
 		}
 		AMCore.proxy.itemFrameWatcher.checkWatchedFrames();
 	}
 
-	private void applyDeferredPotionEffects(){
-		for (EntityLivingBase ent : AMCore.proxy.getDeferredPotionEffects().keySet()){
+	private void applyDeferredPotionEffects() {
+		for(EntityLivingBase ent: AMCore.proxy.getDeferredPotionEffects().keySet()) {
 			ArrayList<PotionEffect> potions = AMCore.proxy.getDeferredPotionEffects().get(ent);
-			for (PotionEffect effect : potions)
+			for(PotionEffect effect: potions) {
 				ent.addPotionEffect(effect);
+			}
 		}
 
 		AMCore.proxy.clearDeferredPotionEffects();
 	}
 
-	private void applyDeferredDimensionTransfers(){
-		for (EntityLivingBase ent : AMCore.proxy.getDeferredDimensionTransfers().keySet()){
+	private void applyDeferredDimensionTransfers() {
+		for(EntityLivingBase ent: AMCore.proxy.getDeferredDimensionTransfers().keySet()) {
 			DimensionUtilities.doDimensionTransfer(ent, AMCore.proxy.getDeferredDimensionTransfers().get(ent));
 		}
 
 		AMCore.proxy.clearDeferredDimensionTransfers();
 	}
 
-	private void gameTick_End(){
+	private void gameTick_End() {
 
 		AMGuiHelper.instance.tick();
 		EntityItemWatcher.instance.tick();
 		checkMouseDWheel();
 
-		if (Minecraft.getMinecraft().isIntegratedServerRunning()){
+		if(Minecraft.getMinecraft().isIntegratedServerRunning()) {
 			MeteorSpawnHelper.instance.tick();
 			applyDeferredPotionEffects();
 		}
 
-		if (!powerWatch.equals(AMVector3.zero())){
-			if (powerWatchSyncTick++ == 0){
+		if(!powerWatch.equals(AMVector3.zero())) {
+			if(powerWatchSyncTick++ == 0) {
 				AMNetHandler.INSTANCE.sendPowerRequestToServer(powerWatch);
 			}
 			powerWatchSyncTick %= 20;
 		}
 	}
 
-	private void spawnPowerPathVisuals(){
-		if (Minecraft.getMinecraft().thePlayer.getCurrentArmor(3) != null &&
+	private void spawnPowerPathVisuals() {
+		if(Minecraft.getMinecraft().thePlayer.getCurrentArmor(3) != null &&
 				(Minecraft.getMinecraft().thePlayer.getCurrentArmor(3).getItem() == ItemsCommonProxy.magitechGoggles ||
-						ArmorHelper.isInfusionPreset(Minecraft.getMinecraft().thePlayer.getCurrentArmor(3), GenericImbuement.magitechGoggleIntegration))
-				){
+						ArmorHelper.isInfusionPreset(Minecraft.getMinecraft().thePlayer.getCurrentArmor(3), GenericImbuement.magitechGoggleIntegration)
+				)
+		) {
 
-			if (arcSpawnCounter++ >= arcSpawnFrequency){
+			if(arcSpawnCounter++ >= arcSpawnFrequency) {
 				arcSpawnCounter = 0;
 
 				AMVector3 playerPos = new AMVector3(Minecraft.getMinecraft().thePlayer);
 
 				HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> paths = AMCore.proxy.getPowerPathVisuals();
-				if (paths != null){
-					for (PowerTypes type : paths.keySet()){
+				if(paths != null) {
+					for(PowerTypes type: paths.keySet()) {
 
 						String texture =
 								type == PowerTypes.LIGHT ? "textures/blocks/oreblockbluetopaz.png" :
 										type == PowerTypes.NEUTRAL ? "textures/blocks/oreblockvinteum.png" :
-												type == PowerTypes.DARK ? "textures/blocks/oreblocksunstone.png" :
-														"textures/blocks/oreblocksunstone.png";
+												"textures/blocks/oreblocksunstone.png";
 
 						ArrayList<LinkedList<AMVector3>> pathList = paths.get(type);
-						for (LinkedList<AMVector3> individualPath : pathList){
-							for (int i = 0; i < individualPath.size() - 1; ++i){
+						for(LinkedList<AMVector3> individualPath: pathList) {
+							for(int i = 0; i < individualPath.size() - 1; ++i) {
 								AMVector3 start = individualPath.get(i + 1);
 								AMVector3 end = individualPath.get(i);
 
-								if (start.distanceSqTo(playerPos) > 2500 || end.distanceSqTo(playerPos) > 2500){
+								if(start.distanceSqTo(playerPos) > 2500 || end.distanceSqTo(playerPos) > 2500) {
 									continue;
 								}
 
@@ -175,8 +181,9 @@ public class ClientTickHandler{
 								TileEntity teStart = Minecraft.getMinecraft().theWorld.getTileEntity((int)start.x, (int)start.y, (int)start.z);
 								TileEntity teEnd = Minecraft.getMinecraft().theWorld.getTileEntity((int)end.x, (int)end.y, (int)end.z);
 
-								if (teEnd == null || !(teEnd instanceof IPowerNode))
+								if(teEnd == null || !(teEnd instanceof IPowerNode)) {
 									break;
+								}
 
 								double startX = start.x + ((teStart != null && teStart instanceof IPowerNode) ? ((IPowerNode)teStart).particleOffset(0) : 0.5f);
 								double startY = start.y + ((teStart != null && teStart instanceof IPowerNode) ? ((IPowerNode)teStart).particleOffset(1) : 0.5f);
@@ -196,7 +203,7 @@ public class ClientTickHandler{
 										endY,
 										endZ);
 
-								if (arc != null){
+								if(arc != null) {
 									arcs.add(arc);
 								}
 							}
@@ -204,42 +211,48 @@ public class ClientTickHandler{
 					}
 				}
 			}
-		}else{
+		}
+		else {
 			Iterator<AMLineArc> it = arcs.iterator();
-			while (it.hasNext()){
+			while(it.hasNext()) {
 				AMLineArc arc = it.next();
-				if (arc == null || arc.isDead)
+				if(arc == null || arc.isDead) {
 					it.remove();
-				else
+				}
+				else {
 					arc.setDead();
+				}
 			}
 			arcSpawnCounter = arcSpawnFrequency;
 		}
 	}
 
-	private void checkMouseDWheel(){
-		if (this.mouseWheelValue != 0 && this.currentSlot > -1){
+	private void checkMouseDWheel() {
+		if(this.mouseWheelValue != 0 && this.currentSlot > -1) {
 			Minecraft.getMinecraft().thePlayer.inventory.currentItem = this.currentSlot;
 
 			ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
 
-			if (checkForTKMove(stack)){
+			if(checkForTKMove(stack)) {
 				ExtendedProperties props = ExtendedProperties.For(Minecraft.getMinecraft().thePlayer);
-				if (this.mouseWheelValue > 0 && props.TK_Distance < 10){
+				if(this.mouseWheelValue > 0 && props.TK_Distance < 10) {
 					props.TK_Distance += 0.5f;
-				}else if (this.mouseWheelValue < 0 && props.TK_Distance > 0.3){
+				}
+				else if(this.mouseWheelValue < 0 && props.TK_Distance > 0.3) {
 					props.TK_Distance -= 0.5f;
 				}
 				LogHelper.debug("TK Distance: %.2f", props.TK_Distance);
 				props.syncTKDistance();
-			}else if (stack.getItem() instanceof ItemSpellBook && Minecraft.getMinecraft().thePlayer.isSneaking()){
+			}
+			else if(stack.getItem() instanceof ItemSpellBook && Minecraft.getMinecraft().thePlayer.isSneaking()) {
 				ItemSpellBook isb = (ItemSpellBook)stack.getItem();
-				if (this.mouseWheelValue != 0){
+				if(this.mouseWheelValue != 0) {
 					byte subID = 0;
-					if (this.mouseWheelValue < 0){
+					if(this.mouseWheelValue < 0) {
 						isb.SetNextSlot(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem());
 						subID = ItemSpellBook.ID_NEXT_SPELL;
-					}else{
+					}
+					else {
 						isb.SetPrevSlot(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem());
 						subID = ItemSpellBook.ID_PREV_SPELL;
 					}
@@ -259,15 +272,16 @@ public class ClientTickHandler{
 		}
 	}
 
-	private boolean checkForTKMove(ItemStack stack){
-		if (stack.getItem() instanceof ItemSpellBook){
+	private boolean checkForTKMove(ItemStack stack) {
+		if(stack.getItem() instanceof ItemSpellBook) {
 			ItemStack activeStack = ((ItemSpellBook)stack.getItem()).GetActiveItemStack(stack);
-			if (activeStack != null)
+			if(activeStack != null) {
 				stack = activeStack;
+			}
 		}
-		if (stack.getItem() instanceof ItemSpellBase && stack.hasTagCompound() && this.usingItem){
-			for (ISpellComponent component : SpellUtils.instance.getComponentsForStage(stack, 0)){
-				if (component instanceof Telekinesis){
+		if(stack.getItem() instanceof ItemSpellBase && stack.hasTagCompound() && this.usingItem) {
+			for(ISpellComponent component: SpellUtils.instance.getComponentsForStage(stack, 0)) {
+				if(component instanceof Telekinesis) {
 					return true;
 				}
 			}
@@ -275,112 +289,119 @@ public class ClientTickHandler{
 		return false;
 	}
 
-	private void renderTick_Start(){
-		if (!Minecraft.getMinecraft().inGameHasFocus)
+	private void renderTick_Start() {
+		if(!Minecraft.getMinecraft().inGameHasFocus) {
 			AMGuiHelper.instance.guiTick();
+		}
 	}
 
-	private void renderTick_End(){
+	private void renderTick_End() {
 	}
 
-	public void renderOverlays(){
+	public void renderOverlays() {
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 
-		if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && (Minecraft.getMinecraft().inGameHasFocus || guiScreen instanceof GuiHudCustomization)){
+		if(Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && (Minecraft.getMinecraft().inGameHasFocus || guiScreen instanceof GuiHudCustomization)) {
 			this.inGameGui.renderGameOverlay();
 			ConfigureAMUICommand.showIfQueued();
 		}
 	}
 
-	private void localServerTick_End(){
+	private void localServerTick_End() {
 		BossSpawnHelper.instance.tick();
 	}
 
 	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event){
-		if (event.phase == TickEvent.Phase.START){
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		if(event.phase == TickEvent.Phase.START) {
 			GuiScreen guiscreen = Minecraft.getMinecraft().currentScreen;
-			if (guiscreen != null){
-			}else{
+			if(guiscreen != null) {
+			}
+			else {
 				gameTick_Start();
 			}
-		}else if (event.phase == TickEvent.Phase.END){
+		}
+		else if(event.phase == TickEvent.Phase.END) {
 			GuiScreen guiscreen = Minecraft.getMinecraft().currentScreen;
-			if (guiscreen != null){
-			}else{
+			if(guiscreen != null) {
+			}
+			else {
 				gameTick_End();
 			}
 
-			if (Minecraft.getMinecraft().theWorld != null)
+			if(Minecraft.getMinecraft().theWorld != null) {
 				spawnPowerPathVisuals();
+			}
 		}
 	}
 
 	@SubscribeEvent
-	public void onRenderTick(TickEvent.RenderTickEvent event){
-		if (event.phase == TickEvent.Phase.START){
+	public void onRenderTick(TickEvent.RenderTickEvent event) {
+		if(event.phase == TickEvent.Phase.START) {
 			renderTick_Start();
-		}else if (event.phase == TickEvent.Phase.END){
+		}
+		else if(event.phase == TickEvent.Phase.END) {
 			renderTick_End();
 		}
 	}
 
 	@SubscribeEvent
-	public void onWorldTick(TickEvent.WorldTickEvent event){
-		if (Minecraft.getMinecraft().isIntegratedServerRunning()){
-			if (AMCore.config.retroactiveWorldgen())
+	public void onWorldTick(TickEvent.WorldTickEvent event) {
+		if(Minecraft.getMinecraft().isIntegratedServerRunning()) {
+			if(AMCore.config.retroactiveWorldgen()) {
 				RetroactiveWorldgenerator.instance.continueRetrogen(event.world);
+			}
 		}
-		if (event.phase == TickEvent.Phase.END){
+		if(event.phase == TickEvent.Phase.END) {
 			applyDeferredDimensionTransfers();
 		}
 	}
 
 	@SubscribeEvent
-	public void onServerTick(TickEvent.ServerTickEvent event){
-		if (event.phase == TickEvent.Phase.END){
+	public void onServerTick(TickEvent.ServerTickEvent event) {
+		if(event.phase == TickEvent.Phase.END) {
 			localServerTick_End();
 		}
 	}
 
-	public void setDWheel(int dWheel, int slot, boolean usingItem){
+	public void setDWheel(int dWheel, int slot, boolean usingItem) {
 		this.mouseWheelValue = dWheel;
 		this.currentSlot = slot;
 		this.usingItem = usingItem;
 	}
 
-	public AMVector3 getTrackLocation(){
+	public AMVector3 getTrackLocation() {
 		return this.powerWatch;
 	}
 
-	public PowerNodeEntry getTrackData(){
+	public PowerNodeEntry getTrackData() {
 		return this.powerData;
 	}
 
-	public void setTrackLocation(AMVector3 location){
-		if (location.equals(AMVector3.zero())){
+	public void setTrackLocation(AMVector3 location) {
+		if(location.equals(AMVector3.zero())) {
 			this.hasSynced = false;
 			this.powerWatch = location;
 			return;
 		}
-		if (!this.powerWatch.equals(location)){
+		if(!this.powerWatch.equals(location)) {
 			this.powerWatch = location;
 			this.powerWatchSyncTick = 0;
 			this.hasSynced = false;
 		}
 	}
 
-	public void setTrackData(NBTTagCompound compound){
+	public void setTrackData(NBTTagCompound compound) {
 		this.powerData = new PowerNodeEntry();
 		this.powerData.readFromNBT(compound);
 		this.hasSynced = true;
 	}
 
-	public boolean getHasSynced(){
+	public boolean getHasSynced() {
 		return this.hasSynced;
 	}
 
-	public void addDeferredTarget(EntityLiving ent, EntityLivingBase target){
+	public void addDeferredTarget(EntityLiving ent, EntityLivingBase target) {
 		targetsToSet.put(ent, target);
 	}
 }

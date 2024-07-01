@@ -7,29 +7,29 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockSlipstreamGenerator extends PoweredBlock{
+public class BlockSlipstreamGenerator extends PoweredBlock {
 
-	public BlockSlipstreamGenerator(){
+	public BlockSlipstreamGenerator() {
 		super(Material.wood);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i){
+	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntitySlipstreamGenerator();
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		this.blockIcon = ResourceManager.RegisterTexture("slipstreamGenerator", par1IconRegister);
 	}
 
 	@Override
-	public int getRenderBlockPass(){
+	public int getRenderBlockPass() {
 		return 1;
 	}
 
 	@Override
-	public boolean isOpaqueCube(){
+	public boolean isOpaqueCube() {
 		return false;
 	}
 }

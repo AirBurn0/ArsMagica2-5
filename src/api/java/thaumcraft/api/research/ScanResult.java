@@ -10,28 +10,30 @@ public class ScanResult {
 	public String phenomena;
 
 	public ScanResult(byte type, int blockId, int blockMeta, Entity entity,
-			String phenomena) {
+					  String phenomena) {
 		super();
 		this.type = type;
 		this.id = blockId;
-		this.meta = blockMeta;		
+		this.meta = blockMeta;
 		this.entity = entity;
 		this.phenomena = phenomena;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ScanResult) {
-			ScanResult sr = (ScanResult) obj;
-			if (type != sr.type)
+		if(obj instanceof ScanResult) {
+			ScanResult sr = (ScanResult)obj;
+			if(type != sr.type) {
 				return false;
-			if (type == 1
-					&& (id != sr.id || meta != sr.meta))
+			}
+			if(type == 1
+					&& (id != sr.id || meta != sr.meta)) {
 				return false;
-			if (type == 2 && entity.getEntityId() != sr.entity.getEntityId())
+			}
+			if(type == 2 && entity.getEntityId() != sr.entity.getEntityId()) {
 				return false;
-			if (type == 3 && !phenomena.equals(sr.phenomena))
-				return false;
+			}
+			return type != 3 || phenomena.equals(sr.phenomena);
 		}
 		return true;
 	}

@@ -3,13 +3,13 @@ package am2.particles;
 import am2.api.math.AMVector3;
 import net.minecraft.util.MathHelper;
 
-public class ParticleFleePoint extends ParticleController{
+public class ParticleFleePoint extends ParticleController {
 
-	private AMVector3 target;
-	private double fleeSpeed;
-	private double targetDistance;
+	private final AMVector3 target;
+	private final double fleeSpeed;
+	private final double targetDistance;
 
-	public ParticleFleePoint(AMParticle particleEffect, AMVector3 fleePoint, double fleeSpeed, double targetDistance, int priority, boolean exclusive){
+	public ParticleFleePoint(AMParticle particleEffect, AMVector3 fleePoint, double fleeSpeed, double targetDistance, int priority, boolean exclusive) {
 		super(particleEffect, priority, exclusive);
 		this.target = fleePoint;
 		this.fleeSpeed = fleeSpeed;
@@ -17,7 +17,7 @@ public class ParticleFleePoint extends ParticleController{
 	}
 
 	@Override
-	public void doUpdate(){
+	public void doUpdate() {
 
 		double posX;
 		double posZ;
@@ -40,15 +40,16 @@ public class ParticleFleePoint extends ParticleController{
 
 		posY = particle.posY + (fleeSpeed * Math.sin(pitchRadians));
 
-		if (distanceToTarget > targetDistance){
+		if(distanceToTarget > targetDistance) {
 			this.finish();
-		}else{
+		}
+		else {
 			particle.setPosition(posX, posY, posZ);
 		}
 	}
 
 	@Override
-	public ParticleController clone(){
+	public ParticleController clone() {
 		return new ParticleFleePoint(particle, target, fleeSpeed, targetDistance, priority, exclusive);
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
 @SideOnly(Side.CLIENT)
-public class ModelBattleChicken extends ModelBase{
+public class ModelBattleChicken extends ModelBase {
 	//fields
 	ModelRenderer head;
 	ModelRenderer bill;
@@ -21,7 +21,7 @@ public class ModelBattleChicken extends ModelBase{
 	ModelRenderer helmet;
 	ModelRenderer cigar;
 
-	public ModelBattleChicken(){
+	public ModelBattleChicken() {
 		textureWidth = 64;
 		textureHeight = 32;
 
@@ -87,7 +87,7 @@ public class ModelBattleChicken extends ModelBase{
 		setRotation(cigar, 0F, 0F, 0F);
 	}
 
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5);
 		head.render(f5);
@@ -102,13 +102,13 @@ public class ModelBattleChicken extends ModelBase{
 		cigar.render(f5);
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;
 	}
 
-	public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6){
+	public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6) {
 		head.rotateAngleX = -(par5 / (180F / (float)Math.PI));
 		head.rotateAngleY = par4 / (180F / (float)Math.PI);
 

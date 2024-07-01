@@ -1,6 +1,6 @@
 package am2.api.items;
 
-public enum KeystoneAccessType{
+public enum KeystoneAccessType {
 	NONE,
 	USE,
 	BREAK

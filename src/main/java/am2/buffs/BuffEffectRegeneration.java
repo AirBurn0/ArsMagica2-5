@@ -6,38 +6,39 @@ import am2.particles.ParticleFadeOut;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
-public class BuffEffectRegeneration extends BuffEffect{
+public class BuffEffectRegeneration extends BuffEffect {
 
-	private int tickCounter;
+	private final int tickCounter;
 
-	public BuffEffectRegeneration(int duration, int amplifier){
+	public BuffEffectRegeneration(int duration, int amplifier) {
 		super(BuffList.regeneration.id, duration, amplifier);
 		tickCounter = 0;
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entityliving){
+	public void applyEffect(EntityLivingBase entityliving) {
 	}
 
 	@Override
-	public void stopEffect(EntityLivingBase entityliving){
+	public void stopEffect(EntityLivingBase entityliving) {
 
 	}
 
-	public boolean onUpdate(EntityLivingBase entityliving){
+	public boolean onUpdate(EntityLivingBase entityliving) {
 
 		World world = entityliving.worldObj;
 		double ticks = 80 / Math.pow(2, this.getAmplifier());
 
-		if (getDuration() != 0 && (getDuration() % ticks) == 0){
-			if (!world.isRemote){
+		if(getDuration() != 0 && (getDuration() % ticks) == 0) {
+			if(!world.isRemote) {
 				entityliving.heal(1);
-			}else{
-				AMParticle effect = (AMParticle)AMCore.instance.proxy.particleManager.spawn(world, "hr_sparkles_1",
+			}
+			else {
+				AMParticle effect = (AMParticle)AMCore.proxy.particleManager.spawn(world, "hr_sparkles_1",
 						entityliving.posX + world.rand.nextDouble() * entityliving.height - (entityliving.height / 2),
 						entityliving.posY + world.rand.nextDouble() * entityliving.height - (entityliving.height / 2),
 						entityliving.posZ + world.rand.nextDouble() * entityliving.height - (entityliving.height / 2));
-				if (effect != null){
+				if(effect != null) {
 					effect.setMaxAge(15 + world.rand.nextInt(10));
 					effect.setIgnoreMaxAge(false);
 					effect.AddParticleController(new ParticleFadeOut(effect, 1, true));
@@ -50,7 +51,7 @@ public class BuffEffectRegeneration extends BuffEffect{
 	}
 
 	@Override
-	protected String spellBuffName(){
+	protected String spellBuffName() {
 		return null;
 	}
 

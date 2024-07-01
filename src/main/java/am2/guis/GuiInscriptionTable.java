@@ -1,7 +1,11 @@
 package am2.guis;
 
 import am2.api.math.AMVector2;
-import am2.api.spell.component.interfaces.*;
+import am2.api.spell.component.interfaces.ISkillTreeEntry;
+import am2.api.spell.component.interfaces.ISpellComponent;
+import am2.api.spell.component.interfaces.ISpellModifier;
+import am2.api.spell.component.interfaces.ISpellPart;
+import am2.api.spell.component.interfaces.ISpellShape;
 import am2.blocks.tileentities.TileEntityInscriptionTable;
 import am2.containers.ContainerInscriptionTable;
 import am2.guis.controls.GuiButtonVariableDims;
@@ -30,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class GuiInscriptionTable extends GuiContainer{
+public class GuiInscriptionTable extends GuiContainer {
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("inscriptionTableGui.png"));
 
@@ -79,10 +83,10 @@ public class GuiInscriptionTable extends GuiContainer{
 	private GuiButtonVariableDims createSpellButton;
 	private GuiButtonVariableDims resetSpellButton;
 
-	private String defaultSearchLabel = "\2477\247o" + StatCollector.translateToLocal("am2.gui.search");
-	private String defaultNameLabel = "\2477\247o" + StatCollector.translateToLocal("am2.gui.name");
+	private final String defaultSearchLabel = "\2477\247o" + StatCollector.translateToLocal("am2.gui.search");
+	private final String defaultNameLabel = "\2477\247o" + StatCollector.translateToLocal("am2.gui.name");
 
-	public GuiInscriptionTable(InventoryPlayer playerInventory, TileEntityInscriptionTable table){
+	public GuiInscriptionTable(InventoryPlayer playerInventory, TileEntityInscriptionTable table) {
 		super(new ContainerInscriptionTable(table, playerInventory));
 		usingPlayer = playerInventory.player;
 		xSize = 220;
@@ -95,12 +99,12 @@ public class GuiInscriptionTable extends GuiContainer{
 	}
 
 	@Override
-	public boolean doesGuiPauseGame(){
+	public boolean doesGuiPauseGame() {
 		return false;
 	}
 
 	@Override
-	public void initGui(){
+	public void initGui() {
 		super.initGui();
 		searchFieldPosition = new AMVector2(39, 59);
 		searchFieldDimensions = new AMVector2(141, 12);
@@ -121,14 +125,14 @@ public class GuiInscriptionTable extends GuiContainer{
 		resetSpellButton.setDimensions(60, 20);
 		resetSpellButton.visible = false;
 
-		if (usingPlayer.capabilities.isCreativeMode){
+		if(usingPlayer.capabilities.isCreativeMode) {
 			this.buttonList.add(createSpellButton);
 		}
 
 		this.buttonList.add(resetSpellButton);
 
 		nameBar.setText(((ContainerInscriptionTable)this.inventorySlots).getSpellName());
-		if (nameBar.getText().equals("")){
+		if(nameBar.getText().equals("")) {
 			nameBar.setText(defaultNameLabel);
 		}
 
@@ -138,89 +142,95 @@ public class GuiInscriptionTable extends GuiContainer{
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton){
-		if (par1GuiButton == createSpellButton && usingPlayer.capabilities.isCreativeMode){
+	protected void actionPerformed(GuiButton par1GuiButton) {
+		if(par1GuiButton == createSpellButton && usingPlayer.capabilities.isCreativeMode) {
 			((ContainerInscriptionTable)this.inventorySlots).giveSpellToPlayer(usingPlayer);
-		}else if (par1GuiButton == resetSpellButton){
+		}
+		else if(par1GuiButton == resetSpellButton) {
 			((ContainerInscriptionTable)this.inventorySlots).resetSpellNameAndIcon();
 		}
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3){
+	protected void mouseClicked(int par1, int par2, int par3) {
 		super.mouseClicked(par1, par2, par3);
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 		par1 -= l;
 		par2 -= i1;
 
-		if (hoveredItem != null && hoveredIcon != null){
-			if (spellPartIsValidAddition(hoveredItem) && !lowerHover){
+		if(hoveredItem != null && hoveredIcon != null) {
+			if(spellPartIsValidAddition(hoveredItem) && !lowerHover) {
 				dragging = true;
-			}else if (lowerHover){
-				if (lowerHoverShapeGroup == -1 && ((ContainerInscriptionTable)this.inventorySlots).currentRecipeContains(hoveredItem)){
-					if (hoveredItem instanceof ISpellShape){
+			}
+			else if(lowerHover) {
+				if(lowerHoverShapeGroup == -1 && ((ContainerInscriptionTable)this.inventorySlots).currentRecipeContains(hoveredItem)) {
+					if(hoveredItem instanceof ISpellShape) {
 						int index = lowerHoverIndex;
 						int startIndex = index;
 						int count = 0;
 						index++;
-						while (index < ((ContainerInscriptionTable)this.inventorySlots).getCurrentRecipeSize() && !(((ContainerInscriptionTable)this.inventorySlots).getRecipeItemAt(index) instanceof ISpellShape)){
+						while(index < ((ContainerInscriptionTable)this.inventorySlots).getCurrentRecipeSize() && !(((ContainerInscriptionTable)this.inventorySlots).getRecipeItemAt(index) instanceof ISpellShape)) {
 							count++;
 							index++;
 						}
 						((ContainerInscriptionTable)this.inventorySlots).removeMultipleRecipeParts(startIndex, count);
-					}else{
+					}
+					else {
 						((ContainerInscriptionTable)this.inventorySlots).removeSingleRecipePart(lowerHoverIndex);
 					}
 					result = ((ContainerInscriptionTable)this.inventorySlots).validateCurrentDefinition();
-				}else if (lowerHoverShapeGroup >= 0){
-					if (hoveredItem instanceof ISpellShape){
+				}
+				else if(lowerHoverShapeGroup >= 0) {
+					if(hoveredItem instanceof ISpellShape) {
 						int index = lowerHoverIndex;
 						int startIndex = index;
 						int count = 0;
 						index++;
-						while (index < ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupSize(lowerHoverShapeGroup) &&
-								!(((ContainerInscriptionTable)this.inventorySlots).getShapeGroupPartAt(lowerHoverShapeGroup, index) instanceof ISpellShape)){
+						while(index < ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupSize(lowerHoverShapeGroup) &&
+								!(((ContainerInscriptionTable)this.inventorySlots).getShapeGroupPartAt(lowerHoverShapeGroup, index) instanceof ISpellShape)) {
 							count++;
 							index++;
 						}
 						((ContainerInscriptionTable)this.inventorySlots).removeMultipleRecipePartsFromGroup(lowerHoverShapeGroup, startIndex, count);
-					}else{
+					}
+					else {
 						((ContainerInscriptionTable)this.inventorySlots).removeSingleRecipePartFromGroup(lowerHoverShapeGroup, lowerHoverIndex);
 					}
 					result = ((ContainerInscriptionTable)this.inventorySlots).validateCurrentDefinition();
 				}
 			}
-		}else{
+		}
+		else {
 			boolean boxClick = false;
-			if (par1 >= searchFieldPosition.iX && par1 <= searchFieldPosition.iX + searchFieldDimensions.iX){
-				if (par2 >= searchFieldPosition.iY && par2 <= searchFieldPosition.iY + searchFieldDimensions.iY){
-					if (par3 == 1 || searchBar.getText().equals(defaultSearchLabel)){
+			if(par1 >= searchFieldPosition.iX && par1 <= searchFieldPosition.iX + searchFieldDimensions.iX) {
+				if(par2 >= searchFieldPosition.iY && par2 <= searchFieldPosition.iY + searchFieldDimensions.iY) {
+					if(par3 == 1 || searchBar.getText().equals(defaultSearchLabel)) {
 						searchBar.setText("");
 					}
-					if (nameBar.getText().equals("")){
+					if(nameBar.getText().equals("")) {
 						nameBar.setText(defaultNameLabel);
 					}
 					boxClick = true;
 				}
 			}
-			if (par1 >= nameFieldPosition.iX && par1 <= nameFieldPosition.iX + nameFieldDimensions.iX){
-				if (par2 >= nameFieldPosition.iY && par2 <= nameFieldPosition.iY + nameFieldDimensions.iY){
-					if (par3 == 1 || nameBar.getText().equals(defaultNameLabel)){
+			if(par1 >= nameFieldPosition.iX && par1 <= nameFieldPosition.iX + nameFieldDimensions.iX) {
+				if(par2 >= nameFieldPosition.iY && par2 <= nameFieldPosition.iY + nameFieldDimensions.iY) {
+					if(par3 == 1 || nameBar.getText().equals(defaultNameLabel)) {
 						nameBar.setText("");
 						((ContainerInscriptionTable)this.inventorySlots).setSpellName(nameBar.getText());
 					}
-					if (searchBar.getText().equals("")){
+					if(searchBar.getText().equals("")) {
 						searchBar.setText(defaultSearchLabel);
 					}
 					boxClick = true;
 				}
 			}
-			if (!boxClick){
-				if (nameBar.getText().equals("")){
+			if(!boxClick) {
+				if(nameBar.getText().equals("")) {
 					nameBar.setText(defaultNameLabel);
 				}
-				if (searchBar.getText().equals("")){
+				if(searchBar.getText().equals("")) {
 					searchBar.setText(defaultSearchLabel);
 				}
 			}
@@ -230,7 +240,7 @@ public class GuiInscriptionTable extends GuiContainer{
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int x, int y, int action){
+	protected void mouseMovedOrUp(int x, int y, int action) {
 		super.mouseMovedOrUp(x, y, action);
 
 		int l = (width - xSize) / 2;
@@ -238,23 +248,23 @@ public class GuiInscriptionTable extends GuiContainer{
 		x -= l;
 		y -= i1;
 
-		if (action == 0 || action == 1){
-			if (dragging){
+		if(action == 0 || action == 1) {
+			if(dragging) {
 				dragging = false;
 				//lower section
-				if (x >= IIconXStart_lower && x <= IIconXStart_lower + 150){
-					if (y >= IIconYStart_lower && y <= IIconYStart_lower + 18){
+				if(x >= IIconXStart_lower && x <= IIconXStart_lower + 150) {
+					if(y >= IIconYStart_lower && y <= IIconYStart_lower + 18) {
 						((ContainerInscriptionTable)this.inventorySlots).addRecipePart((ISpellPart)hoveredItem);
 						result = ((ContainerInscriptionTable)this.inventorySlots).validateCurrentDefinition();
 					}
 				}
 				//spell stage groups
 				int sg = ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups();
-				for (int i = 0; i < sg; ++i){
+				for(int i = 0; i < sg; ++i) {
 					int SGX = shapeGroupX + ((shapeGroupWidth + shapeGroupPadding) * i);
 					int SGY = shapeGroupY;
-					if (x >= SGX && x <= SGX + shapeGroupWidth){
-						if (y >= SGY && y <= SGY + shapeGroupWidth){
+					if(x >= SGX && x <= SGX + shapeGroupWidth) {
+						if(y >= SGY && y <= SGY + shapeGroupWidth) {
 							((ContainerInscriptionTable)this.inventorySlots).addRecipePartToGroup(i, (ISpellPart)hoveredItem);
 							result = ((ContainerInscriptionTable)this.inventorySlots).validateCurrentDefinition();
 						}
@@ -264,7 +274,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		}
 	}
 
-	private void drawDropZones(){
+	private void drawDropZones() {
 
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
@@ -273,7 +283,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		drawRectangle(l + IIconXStart_lower, i1 + IIconYStart_lower, 150, 20, 0xFF0000);
 
 		int sg = ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups();
-		for (int i = 0; i < sg; ++i){
+		for(int i = 0; i < sg; ++i) {
 			int SGX = l + shapeGroupX + ((shapeGroupWidth + shapeGroupPadding) * i);
 			int SGY = i1 + shapeGroupY;
 
@@ -281,7 +291,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		}
 	}
 
-	private void drawRectangle(int x, int y, int width, int height, int color){
+	private void drawRectangle(int x, int y, int width, int height, int color) {
 		AMGuiHelper.line2d(x, y, x + width, y, this.zLevel, color);
 		AMGuiHelper.line2d(x + width, y, x + width, y + height, this.zLevel, color);
 		AMGuiHelper.line2d(x, y + height, x + width, y + height, this.zLevel, color);
@@ -289,18 +299,20 @@ public class GuiInscriptionTable extends GuiContainer{
 	}
 
 	@Override
-	protected void keyTyped(char par1, int par2){
-		if (searchBar.textboxKeyTyped(par1, par2)){
+	protected void keyTyped(char par1, int par2) {
+		if(searchBar.textboxKeyTyped(par1, par2)) {
 
-		}else if (nameBar.textboxKeyTyped(par1, par2)){
+		}
+		else if(nameBar.textboxKeyTyped(par1, par2)) {
 			((ContainerInscriptionTable)this.inventorySlots).setSpellName(nameBar.getText());
-		}else{
+		}
+		else {
 			super.keyTyped(par1, par2);
 		}
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;
@@ -311,9 +323,10 @@ public class GuiInscriptionTable extends GuiContainer{
 
 		int offsetX = l + shapeGroupX;
 
-		for (int sg = 0; sg < TileEntityInscriptionTable.MAX_STAGE_GROUPS; ++sg){
-			if (sg >= ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups())
+		for(int sg = 0; sg < TileEntityInscriptionTable.MAX_STAGE_GROUPS; ++sg) {
+			if(sg >= ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups()) {
 				GL11.glColor3f(0.5f, 0.5f, 0.5f);
+			}
 			drawTexturedModalRect(offsetX + (sg * (shapeGroupWidth + shapeGroupPadding)), i1 + shapeGroupY, 176, 165, 37, 37);
 		}
 
@@ -326,7 +339,7 @@ public class GuiInscriptionTable extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2){
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
 		ArrayList<String> label = new ArrayList<String>();
@@ -340,68 +353,71 @@ public class GuiInscriptionTable extends GuiContainer{
 
 		drawBookIcon();
 		boolean hovering = false;
-		if (drawAvailableParts(label)){
+		if(drawAvailableParts(label)) {
 			hovering = true;
 			lowerHover = false;
 		}
-		if (drawCurrentRecipe(label, l, i1)){
+		if(drawCurrentRecipe(label, l, i1)) {
 			hovering = true;
 			lowerHover = true;
 		}
 		searchBar.drawTextBox();
 		nameBar.drawTextBox();
 
-		if (result.valid){
-			if (((ContainerInscriptionTable)this.inventorySlots).slotHasStack(0)){
-				if (((ContainerInscriptionTable)this.inventorySlots).slotIsBook(0)){
+		if(result.valid) {
+			if(((ContainerInscriptionTable)this.inventorySlots).slotHasStack(0)) {
+				if(((ContainerInscriptionTable)this.inventorySlots).slotIsBook(0)) {
 					Minecraft.getMinecraft().fontRenderer.drawSplitString(StatCollector.translateToLocal("am2.gui.bookOut"), 225, 5, 100, 0xFF7700);
-				}else{
+				}
+				else {
 					resetSpellButton.visible = true;
 				}
 
-			}else{
+			}
+			else {
 				resetSpellButton.visible = false;
 			}
 			createSpellButton.enabled = true;
-		}else{
-			if (((ContainerInscriptionTable)this.inventorySlots).slotHasStack(0) && !((ContainerInscriptionTable)this.inventorySlots).slotIsBook(0)){
-				resetSpellButton.visible = true;
-			}else{
-				resetSpellButton.visible = false;
-			}
+		}
+		else {
+			resetSpellButton.visible = ((ContainerInscriptionTable)this.inventorySlots).slotHasStack(0) && !((ContainerInscriptionTable)this.inventorySlots).slotIsBook(0);
 			Minecraft.getMinecraft().fontRenderer.drawSplitString(result.message, 225, 5, 100, 0xFF7700);
 			createSpellButton.enabled = false;
 		}
 
-		if (!dragging){
-			if (hovering){
+		if(!dragging) {
+			if(hovering) {
 				drawHoveringText(label, lastMouseX, lastMouseY, Minecraft.getMinecraft().fontRenderer);
-			}else{
+			}
+			else {
 				hoveredItem = null;
 				hoveredIcon = null;
 			}
-		}else{
+		}
+		else {
 			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 			drawDraggedItem();
 		}
 
 	}
 
-	private void drawBookIcon(){
+	private void drawBookIcon() {
 		int bookX = this.inventorySlots.getSlot(0).xDisplayPosition;
 		int bookY = this.inventorySlots.getSlot(0).yDisplayPosition;
 
 		IIcon icon = Items.writable_book.getIconFromDamage(0);
 
-		if (AMGuiHelper.instance.getFastTicker() < 20)
+		if(AMGuiHelper.instance.getFastTicker() < 20) {
 			GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.4f);
-		else
+		}
+		else {
 			GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.7f);
+		}
 		AMGuiHelper.DrawIconAtXY(icon, bookX, bookY, this.zLevel, 16, 16, true);
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	private boolean drawCurrentRecipe(ArrayList<String> labelText, int l, int i1){
+	private boolean drawCurrentRecipe(ArrayList<String> labelText, int l, int i1) {
 
 		iconX = IIconXStart_lower;
 		iconY = IIconYStart_lower;
@@ -410,13 +426,14 @@ public class GuiInscriptionTable extends GuiContainer{
 		int index = 0;
 
 		//main recipe
-		for (int i = 0; i < ((ContainerInscriptionTable)this.inventorySlots).getCurrentRecipeSize(); ++i){
+		for(int i = 0; i < ((ContainerInscriptionTable)this.inventorySlots).getCurrentRecipeSize(); ++i) {
 			ISpellPart part = ((ContainerInscriptionTable)this.inventorySlots).getRecipeItemAt(i);
-			if (part == SkillManager.instance.missingShape)
+			if(part == SkillManager.instance.missingShape) {
 				continue;
+			}
 			String name = SkillManager.instance.getDisplayName(part);
 
-			if (drawIcon(part, false)){
+			if(drawIcon(part, false)) {
 				labelText.add(name);
 				hovering = true;
 				lowerHoverIndex = index;
@@ -426,8 +443,8 @@ public class GuiInscriptionTable extends GuiContainer{
 		}
 
 		//shape groups
-		for (int i = 0; i < ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups(); ++i){
-			for (int n = 0; n < ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupSize(i); ++n){
+		for(int i = 0; i < ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups(); ++i) {
+			for(int n = 0; n < ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupSize(i); ++n) {
 				ISpellPart part = ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupPartAt(i, n);
 				String name = SkillManager.instance.getDisplayName(part);
 
@@ -437,7 +454,7 @@ public class GuiInscriptionTable extends GuiContainer{
 				iconX = SGX + (n % 2) * IIconStep;
 				iconY = SGY + (int)Math.floor(n / 2) * IIconStep;
 
-				if (drawIcon(part, false)){
+				if(drawIcon(part, false)) {
 					labelText.add(name);
 					hovering = true;
 					lowerHoverIndex = n;
@@ -448,7 +465,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		return hovering;
 	}
 
-	private boolean drawAvailableParts(ArrayList<String> labelText){
+	private boolean drawAvailableParts(ArrayList<String> labelText) {
 
 		iconX = IIconXStart_upper;
 		iconY = IIconYStart_upper;
@@ -458,7 +475,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		return b;
 	}
 
-	private boolean drawPartIcons(ArrayList<String> labelText){
+	private boolean drawPartIcons(ArrayList<String> labelText) {
 		boolean hovering = false;
 		hovering |= drawIconSet(knownShapes, labelText);
 		hovering |= drawIconSet(knownComponents, labelText);
@@ -466,23 +483,27 @@ public class GuiInscriptionTable extends GuiContainer{
 		return hovering;
 	}
 
-	private boolean drawIconSet(Integer[] ids, ArrayList<String> labelText){
+	private boolean drawIconSet(Integer[] ids, ArrayList<String> labelText) {
 		boolean hovering = false;
-		for (Integer i : ids){
+		for(Integer i: ids) {
 			ISkillTreeEntry part = SkillManager.instance.getSkill(i);
 
-			if (part != null && SkillTreeManager.instance.isSkillDisabled(part))
+			if(part != null && SkillTreeManager.instance.isSkillDisabled(part)) {
 				continue;
+			}
 
 			String name = SkillManager.instance.getDisplayName(part);
 
 			String filterText = searchBar.getText().toLowerCase();
-			if (filterText != "" && !filterText.equals(defaultSearchLabel.toLowerCase()) && !name.toLowerCase().contains(filterText)){
+			if(filterText != "" && !filterText.equals(defaultSearchLabel.toLowerCase()) && !name.toLowerCase()
+																								.contains(filterText)) {
 				continue;
 			}
 
-			if (iconY < 0 || iconY > 42) return hovering;
-			if (drawIcon(part)){
+			if(iconY < 0 || iconY > 42) {
+				return hovering;
+			}
+			if(drawIcon(part)) {
 				hovering = true;
 				labelText.add(name);
 			}
@@ -490,63 +511,68 @@ public class GuiInscriptionTable extends GuiContainer{
 		return hovering;
 	}
 
-	private boolean spellPartIsValidAddition(ISkillTreeEntry part){
+	private boolean spellPartIsValidAddition(ISkillTreeEntry part) {
 		boolean hasShape = false;
-		for (int i = 0; i < ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups(); ++i){
-			for (int n = 0; n < ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupSize(i); ++n){
+		for(int i = 0; i < ((ContainerInscriptionTable)this.inventorySlots).getNumStageGroups(); ++i) {
+			for(int n = 0; n < ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupSize(i); ++n) {
 				ISpellPart groupPart = ((ContainerInscriptionTable)this.inventorySlots).getShapeGroupPartAt(i, n);
-				if (groupPart instanceof ISpellShape){
+				if(groupPart instanceof ISpellShape) {
 					hasShape = true;
 					break;
 				}
 			}
 		}
-		if (!hasShape && !(part instanceof ISpellShape))
+		if(!hasShape && !(part instanceof ISpellShape)) {
 			return false;
-		if (part instanceof ISpellShape && ((ContainerInscriptionTable)this.inventorySlots).currentRecipeContains(part))
+		}
+		if(part instanceof ISpellShape && ((ContainerInscriptionTable)this.inventorySlots).currentRecipeContains(part)) {
 			return false;
-		if (part instanceof ISpellComponent){
+		}
+		if(part instanceof ISpellComponent) {
 			int index = ((ContainerInscriptionTable)this.inventorySlots).getCurrentRecipeSize() - 1;
-			while (index >= 0 && !(((ContainerInscriptionTable)this.inventorySlots).getRecipeItemAt(index) instanceof ISpellShape)){
+			while(index >= 0 && !(((ContainerInscriptionTable)this.inventorySlots).getRecipeItemAt(index) instanceof ISpellShape)) {
 				ISpellPart curPart = ((ContainerInscriptionTable)this.inventorySlots).getRecipeItemAt(index--);
-				if (curPart instanceof ISpellComponent && curPart.getID() == part.getID()){
+				if(curPart instanceof ISpellComponent && curPart.getID() == part.getID()) {
 					return false;
 				}
 			}
 		}
-		if (part instanceof ISpellModifier){
+		if(part instanceof ISpellModifier) {
 			return ((ContainerInscriptionTable)this.inventorySlots).modifierCanBeAdded((ISpellModifier)part);
 		}
 		return true;
 	}
 
-	private boolean drawIcon(ISkillTreeEntry part){
+	private boolean drawIcon(ISkillTreeEntry part) {
 		return drawIcon(part, true);
 	}
 
-	private boolean drawIcon(ISkillTreeEntry part, boolean allowDarken){
+	private boolean drawIcon(ISkillTreeEntry part, boolean allowDarken) {
 
 		boolean hovering = false;
 		IIcon shapeIcon = SpellIconManager.instance.getIcon(SkillManager.instance.getSkillName(part));
 
-		if (shapeIcon == null)
+		if(shapeIcon == null) {
 			return false;
+		}
 
-		if (!currentSpellDefIsReadOnly()){
-			if (!spellPartIsValidAddition(part) && allowDarken){
+		if(!currentSpellDefIsReadOnly()) {
+			if(!spellPartIsValidAddition(part) && allowDarken) {
 				GL11.glColor3f(0.3f, 0.3f, 0.3f);
-			}else{
+			}
+			else {
 				GL11.glColor3f(1.0f, 1.0f, 1.0f);
 			}
-		}else{
+		}
+		else {
 			GL11.glColor3f(1.0f, 0.7f, 0.7f);
 		}
 
 		AMGuiHelper.DrawIconAtXY(shapeIcon, iconX, iconY, this.zLevel, 16, 16, false);
 
-		if (!dragging){
-			if (lastMouseX > iconX && lastMouseX < iconX + 16){
-				if (lastMouseY > iconY && lastMouseY < iconY + 16){
+		if(!dragging) {
+			if(lastMouseX > iconX && lastMouseX < iconX + 16) {
+				if(lastMouseY > iconY && lastMouseY < iconY + 16) {
 					hoveredItem = part;
 					hoveredIcon = shapeIcon;
 					hovering = true;
@@ -555,7 +581,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		}
 
 		iconX += IIconStep;
-		if (iconX >= 175){
+		if(iconX >= 175) {
 			iconX = IIconXStart_upper;
 			iconY += 17;
 		}
@@ -563,13 +589,13 @@ public class GuiInscriptionTable extends GuiContainer{
 		return hovering;
 	}
 
-	private void drawDraggedItem(){
+	private void drawDraggedItem() {
 		AMGuiHelper.DrawIconAtXY(hoveredIcon, lastMouseX - 8, lastMouseY - 8, this.zLevel, 16, 16, false);
 	}
 
 	@Override
-	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font){
-		if (!par1List.isEmpty()){
+	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font) {
+		if(!par1List.isEmpty()) {
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -577,11 +603,11 @@ public class GuiInscriptionTable extends GuiContainer{
 			int k = 0;
 			Iterator iterator = par1List.iterator();
 
-			while (iterator.hasNext()){
+			while(iterator.hasNext()) {
 				String s = (String)iterator.next();
 				int l = font.getStringWidth(s);
 
-				if (l > k){
+				if(l > k) {
 					k = l;
 				}
 			}
@@ -590,15 +616,15 @@ public class GuiInscriptionTable extends GuiContainer{
 			int j1 = par3 - 12;
 			int k1 = 8;
 
-			if (par1List.size() > 1){
+			if(par1List.size() > 1) {
 				k1 += 2 + (par1List.size() - 1) * 10;
 			}
 
-			if (i1 + k > this.width){
+			if(i1 + k > this.width) {
 				i1 -= 28 + k;
 			}
 
-			if (j1 + k1 + 6 > this.height){
+			if(j1 + k1 + 6 > this.height) {
 				j1 = this.height - k1 - 6;
 			}
 
@@ -616,11 +642,11 @@ public class GuiInscriptionTable extends GuiContainer{
 			this.drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 - 3 + 1, i2, i2);
 			this.drawGradientRect(i1 - 3, j1 + k1 + 2, i1 + k + 3, j1 + k1 + 3, j2, j2);
 
-			for (int k2 = 0; k2 < par1List.size(); ++k2){
+			for(int k2 = 0; k2 < par1List.size(); ++k2) {
 				String s1 = (String)par1List.get(k2);
 				font.drawStringWithShadow(s1, i1, j1, -1);
 
-				if (k2 == 0){
+				if(k2 == 0) {
 					j1 += 2;
 				}
 
@@ -635,7 +661,7 @@ public class GuiInscriptionTable extends GuiContainer{
 		}
 	}
 
-	private boolean currentSpellDefIsReadOnly(){
+	private boolean currentSpellDefIsReadOnly() {
 		return ((ContainerInscriptionTable)this.inventorySlots).currentSpellDefIsReadOnly();
 	}
 }

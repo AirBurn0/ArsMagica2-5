@@ -4,7 +4,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-public class ModelInscriptionTableLeft extends ModelBase{
+public class ModelInscriptionTableLeft extends ModelBase {
 	//fields
 	ModelRenderer LFoot2;
 	ModelRenderer LFoot1;
@@ -22,7 +22,7 @@ public class ModelInscriptionTableLeft extends ModelBase{
 	ModelRenderer Book3;
 	ModelRenderer Book1;
 
-	public ModelInscriptionTableLeft(){
+	public ModelInscriptionTableLeft() {
 		textureWidth = 128;
 		textureHeight = 64;
 
@@ -118,7 +118,7 @@ public class ModelInscriptionTableLeft extends ModelBase{
 		setRotation(Book1, 0F, 0F, 0F);
 	}
 
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		LFoot2.render(f5);
 		LFoot1.render(f5);
@@ -137,7 +137,7 @@ public class ModelInscriptionTableLeft extends ModelBase{
 		Book1.render(f5);
 	}
 
-	public void renderModel(float f5, int state){
+	public void renderModel(float f5, int state) {
 		LFoot2.render(f5);
 		LFoot1.render(f5);
 		LFoot3.render(f5);
@@ -147,21 +147,21 @@ public class ModelInscriptionTableLeft extends ModelBase{
 		Tabletop.render(f5);
 		Runner2.render(f5);
 		Runner1.render(f5);
-		if (state >= 3){
+		if(state >= 3) {
 			Candle.render(f5);
 		}
-		if (state >= 2){
+		if(state >= 2) {
 			Tablecloth2.render(f5);
 			Tablecloth1.render(f5);
 		}
-		if (state >= 1){
+		if(state >= 1) {
 			Book3.render(f5);
 			Book1.render(f5);
 			Book2.render(f5);
 		}
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

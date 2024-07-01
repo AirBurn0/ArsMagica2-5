@@ -34,7 +34,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class GuiSkillTrees extends GuiScreen{
+public class GuiSkillTrees extends GuiScreen {
 	int xSize = 210;
 	int ySize = 246;
 
@@ -71,7 +71,7 @@ public class GuiSkillTrees extends GuiScreen{
 	private static final ResourceLocation rl_items = new ResourceLocation("textures/atlas/items.png");
 
 
-	public GuiSkillTrees(EntityPlayer player){
+	public GuiSkillTrees(EntityPlayer player) {
 		CompendiumEntryTypes.instance.initTextures();
 
 		this.player = player;
@@ -80,7 +80,7 @@ public class GuiSkillTrees extends GuiScreen{
 	}
 
 	@Override
-	public void initGui(){
+	public void initGui() {
 		super.initGui();
 
 		int l = (width - xSize) / 2 + 8;
@@ -97,35 +97,37 @@ public class GuiSkillTrees extends GuiScreen{
 		this.buttonList.add(offense);
 		this.buttonList.add(defense);
 		this.buttonList.add(utility);
-		if (ExtendedProperties.For(Minecraft.getMinecraft().thePlayer).getMagicLevel() >= 5)
+		if(ExtendedProperties.For(Minecraft.getMinecraft().thePlayer).getMagicLevel() >= 5) {
 			this.buttonList.add(talents);
-		if (!ArcaneCompendium.instance.getEntry("affinity").isLocked())
+		}
+		if(!ArcaneCompendium.instance.getEntry("affinity").isLocked()) {
 			this.buttonList.add(affinity);
+		}
 	}
 
 	@SuppressWarnings("incomplete-switch")
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton){
-		if (par1GuiButton instanceof GuiButtonSkillTreeTab){
+	protected void actionPerformed(GuiButton par1GuiButton) {
+		if(par1GuiButton instanceof GuiButtonSkillTreeTab) {
 			this.activeTree = ((GuiButtonSkillTreeTab)par1GuiButton).getTree();
 			skillTree = SkillTreeManager.instance.getTree(activeTree);
 
-			switch (activeTree){
-			case Defense:
-				offsetX = 91;
-				offsetY = 0;
-				break;
-			case Offense:
-				offsetX = 105;
-				offsetY = 0;
-				break;
-			case Utility:
-				offsetX = 94;
-				offsetY = 3;
-				break;
+			switch(activeTree) {
+				case Defense:
+					offsetX = 91;
+					offsetY = 0;
+					break;
+				case Offense:
+					offsetX = 105;
+					offsetY = 0;
+					break;
+				case Utility:
+					offsetX = 94;
+					offsetY = 3;
+					break;
 			}
-			for (Object button : this.buttonList){
-				if (button instanceof GuiButtonSkillTreeTab){
+			for(Object button: this.buttonList) {
+				if(button instanceof GuiButtonSkillTreeTab) {
 					((GuiButtonSkillTreeTab)button).setActive(false);
 				}
 			}
@@ -135,52 +137,67 @@ public class GuiSkillTrees extends GuiScreen{
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3){
+	public void drawScreen(int par1, int par2, float par3) {
 
 		SkillData sk = SkillData.For(Minecraft.getMinecraft().thePlayer);
 
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
-		if (AMCore.config.getSkillTreeSecondaryTierCap() < SkillTreeManager.instance.getHighestTier() && (sk.getPrimaryTree() == null || sk.getPrimaryTree() == SkillTrees.None) && sk.getSpellPoints(SkillPointTypes.BLUE) > 0){
+		if(AMCore.config.getSkillTreeSecondaryTierCap() < SkillTreeManager.instance.getHighestTier() && (sk.getPrimaryTree() == null || sk.getPrimaryTree() == SkillTrees.None) && sk.getSpellPoints(SkillPointTypes.BLUE) > 0) {
 			String s = StatCollector.translateToLocal("am2.gui.lockWarning");
 			fontRendererObj.drawSplitString(s, l - 120, i1 + 20, 110, 0xbf6325);
 		}
 
 
-		if (isDragging){
+		if(isDragging) {
 			int dx = lastMouseX - par1;
 			int dy = lastMouseY - par2;
 
 			this.offsetX += dx;
 			this.offsetY += dy;
 
-			if (this.offsetX < 0) this.offsetX = 0;
-			if (this.offsetX > 180) this.offsetX = 180;
+			if(this.offsetX < 0) {
+				this.offsetX = 0;
+			}
+			if(this.offsetX > 180) {
+				this.offsetX = 180;
+			}
 
-			if (this.offsetY < 0) this.offsetY = 0;
-			if (this.offsetY > 180) this.offsetY = 180;
+			if(this.offsetY < 0) {
+				this.offsetY = 0;
+			}
+			if(this.offsetY > 180) {
+				this.offsetY = 180;
+			}
 		}
 		lastMouseX = par1;
 		lastMouseY = par2;
 
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-		if (activeTree == SkillTrees.Offense)
+		if(activeTree == SkillTrees.Offense) {
 			Minecraft.getMinecraft().renderEngine.bindTexture(rl_offense);
-		else if (activeTree == SkillTrees.Defense)
+		}
+		else if(activeTree == SkillTrees.Defense) {
 			Minecraft.getMinecraft().renderEngine.bindTexture(rl_defense);
-		else if (activeTree == SkillTrees.Utility)
+		}
+		else if(activeTree == SkillTrees.Utility) {
 			Minecraft.getMinecraft().renderEngine.bindTexture(rl_utility);
-		else if (activeTree == SkillTrees.Talents || activeTree == SkillTrees.Affinity)
+		}
+		else if(activeTree == SkillTrees.Talents || activeTree == SkillTrees.Affinity) {
 			Minecraft.getMinecraft().renderEngine.bindTexture(rl_talents);
-		else return;
+		}
+		else {
+			return;
+		}
 
 		drawTexturedModalRect_Classic(l + 5, i1 + GuiButtonSkillTreeTab.buttonHeight + 5, offsetX, offsetY, 200, 200, 75, 75);
 
-		if (activeTree == SkillTrees.Affinity){
+		if(activeTree == SkillTrees.Affinity) {
 			drawAffinity();
-		}else{
+		}
+		else {
 			drawSkillTree();
 		}
 
@@ -203,61 +220,71 @@ public class GuiSkillTrees extends GuiScreen{
 
 		super.drawScreen(par1, par2, par3);
 
-		if (hoveredItem != null){
+		if(hoveredItem != null) {
 			ArrayList<String> text = new ArrayList<String>();
 			FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
 			String s = SkillManager.instance.getDisplayName(hoveredItem.registeredItem);
 			LearnStates state = sk.getLearnState(hoveredItem, Minecraft.getMinecraft().thePlayer);
-			if (state == LearnStates.LEARNED) s += " (" + StatCollector.translateToLocal("am2.gui.known") + ")";
-			else if (state == LearnStates.CAN_LEARN)
+			if(state == LearnStates.LEARNED) {
+				s += " (" + StatCollector.translateToLocal("am2.gui.known") + ")";
+			}
+			else if(state == LearnStates.CAN_LEARN) {
 				s += " (" + StatCollector.translateToLocal("am2.gui.notLearned") + ")";
-			else if (state == LearnStates.DISABLED) s = StatCollector.translateToLocal("am2.gui.cfgDisabled");
+			}
+			else if(state == LearnStates.DISABLED) {
+				s = StatCollector.translateToLocal("am2.gui.cfgDisabled");
+			}
 			//else fr = Minecraft.getMinecraft().standardGalacticFontRenderer;
 			text.add(s);
 			SkillPointTypes type = SkillTreeManager.instance.getSkillPointTypeForPart(hoveredItem.registeredItem);
 
-			if (hoveredItem.registeredItem instanceof ISpellComponent){
+			if(hoveredItem.registeredItem instanceof ISpellComponent) {
 				EnumSet<Affinity> aff = ((ISpellComponent)hoveredItem.registeredItem).getAffinity();
 
 				int affX = lastMouseX + 14;
 				int affY = lastMouseY - 34;
 				drawGradientAround(affX - 2, affY - 2, 18 * aff.size() + 2, 18);
-				for (Affinity a : aff){
-					if (a == Affinity.NONE)
+				for(Affinity a: aff) {
+					if(a == Affinity.NONE) {
 						continue;
+					}
 					DrawIconAtXY(a.representItem.getIconFromDamage(a.representMeta), "item", affX, affY, 16, 16, false);
 					affX += 18;
 				}
 			}
 
-			if (!AMCore.config.colourblindMode()){
+			if(!AMCore.config.colourblindMode()) {
 				drawHoveringText(text, lastMouseX, lastMouseY, fr, state == LearnStates.LEARNED ? 0xFFFFFF : type == SkillPointTypes.SILVER ? 0x888888 : type == SkillPointTypes.BLUE ? 0x4444FF : type == SkillPointTypes.GREEN ? 0x44FF44 : 0xFF4444);
-			}else{
+			}
+			else {
 				text.add(StatCollector.translateToLocal("am2.gui." + type.toString().toLowerCase() + "Point"));
 				drawHoveringText(text, lastMouseX, lastMouseY, fr, 0xFFFFFF);
 			}
 		}
 
-		if (hoveredAffinity != null){
+		if(hoveredAffinity != null) {
 			List list = AffinityData.For(Minecraft.getMinecraft().thePlayer).getColoredAffinityEffects(hoveredAffinity);
 			//list.add(0, "\247f" + hoveredAffinity.name());
 			drawHoveringText(list, lastMouseX, lastMouseY, fontRendererObj, 0xFFFFFF);
 		}
 	}
 
-	private void drawSkillTree(){
+	private void drawSkillTree() {
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2 + GuiButtonSkillTreeTab.buttonHeight;
 
 		SkillData sk = SkillData.For(Minecraft.getMinecraft().thePlayer);
 
-		for (SkillTreeEntry entry : skillTree){
-			if (entry.prerequisites == null || entry.prerequisites.length == 0) continue;
-			for (SkillTreeEntry prerequisite : entry.prerequisites){
+		for(SkillTreeEntry entry: skillTree) {
+			if(entry.prerequisites == null) {
+				continue;
+			}
+			for(SkillTreeEntry prerequisite: entry.prerequisites) {
 				int color = 0;
-				if (sk.isEntryKnown(prerequisite) || sk.getLearnState(prerequisite, Minecraft.getMinecraft().thePlayer) == LearnStates.DISABLED){
+				if(sk.isEntryKnown(prerequisite) || sk.getLearnState(prerequisite, Minecraft.getMinecraft().thePlayer) == LearnStates.DISABLED) {
 					color = 0x006600;
-				}else{
+				}
+				else {
 					continue;
 				}
 				line2d(l + entry.x - offsetX * 2 + 16, i1 + entry.y - offsetY * 2 + 16, l + entry.x - offsetX * 2 + 16, i1 + prerequisite.y - offsetY * 2 + 16, color);
@@ -265,14 +292,17 @@ public class GuiSkillTrees extends GuiScreen{
 			}
 		}
 
-		for (SkillTreeEntry entry : skillTree){
-			if (entry.prerequisites == null || entry.prerequisites.length == 0) continue;
-			for (SkillTreeEntry prerequisite : entry.prerequisites){
+		for(SkillTreeEntry entry: skillTree) {
+			if(entry.prerequisites == null) {
+				continue;
+			}
+			for(SkillTreeEntry prerequisite: entry.prerequisites) {
 				int color = 0;
 				LearnStates state = sk.getLearnState(entry, Minecraft.getMinecraft().thePlayer);
-				if ((sk.isEntryKnown(prerequisite) && (state == LearnStates.CAN_LEARN || state == LearnStates.LEARNED)) || sk.getLearnState(prerequisite, Minecraft.getMinecraft().thePlayer) == LearnStates.DISABLED){
+				if((sk.isEntryKnown(prerequisite) && (state == LearnStates.CAN_LEARN || state == LearnStates.LEARNED)) || sk.getLearnState(prerequisite, Minecraft.getMinecraft().thePlayer) == LearnStates.DISABLED) {
 					continue;
-				}else{
+				}
+				else {
 					color = 0x220000;
 				}
 				line2d(l + entry.x - offsetX * 2 + 16, i1 + entry.y - offsetY * 2 + 16, l + entry.x - offsetX * 2 + 16, i1 + prerequisite.y - offsetY * 2 + 16, color);
@@ -282,52 +312,58 @@ public class GuiSkillTrees extends GuiScreen{
 
 		SkillTreeEntry hovered = null;
 
-		for (SkillTreeEntry entry : skillTree){
-			if (entry.registeredItem == null)
+		for(SkillTreeEntry entry: skillTree) {
+			if(entry.registeredItem == null) {
 				continue;
+			}
 			String name = SkillManager.instance.getSkillName(entry.registeredItem);
-			if (name == null)
+			if(name == null) {
 				name = "";
+			}
 
 			IIcon IIcon = SpellIconManager.instance.getIcon(name);
 
 			LearnStates state = sk.getLearnState(entry, Minecraft.getMinecraft().thePlayer);
 
-			if (state == LearnStates.LEARNED){
+			if(state == LearnStates.LEARNED) {
 				GL11.glColor3f(1.0f, 1.0f, 1.0f);
-			}else if (state == LearnStates.CAN_LEARN){
+			}
+			else if(state == LearnStates.CAN_LEARN) {
 				float min = 0.2f;
 				float delta = 0.45f * (1f - (Math.abs(AMGuiHelper.instance.getFastTicker() - 20f) / 20f));
 				float colorShift = 0.25f;
 				SkillPointTypes type = SkillTreeManager.instance.getSkillPointTypeForPart(entry.registeredItem);
-				if (type == SkillPointTypes.SILVER){
+				if(type == SkillPointTypes.SILVER) {
 					GL11.glColor3f(min + delta + colorShift,
 							min + delta + colorShift,
 							min + delta + colorShift);
-				}else{
+				}
+				else {
 					GL11.glColor3f(min + delta + ((type == SkillPointTypes.RED) ? colorShift : 0f),
 							min + delta + ((type == SkillPointTypes.GREEN) ? colorShift : 0f),
 							min + delta + ((type == SkillPointTypes.BLUE) ? colorShift : 0f));
 				}
-			}else{
+			}
+			else {
 				GL11.glColor3f(0.1f, 0.1f, 0.1f);
 			}
 
 			DrawConstrainedIconAtXY(IIcon, l + entry.x - offsetX * 2, i1 + entry.y - offsetY * 2, IIcondims, IIcondims, false);
 
-			if (state == LearnStates.LOCKED){
+			if(state == LearnStates.LOCKED) {
 				GL11.glColor4f(0.3f, 0.3f, 0.3f, 0.8f);
 				DrawConstrainedIconAtXY(AMGuiIcons.padlock, l + entry.x - offsetX * 2 + 8.5f, i1 + entry.y - offsetY * 2 + 8, 15, 15, true);
-			}else if (state == LearnStates.DISABLED){
+			}
+			else if(state == LearnStates.DISABLED) {
 				GL11.glColor4f(1.0f, 0.3f, 0.3f, 0.8f);
 				DrawConstrainedIconAtXY(AMGuiIcons.padlock, l + entry.x - offsetX * 2 + 8.5f, i1 + entry.y - offsetY * 2 + 8, 15, 15, true);
 			}
 
 			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-			if (lastMouseX > l && lastMouseX < l + xSize && lastMouseY > i1 && lastMouseY < i1 + ySize){
-				if (lastMouseX > l + entry.x - offsetX * 2 && lastMouseX < l + entry.x - offsetX * 2 + IIcondims){
-					if (lastMouseY > i1 + entry.y - offsetY * 2 && lastMouseY < i1 + entry.y - offsetY * 2 + IIcondims){
+			if(lastMouseX > l && lastMouseX < l + xSize && lastMouseY > i1 && lastMouseY < i1 + ySize) {
+				if(lastMouseX > l + entry.x - offsetX * 2 && lastMouseX < l + entry.x - offsetX * 2 + IIcondims) {
+					if(lastMouseY > i1 + entry.y - offsetY * 2 && lastMouseY < i1 + entry.y - offsetY * 2 + IIcondims) {
 						hovered = entry;
 					}
 				}
@@ -337,7 +373,7 @@ public class GuiSkillTrees extends GuiScreen{
 		hoveredItem = hovered;
 	}
 
-	private void drawAffinity(){
+	private void drawAffinity() {
 
 		hoveredAffinity = null;
 
@@ -356,7 +392,7 @@ public class GuiSkillTrees extends GuiScreen{
 
 		AffinityData ad = AffinityData.For(Minecraft.getMinecraft().thePlayer);
 
-		for (Affinity aff : Affinity.getOrderedAffinities()){
+		for(Affinity aff: Affinity.getOrderedAffinities()) {
 			IIcon IIcon = aff.representItem.getIconFromDamage(aff.representMeta);
 			int newX = (int)(cx + Math.cos(Math.toRadians(angle)) * distance);
 			int newY = (int)(cy + Math.sin(Math.toRadians(angle)) * distance);
@@ -373,15 +409,16 @@ public class GuiSkillTrees extends GuiScreen{
 
 			int displace = (int)((Math.max(cx1, cx2) - Math.min(cx1, cx2) + Math.max(cy1, cy2) - Math.min(cy1, cy2)) / 3f);
 
-			if (ad.getAffinityDepth(aff) > 0.01f){
-				AMGuiHelper.instance.fractalLine2d(lx + halfIconSize, ly + halfIconSize, cx1 + halfIconSize, cy1 + halfIconSize, this.zLevel, aff.color, displace, 1.1f);
-				AMGuiHelper.instance.fractalLine2d(lx + halfIconSize, ly + halfIconSize, cx2 + halfIconSize, cy2 + halfIconSize, this.zLevel, aff.color, displace, 1.1f);
+			if(ad.getAffinityDepth(aff) > 0.01f) {
+				AMGuiHelper.fractalLine2d(lx + halfIconSize, ly + halfIconSize, cx1 + halfIconSize, cy1 + halfIconSize, this.zLevel, aff.color, displace, 1.1f);
+				AMGuiHelper.fractalLine2d(lx + halfIconSize, ly + halfIconSize, cx2 + halfIconSize, cy2 + halfIconSize, this.zLevel, aff.color, displace, 1.1f);
 
-				AMGuiHelper.instance.fractalLine2d(cx1 + halfIconSize, cy1 + halfIconSize, lx + halfIconSize, ly + halfIconSize, this.zLevel, aff.color, displace, 0.8f);
-				AMGuiHelper.instance.fractalLine2d(cx2 + halfIconSize, cy2 + halfIconSize, lx + halfIconSize, ly + halfIconSize, this.zLevel, aff.color, displace, 0.8f);
-			}else{
-				AMGuiHelper.instance.line2d(lx + halfIconSize, ly + halfIconSize, cx1 + halfIconSize, cy1 + halfIconSize, this.zLevel, aff.color);
-				AMGuiHelper.instance.line2d(lx + halfIconSize, ly + halfIconSize, cx2 + halfIconSize, cy2 + halfIconSize, this.zLevel, aff.color);
+				AMGuiHelper.fractalLine2d(cx1 + halfIconSize, cy1 + halfIconSize, lx + halfIconSize, ly + halfIconSize, this.zLevel, aff.color, displace, 0.8f);
+				AMGuiHelper.fractalLine2d(cx2 + halfIconSize, cy2 + halfIconSize, lx + halfIconSize, ly + halfIconSize, this.zLevel, aff.color, displace, 0.8f);
+			}
+			else {
+				AMGuiHelper.line2d(lx + halfIconSize, ly + halfIconSize, cx1 + halfIconSize, cy1 + halfIconSize, this.zLevel, aff.color);
+				AMGuiHelper.line2d(lx + halfIconSize, ly + halfIconSize, cx2 + halfIconSize, cy2 + halfIconSize, this.zLevel, aff.color);
 			}
 
 			DrawIconAtXY(IIcon, "items", newX, newY, IIconsize, IIconsize, false);
@@ -390,8 +427,8 @@ public class GuiSkillTrees extends GuiScreen{
 			angle += 36;
 
 			//if (lastMouseX > l && lastMouseX < l + xSize && lastMouseY > i1 && lastMouseY < i1 + ySize){
-			if (lastMouseX > newX && lastMouseX < newX + IIconsize){
-				if (lastMouseY > newY && lastMouseY < newY + IIconsize){
+			if(lastMouseX > newX && lastMouseX < newX + IIconsize) {
+				if(lastMouseY > newY && lastMouseY < newY + IIconsize) {
 					hoveredAffinity = aff;
 				}
 			}
@@ -400,20 +437,22 @@ public class GuiSkillTrees extends GuiScreen{
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3){
+	protected void mouseClicked(int par1, int par2, int par3) {
 		super.mouseClicked(par1, par2, par3);
-		if (par3 == 0){
-			if (hoveredItem != null){
+		if(par3 == 0) {
+			if(hoveredItem != null) {
 				SkillData sk = SkillData.For(Minecraft.getMinecraft().thePlayer);
-				if (!sk.isEntryKnown(hoveredItem)){
-					if (sk.getLearnState(hoveredItem, Minecraft.getMinecraft().thePlayer) == LearnStates.CAN_LEARN){
+				if(!sk.isEntryKnown(hoveredItem)) {
+					if(sk.getLearnState(hoveredItem, Minecraft.getMinecraft().thePlayer) == LearnStates.CAN_LEARN) {
 						sk.learn(hoveredItem.registeredItem);
 					}
 				}
 
-			}else{
-				if (this.activeTree != SkillTrees.Affinity)
+			}
+			else {
+				if(this.activeTree != SkillTrees.Affinity) {
 					isDragging = true;
+				}
 				lastMouseX = par1;
 				lastMouseY = par2;
 			}
@@ -421,36 +460,36 @@ public class GuiSkillTrees extends GuiScreen{
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int par1, int par2, int par3){
+	protected void mouseMovedOrUp(int par1, int par2, int par3) {
 		super.mouseMovedOrUp(par1, par2, par3);
-		if (par3 != -1){
+		if(par3 != -1) {
 			this.isDragging = false;
 		}
 	}
 
 	@Override
-	public boolean doesGuiPauseGame(){
+	public boolean doesGuiPauseGame() {
 		return false;
 	}
 
-	public void drawTexturedModalRect_Classic(int dst_x, int dst_y, int src_x, int src_y, int dst_width, int dst_height, int src_width, int src_height){
+	public void drawTexturedModalRect_Classic(int dst_x, int dst_y, int src_x, int src_y, int dst_width, int dst_height, int src_width, int src_height) {
 		float var7 = 0.00390625F;
 		float var8 = 0.00390625F;
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(dst_x + 0, dst_y + dst_height, this.zLevel, (src_x + 0) * var7, (src_y + src_height) * var8);
+		var9.addVertexWithUV(dst_x, dst_y + dst_height, this.zLevel, (src_x) * var7, (src_y + src_height) * var8);
 		var9.addVertexWithUV(dst_x + dst_width, dst_y + dst_height, this.zLevel, (src_x + src_width) * var7, (src_y + src_height) * var8);
-		var9.addVertexWithUV(dst_x + dst_width, dst_y + 0, this.zLevel, (src_x + src_width) * var7, (src_y + 0) * var8);
-		var9.addVertexWithUV(dst_x + 0, dst_y + 0, this.zLevel, (src_x + 0) * var7, (src_y + 0) * var8);
+		var9.addVertexWithUV(dst_x + dst_width, dst_y, this.zLevel, (src_x + src_width) * var7, (src_y) * var8);
+		var9.addVertexWithUV(dst_x, dst_y, this.zLevel, (src_x) * var7, (src_y) * var8);
 		var9.draw();
 	}
 
-	private void DrawIconAtXY(IIcon IIcon, String base, float x, float y, int w, int h, boolean semitransparent){
+	private void DrawIconAtXY(IIcon IIcon, String base, float x, float y, int w, int h, boolean semitransparent) {
 
 		GL11.glMatrixMode(GL11.GL_TEXTURE);
 		GL11.glPushMatrix();
-		if (semitransparent){
+		if(semitransparent) {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		}
@@ -466,14 +505,14 @@ public class GuiSkillTrees extends GuiScreen{
 
 		tessellator.draw();
 
-		if (semitransparent){
+		if(semitransparent) {
 			GL11.glDisable(GL11.GL_BLEND);
 		}
 		GL11.glPopMatrix();
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 
-	private void DrawConstrainedIconAtXY(IIcon IIcon, float x, float y, int w, int h, boolean semitransparent){
+	private void DrawConstrainedIconAtXY(IIcon IIcon, float x, float y, int w, int h, boolean semitransparent) {
 
 		int l = (width - xSize) / 2 + 3;
 		int i1 = ((height - ySize) / 2) + GuiButtonSkillTreeTab.buttonHeight;
@@ -481,8 +520,12 @@ public class GuiSkillTrees extends GuiScreen{
 		int wid = xSize - 10;
 		int hei = ySize - 40;
 
-		if (x + w < l || x > l + wid) return;
-		if (y + h < i1 || y > i1 + hei) return;
+		if(x + w < l || x > l + wid) {
+			return;
+		}
+		if(y + h < i1 || y > i1 + hei) {
+			return;
+		}
 
 		float wFactor = 1.0f;
 		float hFactor = 1.0f;
@@ -495,43 +538,53 @@ public class GuiSkillTrees extends GuiScreen{
 		float deltaU = maxU - minU;
 		float deltaV = maxV - minV;
 
-		if (x < l){
+		if(x < l) {
 			float delta = l - x;
 			x += delta;
 			float tempW = w - delta;
 			wFactor = tempW / w;
-			if (wFactor <= 0) return;
+			if(wFactor <= 0) {
+				return;
+			}
 			minU += (deltaU - (deltaU * wFactor));
 			w -= delta;
-		}else if (x + w > l + wid){
+		}
+		else if(x + w > l + wid) {
 			float delta = (x + w) - (l + wid);
 			float tempW = w - delta;
 			wFactor = tempW / w;
-			if (wFactor <= 0) return;
+			if(wFactor <= 0) {
+				return;
+			}
 			maxU -= (deltaU - (deltaU * wFactor));
 			w -= delta;
 		}
 
-		if (y < i1){
+		if(y < i1) {
 			float delta = i1 - y;
 			y += delta;
 			float tempH = h - delta;
 			hFactor = tempH / h;
-			if (hFactor <= 0) return;
+			if(hFactor <= 0) {
+				return;
+			}
 			minV += (deltaV - (deltaV * hFactor));
 			h -= delta;
-		}else if (y + h > i1 + hei){
+		}
+		else if(y + h > i1 + hei) {
 			float delta = (y + h) - (i1 + hei);
 			float tempH = h - delta;
 			hFactor = tempH / h;
-			if (hFactor <= 0) return;
+			if(hFactor <= 0) {
+				return;
+			}
 			maxV -= (deltaV - (deltaV * hFactor));
 			h -= delta;
 		}
 
 		GL11.glMatrixMode(GL11.GL_TEXTURE);
 		GL11.glPushMatrix();
-		if (semitransparent){
+		if(semitransparent) {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		}
@@ -547,34 +600,54 @@ public class GuiSkillTrees extends GuiScreen{
 
 		tessellator.draw();
 
-		if (semitransparent){
+		if(semitransparent) {
 			GL11.glDisable(GL11.GL_BLEND);
 		}
 		GL11.glPopMatrix();
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 
-	private void line2d(int src_x, int src_y, int dst_x, int dst_y, int color){
+	private void line2d(int src_x, int src_y, int dst_x, int dst_y, int color) {
 		int l = (width - xSize) / 2 + 3;
 		int i1 = ((height - ySize) / 2) + GuiButtonSkillTreeTab.buttonHeight;
 
 		int w = xSize - 5;
 		int h = ySize - 40;
 
-		if ((src_x < l && dst_x < l) || (src_x > l + w && dst_x > l + w)) return;
-		if ((src_y < i1 && dst_y < i1) || (src_y > i1 + h && dst_y > i1 + h)) return;
+		if((src_x < l && dst_x < l) || (src_x > l + w && dst_x > l + w)) {
+			return;
+		}
+		if((src_y < i1 && dst_y < i1) || (src_y > i1 + h && dst_y > i1 + h)) {
+			return;
+		}
 
-		if (src_x < l) src_x = l;
-		else if (src_x > l + w) src_x = l + w;
+		if(src_x < l) {
+			src_x = l;
+		}
+		else if(src_x > l + w) {
+			src_x = l + w;
+		}
 
-		if (dst_x < l) dst_x = l;
-		else if (dst_x > l + w) dst_x = l + w;
+		if(dst_x < l) {
+			dst_x = l;
+		}
+		else if(dst_x > l + w) {
+			dst_x = l + w;
+		}
 
-		if (src_y < i1) src_y = i1;
-		else if (src_y > i1 + h) src_y = i1 + h;
+		if(src_y < i1) {
+			src_y = i1;
+		}
+		else if(src_y > i1 + h) {
+			src_y = i1 + h;
+		}
 
-		if (dst_y < i1) dst_y = i1;
-		else if (dst_y > i1 + h) dst_y = i1 + h;
+		if(dst_y < i1) {
+			dst_y = i1;
+		}
+		else if(dst_y > i1 + h) {
+			dst_y = i1 + h;
+		}
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glLineWidth(4f);
@@ -587,7 +660,7 @@ public class GuiSkillTrees extends GuiScreen{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	private void drawGradientAround(int x, int y, int width, int height){
+	private void drawGradientAround(int x, int y, int width, int height) {
 		int pad = 3;
 
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -615,8 +688,8 @@ public class GuiSkillTrees extends GuiScreen{
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 	}
 
-	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font, int color){
-		if (!par1List.isEmpty()){
+	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font, int color) {
+		if(!par1List.isEmpty()) {
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -624,11 +697,11 @@ public class GuiSkillTrees extends GuiScreen{
 			int k = 0;
 			Iterator iterator = par1List.iterator();
 
-			while (iterator.hasNext()){
+			while(iterator.hasNext()) {
 				String s = (String)iterator.next();
 				int l = font.getStringWidth(s);
 
-				if (l > k){
+				if(l > k) {
 					k = l;
 				}
 			}
@@ -637,15 +710,15 @@ public class GuiSkillTrees extends GuiScreen{
 			int j1 = par3 - 12;
 			int k1 = 8;
 
-			if (par1List.size() > 1){
+			if(par1List.size() > 1) {
 				k1 += 2 + (par1List.size() - 1) * 10;
 			}
 
-			if (i1 + k > this.width){
+			if(i1 + k > this.width) {
 				i1 -= 28 + k;
 			}
 
-			if (j1 + k1 + 6 > this.height){
+			if(j1 + k1 + 6 > this.height) {
 				j1 = this.height - k1 - 6;
 			}
 
@@ -663,11 +736,11 @@ public class GuiSkillTrees extends GuiScreen{
 			this.drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 - 3 + 1, i2, i2);
 			this.drawGradientRect(i1 - 3, j1 + k1 + 2, i1 + k + 3, j1 + k1 + 3, j2, j2);
 
-			for (int k2 = 0; k2 < par1List.size(); ++k2){
+			for(int k2 = 0; k2 < par1List.size(); ++k2) {
 				String s1 = (String)par1List.get(k2);
 				font.drawStringWithShadow(s1, i1, j1, color);
 
-				if (k2 == 0){
+				if(k2 == 0) {
 					j1 += 2;
 				}
 

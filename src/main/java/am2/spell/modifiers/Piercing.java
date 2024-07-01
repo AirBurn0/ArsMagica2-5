@@ -2,6 +2,7 @@ package am2.spell.modifiers;
 
 import am2.api.spell.component.interfaces.ISpellModifier;
 import am2.api.spell.enums.SpellModifiers;
+import am2.items.ItemEssence;
 import am2.items.ItemsCommonProxy;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,39 +12,39 @@ import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
-public class Piercing implements ISpellModifier{
+public class Piercing implements ISpellModifier {
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 13;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.essence, 1, ItemsCommonProxy.essence.META_ICE),
+				new ItemStack(ItemsCommonProxy.essence, 1, ItemEssence.META_ICE),
 				Items.arrow,
 				Items.emerald
 		};
 	}
 
 	@Override
-	public EnumSet<SpellModifiers> getAspectsModified(){
+	public EnumSet<SpellModifiers> getAspectsModified() {
 		return EnumSet.of(SpellModifiers.PIERCING);
 	}
 
 	@Override
-	public float getModifier(SpellModifiers type, EntityLivingBase caster, Entity target, World world, byte[] metadata){
+	public float getModifier(SpellModifiers type, EntityLivingBase caster, Entity target, World world, byte[] metadata) {
 		return SpellModifiers.PIERCING.defaultValueInt;
 	}
 
 	@Override
-	public float getManaCostMultiplier(ItemStack spellStack, int stage, int quantity){
+	public float getManaCostMultiplier(ItemStack spellStack, int stage, int quantity) {
 		return 1.5f * quantity;
 	}
 
 	@Override
-	public byte[] getModifierMetadata(ItemStack[] matchedRecipe){
+	public byte[] getModifierMetadata(ItemStack[] matchedRecipe) {
 		return null;
 	}
 }

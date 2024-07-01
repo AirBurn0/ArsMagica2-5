@@ -14,23 +14,24 @@ import org.w3c.dom.NodeList;
 
 import java.lang.reflect.Field;
 
-public class CompendiumEntryRitual extends CompendiumEntry{
+public class CompendiumEntryRitual extends CompendiumEntry {
 
 	private String ritualShape;
 	private String ritualController;
 
-	public CompendiumEntryRitual(){
+	public CompendiumEntryRitual() {
 		super(CompendiumEntryTypes.instance.RITUAL);
 	}
 
 	@Override
-	protected void parseEx(Node node){
+	protected void parseEx(Node node) {
 		NodeList childNodes = node.getChildNodes();
-		for (int i = 0; i < childNodes.getLength(); ++i){
+		for(int i = 0; i < childNodes.getLength(); ++i) {
 			Node child = childNodes.item(i);
-			if (child.getNodeName().equals("ritualName")){
+			if(child.getNodeName().equals("ritualName")) {
 				this.ritualShape = child.getTextContent();
-			}else if (child.getNodeName().equals("ritualController")){
+			}
+			else if(child.getNodeName().equals("ritualController")) {
 				this.ritualController = child.getTextContent();
 			}
 		}
@@ -38,17 +39,18 @@ public class CompendiumEntryRitual extends CompendiumEntry{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta){
-		if (this.ritualShape != null){
-			try{
+	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta) {
+		if(this.ritualShape != null) {
+			try {
 				Field f = RitualShapeHelper.class.getField(ritualShape);
 				MultiblockStructureDefinition def = (MultiblockStructureDefinition)f.get(RitualShapeHelper.instance);
 				ISkillTreeEntry entry = SkillManager.instance.getSkill(ritualController);
-				if (entry instanceof IRitualInteraction){
+				if(entry instanceof IRitualInteraction) {
 					IRitualInteraction controller = (IRitualInteraction)entry;
 					return new GuiArcaneCompendium(searchID, def, controller);
 				}
-			}catch (Throwable e){
+			}
+			catch(Throwable e) {
 				e.printStackTrace();
 			}
 		}
@@ -56,7 +58,7 @@ public class CompendiumEntryRitual extends CompendiumEntry{
 	}
 
 	@Override
-	public ItemStack getRepresentItemStack(String searchID, int meta){
+	public ItemStack getRepresentItemStack(String searchID, int meta) {
 		return null;
 	}
 

@@ -19,10 +19,15 @@ import am2.guis.controls.GuiButtonCompendiumNext;
 import am2.guis.controls.GuiButtonCompendiumTab;
 import am2.guis.controls.GuiButtonVariableDims;
 import am2.guis.controls.GuiSpellImageButton;
+import am2.items.ItemEssence;
 import am2.items.ItemSpellPart;
 import am2.items.ItemsCommonProxy;
 import am2.items.RecipeArsMagica;
-import am2.lore.*;
+import am2.lore.ArcaneCompendium;
+import am2.lore.CompendiumEntry;
+import am2.lore.CompendiumEntrySpellComponent;
+import am2.lore.CompendiumEntrySpellModifier;
+import am2.lore.CompendiumEntrySpellShape;
 import am2.spell.SkillManager;
 import am2.spell.SpellRecipeManager;
 import am2.texture.SpellIconManager;
@@ -60,9 +65,15 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.TreeMap;
 
-public class GuiArcaneCompendium extends GuiScreen{
+public class GuiArcaneCompendium extends GuiScreen {
 
 	protected static RenderItem itemRenderer = new RenderItem();
 	protected static RenderBlocks blockRenderer = new RenderBlocks();
@@ -143,7 +154,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 	IRitualInteraction ritualController;
 	//======================================================
 
-	public GuiArcaneCompendium(Block block){
+	public GuiArcaneCompendium(Block block) {
 		this(block.getUnlocalizedName().replace("arsmagica2:", "").replace("tile.", ""));
 		this.entryBlock = block;
 		this.entryMeta = -1;
@@ -152,7 +163,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		getAndAnalyzeRecipe();
 	}
 
-	public GuiArcaneCompendium(Item item){
+	public GuiArcaneCompendium(Item item) {
 		this(item.getUnlocalizedName().replace("item.", "").replace("arsmagica2:", ""));
 		this.entryItem = item;
 		this.entryMeta = -1;
@@ -161,7 +172,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		getAndAnalyzeRecipe();
 	}
 
-	public GuiArcaneCompendium(String entryID, Block block, int meta){
+	public GuiArcaneCompendium(String entryID, Block block, int meta) {
 		this(entryID);
 		this.entryBlock = block;
 		this.entryMeta = meta;
@@ -170,7 +181,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		getAndAnalyzeRecipe();
 	}
 
-	public GuiArcaneCompendium(String entryID, Item item, int meta){
+	public GuiArcaneCompendium(String entryID, Item item, int meta) {
 		this(entryID);
 		this.entryItem = item;
 		this.entryMeta = meta;
@@ -179,12 +190,12 @@ public class GuiArcaneCompendium extends GuiScreen{
 		getAndAnalyzeRecipe();
 	}
 
-	public GuiArcaneCompendium(Entity entity){
+	public GuiArcaneCompendium(Entity entity) {
 		this(EntityList.getEntityString(entity).replace("arsmagica2.", ""));
 		this.entryEntity = entity;
 	}
 
-	public GuiArcaneCompendium(MultiblockStructureDefinition multi, TileEntity controllingTileEntity){
+	public GuiArcaneCompendium(MultiblockStructureDefinition multi, TileEntity controllingTileEntity) {
 		this(multi.getID());
 		this.entryMultiblock = multi;
 		this.blockAccess = new GuiBlockAccess();
@@ -192,7 +203,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		ReflectionHelper.setPrivateValue(RenderBlocks.class, blockRenderer, this.blockAccess, 0);
 	}
 
-	public GuiArcaneCompendium(String id, MultiblockStructureDefinition multi, IRitualInteraction ritualController){
+	public GuiArcaneCompendium(String id, MultiblockStructureDefinition multi, IRitualInteraction ritualController) {
 		this(id);
 		this.entryMultiblock = multi;
 		this.blockAccess = new GuiBlockAccess();
@@ -203,24 +214,20 @@ public class GuiArcaneCompendium extends GuiScreen{
 		ReflectionHelper.setPrivateValue(RenderBlocks.class, blockRenderer, this.blockAccess, 0);
 	}
 
-	private void setupRitualPage(){
+	private void setupRitualPage() {
 		this.blockAccess.setControllingTileEntity(null);
-		for (ItemStack stack : ritualController.getReagents()){
-			this.modifiers.add(stack);
-		}
+		Collections.addAll(this.modifiers, ritualController.getReagents());
 		ItemStack[] temp = new ItemStack[relatedEntries.length + 1];
-		for (int i = 0; i < relatedEntries.length; ++i){
-			temp[i] = relatedEntries[i];
-		}
+		System.arraycopy(relatedEntries, 0, temp, 0, relatedEntries.length);
 		temp[temp.length - 1] = new ItemStack(ItemsCommonProxy.spell_component, 1, SkillManager.instance.getShiftedPartID((ISkillTreeEntry)ritualController));
 		relatedEntries = temp;
 	}
 
-	public GuiArcaneCompendium(CompendiumBreadcrumb breadcrumb){
+	public GuiArcaneCompendium(CompendiumBreadcrumb breadcrumb) {
 		this(breadcrumb.entryName);
 		this.page = breadcrumb.page;
-		if (breadcrumb.refData.length == 3){
-			if (breadcrumb.refData[0] instanceof MultiblockStructureDefinition){
+		if(breadcrumb.refData.length == 3) {
+			if(breadcrumb.refData[0] instanceof MultiblockStructureDefinition) {
 				this.entryMultiblock = (MultiblockStructureDefinition)breadcrumb.refData[0];
 				this.blockAccess = new GuiBlockAccess();
 				this.blockAccess.setControllingTileEntity((TileEntity)breadcrumb.refData[1]);
@@ -229,85 +236,102 @@ public class GuiArcaneCompendium extends GuiScreen{
 				this.ritualController = (IRitualInteraction)breadcrumb.refData[2];
 				setupRitualPage();
 			}
-		}else if (breadcrumb.refData.length == 2){
-			if (breadcrumb.refData[0] instanceof Block){
+		}
+		else if(breadcrumb.refData.length == 2) {
+			if(breadcrumb.refData[0] instanceof Block) {
 				this.entryBlock = (Block)breadcrumb.refData[0];
 				this.entryMeta = (Integer)breadcrumb.refData[1];
 				renderStack = new ItemStack(this.entryBlock, 1, this.entryMeta);
 
 				getAndAnalyzeRecipe();
-			}else if (breadcrumb.refData[0] instanceof Item){
+			}
+			else if(breadcrumb.refData[0] instanceof Item) {
 				this.entryItem = (Item)breadcrumb.refData[0];
 				this.entryMeta = (Integer)breadcrumb.refData[1];
 				renderStack = new ItemStack(this.entryItem, 1, this.entryMeta);
 
 				getAndAnalyzeRecipe();
-			}else if (breadcrumb.refData[0] instanceof MultiblockStructureDefinition){
+			}
+			else if(breadcrumb.refData[0] instanceof MultiblockStructureDefinition) {
 				this.entryMultiblock = (MultiblockStructureDefinition)breadcrumb.refData[0];
 				this.blockAccess = new GuiBlockAccess();
 				this.blockAccess.setControllingTileEntity((TileEntity)breadcrumb.refData[1]);
 				ReflectionHelper.setPrivateValue(RenderBlocks.class, blockRenderer, this.blockAccess, 0);
 			}
-		}else if (breadcrumb.refData.length == 1){
-			if (breadcrumb.refData[0] instanceof Entity){
+		}
+		else if(breadcrumb.refData.length == 1) {
+			if(breadcrumb.refData[0] instanceof Entity) {
 				this.entryEntity = (Entity)breadcrumb.refData[0];
 			}
 		}
 	}
 
-	private void getAndAnalyzeRecipe(){
-		if (renderStack == null) return;
+	private void getAndAnalyzeRecipe() {
+		if(renderStack == null) {
+			return;
+		}
 
-		if (renderStack.getItem() == ItemsCommonProxy.essence || renderStack.getItem() == ItemsCommonProxy.deficitCrystal){
+		if(renderStack.getItem() == ItemsCommonProxy.essence || renderStack.getItem() == ItemsCommonProxy.deficitCrystal) {
 			RecipeArsMagica essenceRecipe = RecipesEssenceRefiner.essenceRefinement().recipeFor(renderStack);
-			if (essenceRecipe != null){
+			if(essenceRecipe != null) {
 				craftingComponents = essenceRecipe.getRecipeItems();
 				recipeHeight = 2;
-			}else{
+			}
+			else {
 				craftingComponents = null;
 			}
-		}else if (renderStack.getItem() instanceof ItemSpellPart){
+		}
+		else if(renderStack.getItem() instanceof ItemSpellPart) {
 			ISkillTreeEntry part = SkillManager.instance.getSkill(this.entryName);
-			if (part == null) return;
+			if(part == null) {
+				return;
+			}
 			ArrayList<Object> recipe = new ArrayList<Object>();
 
-			if (part instanceof ISpellPart){
+			if(part instanceof ISpellPart) {
 				Object[] recipeItems = ((ISpellPart)part).getRecipeItems();
 				SpellRecipeItemsEvent event = new SpellRecipeItemsEvent(SkillManager.instance.getSkillName(part), SkillManager.instance.getShiftedPartID(part), recipeItems);
 				MinecraftForge.EVENT_BUS.post(event);
 				recipeItems = event.recipeItems;
 
-				if (recipeItems != null){
-					for (int i = 0; i < recipeItems.length; ++i){
+				if(recipeItems != null) {
+					for(int i = 0; i < recipeItems.length; ++i) {
 						Object o = recipeItems[i];
 						boolean matches = false;
 
-						if (o instanceof ItemStack){
+						if(o instanceof ItemStack) {
 							recipe.add(o);
-						}else if (o instanceof Item){
+						}
+						else if(o instanceof Item) {
 							recipe.add(new ItemStack((Item)o));
-						}else if (o instanceof Block){
+						}
+						else if(o instanceof Block) {
 							recipe.add(new ItemStack((Block)o));
-						}else if (o instanceof String){
-							if (((String)o).startsWith("P:")){
+						}
+						else if(o instanceof String) {
+							if(((String)o).startsWith("P:")) {
 								//potion
 								String s = ((String)o).substring(2);
 								int pfx = SpellRecipeManager.parsePotionMeta(s);
 								recipe.add(new ItemStack(Items.potionitem, 1, pfx));
-							}else if (((String)o).startsWith("E:")){
+							}
+							else if(((String)o).startsWith("E:")) {
 								//essence
 								String s = ((String)o);
-								try{
+								try {
 									int[] types = SpellRecipeManager.ParseEssenceIDs(s);
 									int type = 0;
-									for (int t : types)
+									for(int t: types) {
 										type |= t;
+									}
 									int amount = (Integer)recipeItems[++i];
-									recipe.add(new ItemStack(ItemsCommonProxy.essence, amount, ItemsCommonProxy.essence.META_MAX + type));
-								}catch (Throwable t){
+									recipe.add(new ItemStack(ItemsCommonProxy.essence, amount, ItemEssence.META_MAX + type));
+								}
+								catch(Throwable t) {
 									continue;
 								}
-							}else{
+							}
+							else {
 								recipe.add(OreDictionary.getOres((String)o));
 							}
 						}
@@ -317,41 +341,47 @@ public class GuiArcaneCompendium extends GuiScreen{
 
 			craftingComponents = recipe.toArray();
 
-		}else{
+		}
+		else {
 			IRecipe recipe = RecipeUtilities.getRecipeFor(renderStack);
 
-			if (recipe != null){
+			if(recipe != null) {
 				renderStack = recipe.getRecipeOutput();
 
-				if (recipe instanceof ShapedRecipes){
+				if(recipe instanceof ShapedRecipes) {
 					recipeWidth = ((ShapedRecipes)recipe).recipeWidth;
 					recipeHeight = ((ShapedRecipes)recipe).recipeHeight;
 					craftingComponents = ((ShapedRecipes)recipe).recipeItems;
-				}else if (recipe instanceof ShapedOreRecipe){
+				}
+				else if(recipe instanceof ShapedOreRecipe) {
 					recipeWidth = ReflectionHelper.getPrivateValue(ShapedOreRecipe.class, ((ShapedOreRecipe)recipe), "width");
 					recipeHeight = ReflectionHelper.getPrivateValue(ShapedOreRecipe.class, ((ShapedOreRecipe)recipe), "height");
 
 					craftingComponents = ((ShapedOreRecipe)recipe).getInput();
-				}else if (recipe instanceof ShapelessRecipes){
-					recipeWidth = ((ShapelessRecipes)recipe).getRecipeSize();
+				}
+				else if(recipe instanceof ShapelessRecipes) {
+					recipeWidth = recipe.getRecipeSize();
 					recipeHeight = -1;
 
 					craftingComponents = ((ShapelessRecipes)recipe).recipeItems.toArray();
-				}else if (recipe instanceof ShapelessOreRecipe){
-					recipeWidth = ((ShapelessOreRecipe)recipe).getRecipeSize();
+				}
+				else if(recipe instanceof ShapelessOreRecipe) {
+					recipeWidth = recipe.getRecipeSize();
 					recipeHeight = -1;
 
 					craftingComponents = ((ShapelessOreRecipe)recipe).getInput().toArray();
-				}else{
+				}
+				else {
 					craftingComponents = null;
 				}
-			}else{
+			}
+			else {
 				craftingComponents = null;
 			}
 		}
 	}
 
-	public GuiArcaneCompendium(String entryName){
+	public GuiArcaneCompendium(String entryName) {
 		mc = Minecraft.getMinecraft();
 		entry = ArcaneCompendium.instance.getEntry(entryName);
 
@@ -359,11 +389,12 @@ public class GuiArcaneCompendium extends GuiScreen{
 
 		forcedMetas = new HashMap<Item, Integer>();
 
-		if (entry != null){
+		if(entry != null) {
 			lines = splitStringToLines(Minecraft.getMinecraft().fontRenderer, entry.getDescription(entryName), lineWidth, maxLines);
 			numPages = lines.size() - 1;
 			entry.setIsNew(false);
-		}else{
+		}
+		else {
 			lines = new ArrayList<String>();
 			numPages = 0;
 			relatedEntries = new ItemStack[0];
@@ -377,15 +408,17 @@ public class GuiArcaneCompendium extends GuiScreen{
 		String name = "";
 		int meta = -1;
 
-		for (int i = 0; i < childEntries.length; ++i){
-			if (childEntries[i].getID().indexOf('@') == -1){
+		for(int i = 0; i < childEntries.length; ++i) {
+			if(childEntries[i].getID().indexOf('@') == -1) {
 				name = childEntries[i].getID();
-			}else{
+			}
+			else {
 				String[] split = childEntries[i].getID().split("@");
 				name = split[0];
-				try{
+				try {
 					meta = Integer.parseInt(split[1]);
-				}catch (Throwable t){
+				}
+				catch(Throwable t) {
 					meta = -1;
 				}
 			}
@@ -395,29 +428,34 @@ public class GuiArcaneCompendium extends GuiScreen{
 		modifiers = new ArrayList<ItemStack>();
 		SpellModifiers[] modifiedBy = new SpellModifiers[0];
 
-		if (entry instanceof CompendiumEntrySpellComponent){
+		if(entry instanceof CompendiumEntrySpellComponent) {
 			modifiedBy = ((CompendiumEntrySpellComponent)entry).getModifiedBy();
-		}else if (entry instanceof CompendiumEntrySpellShape){
+		}
+		else if(entry instanceof CompendiumEntrySpellShape) {
 			modifiedBy = ((CompendiumEntrySpellShape)entry).getModifiedBy();
-		}else if (entry instanceof CompendiumEntrySpellModifier){
+		}
+		else if(entry instanceof CompendiumEntrySpellModifier) {
 			modifiedBy = ((CompendiumEntrySpellModifier)entry).getModifies();
 		}
 
-		if (modifiedBy == null)
+		if(modifiedBy == null) {
 			modifiedBy = new SpellModifiers[0];
+		}
 
-		if (modifiedBy.length > 0){
-			for (Integer modid : SkillManager.instance.getAllModifiers()){
+		if(modifiedBy.length > 0) {
+			for(Integer modid: SkillManager.instance.getAllModifiers()) {
 				ISpellModifier modifier = SkillManager.instance.getModifier(modid);
-				if (modifier != null){
-					for (SpellModifiers mod : modifiedBy){
-						if (entry instanceof CompendiumEntrySpellModifier){
-							if (modifier.getAspectsModified().size() == 1 && modifier.getAspectsModified().contains(mod)){
+				if(modifier != null) {
+					for(SpellModifiers mod: modifiedBy) {
+						if(entry instanceof CompendiumEntrySpellModifier) {
+							if(modifier.getAspectsModified().size() == 1 && modifier.getAspectsModified()
+																					.contains(mod)) {
 								modifiers.add(new ItemStack(ItemsCommonProxy.spell_component, 1, modid));
 								break;
 							}
-						}else{
-							if (modifier.getAspectsModified().contains(mod)){
+						}
+						else {
+							if(modifier.getAspectsModified().contains(mod)) {
 								modifiers.add(new ItemStack(ItemsCommonProxy.spell_component, 1, modid));
 								break;
 							}
@@ -429,7 +467,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 	}
 
 	@Override
-	public void initGui(){
+	public void initGui() {
 		super.initGui();
 
 		int l = (width - xSize) / 2;
@@ -445,12 +483,13 @@ public class GuiArcaneCompendium extends GuiScreen{
 		nextLayer = new GuiButtonCompendiumNext(4, l + 305, i1 + 19, true);
 		pauseCycling = new GuiButtonVariableDims(5, l + 285, i1 + 190, AMGuiHelper.instance.runCompendiumTicker ? StatCollector.translateToLocal("am2.gui.pause") : StatCollector.translateToLocal("am2.gui.cycle")).setDimensions(40, 20);
 
-		if (entryMultiblock != null){
+		if(entryMultiblock != null) {
 			prevLayer.visible = true;
 			nextLayer.visible = true;
 			pauseCycling.visible = true;
 			maxLayers = entryMultiblock.getHeight();
-		}else{
+		}
+		else {
 			prevLayer.visible = false;
 			nextLayer.visible = false;
 			pauseCycling.visible = false;
@@ -465,15 +504,15 @@ public class GuiArcaneCompendium extends GuiScreen{
 	}
 
 	@Override
-	public boolean doesGuiPauseGame(){
+	public boolean doesGuiPauseGame() {
 		return false;
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3){
-		if (stackTip != null){
+	protected void mouseClicked(int par1, int par2, int par3) {
+		if(stackTip != null) {
 			GuiArcaneCompendium newGuiToDisplay = null;
-			if (stackTip.getItem() instanceof ItemBlock){
+			if(stackTip.getItem() instanceof ItemBlock) {
 				ItemBlock item = (ItemBlock)stackTip.getItem();
 				Block block = item.field_150939_a;
 
@@ -481,64 +520,71 @@ public class GuiArcaneCompendium extends GuiScreen{
 				String metaname = name + "@" + stackTip.getItemDamage();
 				String searchName = metaname;
 				CompendiumEntry entry = ArcaneCompendium.instance.getEntry(metaname);
-				if (entry == null){
+				if(entry == null) {
 					searchName = name;
 					entry = ArcaneCompendium.instance.getEntry(searchName);
 				}
-				if (entry != null){
+				if(entry != null) {
 					newGuiToDisplay = entry.getCompendiumGui(searchName);
 				}
-			}else if (stackTip.getItem() == ItemsCommonProxy.spell_component){
+			}
+			else if(stackTip.getItem() == ItemsCommonProxy.spell_component) {
 				String name = SkillManager.instance.getSkillName(SkillManager.instance.getSkill(stackTip.getItemDamage()));
 				CompendiumEntry entry = ArcaneCompendium.instance.getEntry(name);
-				if (entry != null){
+				if(entry != null) {
 					newGuiToDisplay = new GuiArcaneCompendium(name, stackTip.getItem(), stackTip.getItemDamage());
 				}
-			}else{
+			}
+			else {
 				String name = stackTip.getItem().getUnlocalizedName().replace("item.", "").replace("arsmagica2:", "");
 				String metaname = name + "@" + stackTip.getItemDamage();
 				String searchName = metaname;
 				CompendiumEntry entry = ArcaneCompendium.instance.getEntry(metaname);
-				if (entry == null){
+				if(entry == null) {
 					searchName = name;
 					entry = ArcaneCompendium.instance.getEntry(searchName);
 				}
-				if (entry != null){
+				if(entry != null) {
 					newGuiToDisplay = entry.getCompendiumGui(searchName);
 				}
 			}
-			if (newGuiToDisplay != null){
+			if(newGuiToDisplay != null) {
 
 				storeBreadcrumb();
 
 				Minecraft.getMinecraft().displayGuiScreen(newGuiToDisplay);
 			}
 			return;
-		}else if (entryEntity != null){
+		}
+		else if(entryEntity != null) {
 			isDragging = true;
 			lastMouseX = par1;
 		}
 		super.mouseClicked(par1, par2, par3);
 	}
 
-	private void storeBreadcrumb(){
-		if (this.ritualController != null){
+	private void storeBreadcrumb() {
+		if(this.ritualController != null) {
 			AMGuiHelper.instance.pushCompendiumBreadcrumb(this.entryName, this.page, CompendiumBreadcrumb.TYPE_ENTRY, this.entryMultiblock, this.blockAccess.getTileEntity(0, 0, 0), this.ritualController);
-		}else if (this.entryItem != null){
+		}
+		else if(this.entryItem != null) {
 			AMGuiHelper.instance.pushCompendiumBreadcrumb(this.entryName, this.page, CompendiumBreadcrumb.TYPE_ENTRY, this.entryItem, this.entryMeta);
-		}else if (this.entryBlock != null){
+		}
+		else if(this.entryBlock != null) {
 			AMGuiHelper.instance.pushCompendiumBreadcrumb(this.entryName, this.page, CompendiumBreadcrumb.TYPE_ENTRY, this.entryBlock, this.entryMeta);
-		}else if (this.entryEntity != null){
+		}
+		else if(this.entryEntity != null) {
 			AMGuiHelper.instance.pushCompendiumBreadcrumb(this.entryName, this.page, CompendiumBreadcrumb.TYPE_ENTRY, this.entryEntity);
-		}else if (this.entryMultiblock != null){
+		}
+		else if(this.entryMultiblock != null) {
 			AMGuiHelper.instance.pushCompendiumBreadcrumb(this.entryName, this.page, CompendiumBreadcrumb.TYPE_ENTRY, this.entryMultiblock, this.blockAccess.getTileEntity(0, 0, 0));
 		}
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int par1, int par2, int par3){
-		if (isDragging){
-			if (par3 == 1){
+	protected void mouseMovedOrUp(int par1, int par2, int par3) {
+		if(isDragging) {
+			if(par3 == 1) {
 				isDragging = false;
 			}
 		}
@@ -546,8 +592,8 @@ public class GuiArcaneCompendium extends GuiScreen{
 	}
 
 	@Override
-	protected void mouseClickMove(int par1, int par2, int par3, long par4){
-		if (isDragging){
+	protected void mouseClickMove(int par1, int par2, int par3, long par4) {
+		if(isDragging) {
 			curRotationH -= (lastMouseX - par1);
 
 			lastMouseX = par1;
@@ -556,46 +602,53 @@ public class GuiArcaneCompendium extends GuiScreen{
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton){
-		switch (par1GuiButton.id){
-		case 0: //prev page
-			if (page > 0) page--;
-			break;
-		case 1: //next page
-			if (page < numPages) page++;
-			break;
-		case 2:
-			CompendiumBreadcrumb prevEntry = AMGuiHelper.instance.popCompendiumBreadcrumb();
-			if (prevEntry != null){
-				if (prevEntry.entryType == prevEntry.TYPE_ENTRY)
-					Minecraft.getMinecraft().displayGuiScreen(new GuiArcaneCompendium(prevEntry));
-				else
-					Minecraft.getMinecraft().displayGuiScreen(new GuiCompendiumIndex(prevEntry));
-			}else{
-				Minecraft.getMinecraft().displayGuiScreen(new GuiCompendiumIndex());
-			}
-			break;
-		case 3:
-			curLayer--;
-			if (curLayer < -1){
-				curLayer = maxLayers;
-			}
-			break;
-		case 4:
-			curLayer++;
-			if (curLayer > maxLayers){
-				curLayer = -1;
-			}
-			break;
-		case 5:
-			AMGuiHelper.instance.runCompendiumTicker = !AMGuiHelper.instance.runCompendiumTicker;
-			pauseCycling.displayString = AMGuiHelper.instance.runCompendiumTicker ? StatCollector.translateToLocal("am2.gui.pause") : StatCollector.translateToLocal("am2.gui.cycle");
-			break;
+	protected void actionPerformed(GuiButton par1GuiButton) {
+		switch(par1GuiButton.id) {
+			case 0: //prev page
+				if(page > 0) {
+					page--;
+				}
+				break;
+			case 1: //next page
+				if(page < numPages) {
+					page++;
+				}
+				break;
+			case 2:
+				CompendiumBreadcrumb prevEntry = AMGuiHelper.instance.popCompendiumBreadcrumb();
+				if(prevEntry != null) {
+					if(prevEntry.entryType == CompendiumBreadcrumb.TYPE_ENTRY) {
+						Minecraft.getMinecraft().displayGuiScreen(new GuiArcaneCompendium(prevEntry));
+					}
+					else {
+						Minecraft.getMinecraft().displayGuiScreen(new GuiCompendiumIndex(prevEntry));
+					}
+				}
+				else {
+					Minecraft.getMinecraft().displayGuiScreen(new GuiCompendiumIndex());
+				}
+				break;
+			case 3:
+				curLayer--;
+				if(curLayer < -1) {
+					curLayer = maxLayers;
+				}
+				break;
+			case 4:
+				curLayer++;
+				if(curLayer > maxLayers) {
+					curLayer = -1;
+				}
+				break;
+			case 5:
+				AMGuiHelper.instance.runCompendiumTicker = !AMGuiHelper.instance.runCompendiumTicker;
+				pauseCycling.displayString = AMGuiHelper.instance.runCompendiumTicker ? StatCollector.translateToLocal("am2.gui.pause") : StatCollector.translateToLocal("am2.gui.cycle");
+				break;
 		}
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3){
+	public void drawScreen(int par1, int par2, float par3) {
 		framecount += 0.5f;
 
 		framecount %= 360;
@@ -608,16 +661,10 @@ public class GuiArcaneCompendium extends GuiScreen{
 		drawLeftPage(l, i1);
 		drawRightPage(l, i1, par1, par2);
 
-		if (this.page == 0)
-			prevPage.visible = false;
-		else
-			prevPage.visible = true;
+		prevPage.visible = this.page != 0;
 
 
-		if (this.page == numPages)
-			nextPage.visible = false;
-		else
-			nextPage.visible = true;
+		nextPage.visible = this.page != numPages;
 
 		RenderHelper.disableStandardItemLighting();
 
@@ -638,27 +685,29 @@ public class GuiArcaneCompendium extends GuiScreen{
 
 		super.drawScreen(par1, par2, par3);
 
-		if (stackTip != null){
+		if(stackTip != null) {
 			renderItemToolTip(stackTip, tipX, tipY);
 		}
 
-		if (this.entryMultiblock != null){
+		if(this.entryMultiblock != null) {
 			fontRendererObj.drawString(StatCollector.translateToLocal("am2.gui.mbb"), l + 190, i1 + 195, 0x000000);
 		}
 	}
 
 	@Override
-	protected void keyTyped(char par1, int par2){
-		if (par2 == 1){
+	protected void keyTyped(char par1, int par2) {
+		if(par2 == 1) {
 			storeBreadcrumb();
 			onGuiClosed();
 		}
 		super.keyTyped(par1, par2);
 	}
 
-	private void drawLeftPage(int l, int i1){
+	private void drawLeftPage(int l, int i1) {
 
-		if (entry == null) return;
+		if(entry == null) {
+			return;
+		}
 
 		int y_start_title = i1 + 50;
 		int x_start_title = l + 100 - (fontRendererObj.getStringWidth(entry.getName(entryName)) / 2);
@@ -666,34 +715,40 @@ public class GuiArcaneCompendium extends GuiScreen{
 		int x_start_line = l + 35;
 		int y_start_line = page == 0 ? i1 + 65 : i1 + 50;
 
-		if (page > numPages) page = numPages;
+		if(page > numPages) {
+			page = numPages;
+		}
 
-		if (entry != null){
-			if (page == 0)
+		if(entry != null) {
+			if(page == 0) {
 				fontRendererObj.drawString(entry.getName(entryName), x_start_title, y_start_title, 0x000000);
+			}
 			AMGuiHelper.drawCompendiumText(lines.get(page), x_start_line, y_start_line, lineWidth, 0x000000, fontRendererObj);
 		}
 	}
 
-	private void drawRightPage(int l, int i1, int mousex, int mousey){
+	private void drawRightPage(int l, int i1, int mousex, int mousey) {
 		int cx = l + 250;
 		int cy = i1 + 120 - 6;
 
 		//block/item
-		if (entryBlock != null || entryItem != null){
+		if(entryBlock != null || entryItem != null) {
 			drawRightPage_Block_Item(cx, cy, mousex, mousey);
-		}else if (entryEntity != null){
+		}
+		else if(entryEntity != null) {
 			drawRightPage_Entity(cx, cy);
-		}else if (entryMultiblock != null){
+		}
+		else if(entryMultiblock != null) {
 			drawRightPage_Multiblock(cx, cy, mousex, mousey);
 		}
 
 		drawRelatedItems(cx, cy, mousex, mousey);
-		if (modifiers.size() > 0)
+		if(modifiers.size() > 0) {
 			drawModifiers(cx, entryMultiblock == null ? cy : cy + 20, mousex, mousey);
+		}
 	}
 
-	private void drawRightPageExtras(int l, int i1){
+	private void drawRightPageExtras(int l, int i1) {
 		int cx = l + 256 - 6;
 		int cy = i1 + 120 - 6;
 
@@ -705,16 +760,18 @@ public class GuiArcaneCompendium extends GuiScreen{
 		GL11.glDisable(GL11.GL_BLEND);
 
 		//block/item
-		if (entryBlock != null || entryItem != null){
+		if(entryBlock != null || entryItem != null) {
 			drawRightPageExtras_Block_Item(cx, cy);
-		}else if (entryMultiblock == null){
+		}
+		else if(entryMultiblock == null) {
 			drawRightPageExtras_Generic(cx, cy);
 		}
 	}
 
-	private void drawRelatedItems(int cx, int cy, int mouseX, int mouseY){
-		if (relatedEntries.length == 0)
+	private void drawRelatedItems(int cx, int cy, int mouseX, int mouseY) {
+		if(relatedEntries.length == 0) {
 			return;
+		}
 
 		int length = Math.min(relatedEntries.length, 5);
 
@@ -726,12 +783,12 @@ public class GuiArcaneCompendium extends GuiScreen{
 
 		int count = 0;
 
-		for (int i = 0; i < relatedEntries.length && count < 5; i++){
+		for(int i = 0; i < relatedEntries.length && count < 5; i++) {
 			ItemStack stack = relatedEntries[i];
-			if (stack != null){
-				AMGuiHelper.instance.DrawItemAtXY(stack, x, y, this.zLevel);
-				if (mouseX > x && mouseX < x + 16){
-					if (mouseY > y && mouseY < y + 16){
+			if(stack != null) {
+				AMGuiHelper.DrawItemAtXY(stack, x, y, this.zLevel);
+				if(mouseX > x && mouseX < x + 16) {
+					if(mouseY > y && mouseY < y + 16) {
 						stackTip = stack;
 						tipX = mouseX;
 						tipY = mouseY;
@@ -744,24 +801,27 @@ public class GuiArcaneCompendium extends GuiScreen{
 
 		y -= 16;
 
-		if (count > 0){
+		if(count > 0) {
 			String s = StatCollector.translateToLocal("am2.gui.relatedItems");
 			fontRendererObj.drawString(s, cx - this.xSize / 6, y, 0x00000);
 		}
 	}
 
-	private void drawModifiers(int cx, int cy, int mouseX, int mouseY){
+	private void drawModifiers(int cx, int cy, int mouseX, int mouseY) {
 
 		int step = 18;
 
 		String label = "";
 
-		if (this.entryMultiblock != null)
+		if(this.entryMultiblock != null) {
 			label = StatCollector.translateToLocal("am2.gui.ritual");
-		else if (entry instanceof CompendiumEntrySpellModifier)
+		}
+		else if(entry instanceof CompendiumEntrySpellModifier) {
 			label = StatCollector.translateToLocal("am2.gui.modifies");
-		else
+		}
+		else {
 			label = StatCollector.translateToLocal("am2.gui.modifiedBy");
+		}
 
 		int x = cx - fontRendererObj.getStringWidth(label) / 2;
 		int y = cy - this.ySize / 2 + 28;
@@ -771,11 +831,11 @@ public class GuiArcaneCompendium extends GuiScreen{
 		y += 12;
 		x = cx - (int)(modifiers.size() / 2.0f * step);
 
-		for (ItemStack mod : modifiers){
-			if (mod != null){
-				AMGuiHelper.instance.DrawItemAtXY(mod, x, y, this.zLevel);
-				if (mouseX > x && mouseX < x + 16){
-					if (mouseY > y && mouseY < y + 16){
+		for(ItemStack mod: modifiers) {
+			if(mod != null) {
+				AMGuiHelper.DrawItemAtXY(mod, x, y, this.zLevel);
+				if(mouseX > x && mouseX < x + 16) {
+					if(mouseY > y && mouseY < y + 16) {
 						stackTip = mod;
 						tipX = mouseX;
 						tipY = mouseY;
@@ -786,7 +846,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		}
 	}
 
-	private void drawRightPage_Entity(int cx, int cy){
+	private void drawRightPage_Entity(int cx, int cy) {
 
 		double ex = cx;
 		double ey = cy;
@@ -811,15 +871,16 @@ public class GuiArcaneCompendium extends GuiScreen{
 		fontRendererObj.drawString(renderString, cx - fontRendererObj.getStringWidth(renderString) / 2, i1 + 20, 0x000000);
 	}
 
-	private void renderEntityIntoUI(){
+	private void renderEntityIntoUI() {
 		Render render = (Render)RenderManager.instance.entityRenderMap.get(entryEntity.getClass());
-		if (render != null){
+		if(render != null) {
 			GL11.glPushMatrix();
-			if (entryEntity instanceof IArsMagicaBoss){
+			if(entryEntity instanceof IArsMagicaBoss) {
 				float scaleFactorX = (1 / entryEntity.width);
 				float scaleFactorY = (2 / entryEntity.height);
 				GL11.glScalef(scaleFactorX, scaleFactorY, scaleFactorX);
-			}else if (entryEntity instanceof EntityFlicker){
+			}
+			else if(entryEntity instanceof EntityFlicker) {
 				GL11.glTranslatef(0, 1.3f, 0);
 			}
 			GL11.glRotatef(curRotationH, 0, 1, 0);
@@ -831,27 +892,28 @@ public class GuiArcaneCompendium extends GuiScreen{
 		}
 	}
 
-	private void drawRightPage_Block_Item(int cx, int cy, int mousex, int mousey){
+	private void drawRightPage_Block_Item(int cx, int cy, int mousex, int mousey) {
 
 		RenderHelper.disableStandardItemLighting();
 
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
-		if (craftingComponents == null){
-			AMGuiHelper.instance.DrawItemAtXY(renderStack, cx, cy, this.zLevel);
-			if (mousex > cx && mousex < cx + 16){
-				if (mousey > cy && mousey < cy + 16){
+		if(craftingComponents == null) {
+			AMGuiHelper.DrawItemAtXY(renderStack, cx, cy, this.zLevel);
+			if(mousex > cx && mousex < cx + 16) {
+				if(mousey > cy && mousey < cy + 16) {
 					stackTip = this.renderStack;
 					tipX = mousex;
 					tipY = mousey;
 				}
 			}
-		}else{
+		}
+		else {
 			RenderRecipe(cx, cy, mousex, mousey);
 		}
 
-		if (this.renderStack.getItem() instanceof ItemSpellPart){
+		if(this.renderStack.getItem() instanceof ItemSpellPart) {
 			IIcon icon = SpellIconManager.instance.getIcon(entryName);
 			mc.renderEngine.bindTexture(items);
 			GL11.glColor4f(1, 1, 1, 1);
@@ -861,12 +923,12 @@ public class GuiArcaneCompendium extends GuiScreen{
 		RenderHelper.enableStandardItemLighting();
 	}
 
-	private void drawRightPageExtras_Block_Item(int cx, int cy){
+	private void drawRightPageExtras_Block_Item(int cx, int cy) {
 
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
-		if (craftingComponents == null){
+		if(craftingComponents == null) {
 			GL11.glPushMatrix();
 
 			GL11.glEnable(GL11.GL_BLEND);
@@ -874,88 +936,100 @@ public class GuiArcaneCompendium extends GuiScreen{
 			this.drawTexturedModalRect_Classic(cx - 77, cy - 68, 0, 101, 150, 150, 100, 147);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPopMatrix();
-		}else{
+		}
+		else {
 
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			if (this.renderStack.getItem() == ItemsCommonProxy.essence || this.renderStack.getItem() == ItemsCommonProxy.deficitCrystal){
+			if(this.renderStack.getItem() == ItemsCommonProxy.essence || this.renderStack.getItem() == ItemsCommonProxy.deficitCrystal) {
 				this.drawTexturedModalRect_Classic(cx - 43, cy - 45, 367, 0, 105, 105, 70, 105);
-			}else if (this.renderStack.getItem() == ItemsCommonProxy.spell_component){
+			}
+			else if(this.renderStack.getItem() == ItemsCommonProxy.spell_component) {
 				//intentionally do nothing
-			}else{
+			}
+			else {
 				this.drawTexturedModalRect_Classic(cx - 43, cy - 43, 0, 0, 100, 100, 67, 95);
 			}
 			GL11.glDisable(GL11.GL_BLEND);
 		}
 	}
 
-	private void renderItemToolTip(ItemStack stack, int x, int y){
-		try{
+	private void renderItemToolTip(ItemStack stack, int x, int y) {
+		try {
 			List list = stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
 
 			CompendiumEntry entry;
-			if (stack.getItem() instanceof ItemBlock){
+			if(stack.getItem() instanceof ItemBlock) {
 				ItemBlock item = (ItemBlock)stack.getItem();
 				Block block = item.field_150939_a;
 				String name = block.getUnlocalizedName().replace("arsmagica2:", "").replace("tile.", "");
 				String metaname = name + "@" + stack.getItemDamage();
 				entry = ArcaneCompendium.instance.getEntry(metaname);
-				if (entry == null)
+				if(entry == null) {
 					entry = ArcaneCompendium.instance.getEntry(name);
-			}else{
-				if (stack.getItem() == ItemsCommonProxy.spell_component){
+				}
+			}
+			else {
+				if(stack.getItem() == ItemsCommonProxy.spell_component) {
 					list.clear();
 					ISkillTreeEntry skill = SkillManager.instance.getSkill(stack.getItemDamage());
-					if (skill == null)
+					if(skill == null) {
 						return;
+					}
 					list.add(SkillManager.instance.getDisplayName(skill));
 					entry = ArcaneCompendium.instance.getEntry(SkillManager.instance.getSkillName(skill));
-				}else{
+				}
+				else {
 					String name = stack.getItem().getUnlocalizedName().replace("item.", "").replace("arsmagica2:", "");
 					String metaname = name + "@" + stack.getItemDamage();
 					entry = ArcaneCompendium.instance.getEntry(metaname);
-					if (entry == null)
+					if(entry == null) {
 						entry = ArcaneCompendium.instance.getEntry(name);
+					}
 				}
 			}
 
-			for (int k = 0; k < list.size(); ++k){
-				if (k == 0){
-					if (entry != null){
-						list.set(k, "\u00a72" + (String)list.get(k));
-					}else{
-						list.set(k, "\u00a7" + stack.getRarity().rarityColor.getFormattingCode() + (String)list.get(k));
+			for(int k = 0; k < list.size(); ++k) {
+				if(k == 0) {
+					if(entry != null) {
+						list.set(k, "\u00a72" + list.get(k));
 					}
-				}else{
+					else {
+						list.set(k, "\u00a7" + stack.getRarity().rarityColor.getFormattingCode() + list.get(k));
+					}
+				}
+				else {
 					list.set(k, EnumChatFormatting.GRAY + (String)list.get(k));
 				}
 			}
 
 			//split out multiline entries (only entry 0 in this case)
-			if (((String)list.get(0)).indexOf('\n') != -1){
+			if(((String)list.get(0)).indexOf('\n') != -1) {
 				String s = ((String)list.get(0));
 				String colorPrefix = "";
 				list.remove(0);
-				if (entry != null){
+				if(entry != null) {
 					colorPrefix = "\u00a72";
-				}else{
+				}
+				else {
 					colorPrefix = "\u00a7" + stack.getRarity().rarityColor.getFormattingCode();
 				}
 				String[] split = s.split("\n");
-				for (int i = split.length - 1; i >= 0; --i){
+				for(int i = split.length - 1; i >= 0; --i) {
 					list.add(0, colorPrefix + split[i]);
 				}
 			}
 
 			FontRenderer font = stack.getItem().getFontRenderer(stack);
 			drawHoveringText(list, x, y, (font == null ? this.fontRendererObj : font));
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 
 		}
 	}
 
-	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font){
-		if (!par1List.isEmpty()){
+	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font) {
+		if(!par1List.isEmpty()) {
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -963,11 +1037,11 @@ public class GuiArcaneCompendium extends GuiScreen{
 			int k = 0;
 			Iterator iterator = par1List.iterator();
 
-			while (iterator.hasNext()){
+			while(iterator.hasNext()) {
 				String s = (String)iterator.next();
 				int l = font.getStringWidth(s);
 
-				if (l > k){
+				if(l > k) {
 					k = l;
 				}
 			}
@@ -976,15 +1050,15 @@ public class GuiArcaneCompendium extends GuiScreen{
 			int j1 = par3 - 12;
 			int k1 = 8;
 
-			if (par1List.size() > 1){
+			if(par1List.size() > 1) {
 				k1 += 2 + (par1List.size() - 1) * 10;
 			}
 
-			if (i1 + k > this.width){
+			if(i1 + k > this.width) {
 				i1 -= 28 + k;
 			}
 
-			if (j1 + k1 + 6 > this.height){
+			if(j1 + k1 + 6 > this.height) {
 				j1 = this.height - k1 - 6;
 			}
 
@@ -1003,11 +1077,11 @@ public class GuiArcaneCompendium extends GuiScreen{
 			this.drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 - 3 + 1, i2, i2);
 			this.drawGradientRect(i1 - 3, j1 + k1 + 2, i1 + k + 3, j1 + k1 + 3, j2, j2);
 
-			for (int k2 = 0; k2 < par1List.size(); ++k2){
+			for(int k2 = 0; k2 < par1List.size(); ++k2) {
 				String s1 = (String)par1List.get(k2);
 				font.drawStringWithShadow(s1, i1, j1, -1);
 
-				if (k2 == 0){
+				if(k2 == 0) {
 					j1 += 2;
 				}
 
@@ -1023,9 +1097,9 @@ public class GuiArcaneCompendium extends GuiScreen{
 		}
 	}
 
-	private void drawRightPage_Multiblock(int cx, int cy, int mousex, int mousey){
+	private void drawRightPage_Multiblock(int cx, int cy, int mousex, int mousey) {
 
-		String label = String.format("%s: %s", StatCollector.translateToLocal("am2.gui.layer"), curLayer == -1 ? StatCollector.translateToLocal("am2.gui.all") : "" + curLayer);
+		String label = String.format("%s: %s", StatCollector.translateToLocal("am2.gui.layer"), curLayer == -1 ? StatCollector.translateToLocal("am2.gui.all") : String.valueOf(curLayer));
 
 		fontRendererObj.drawString(label, cx - fontRendererObj.getStringWidth(label) / 2, cy - 90, 0x000000);
 
@@ -1039,13 +1113,14 @@ public class GuiArcaneCompendium extends GuiScreen{
 			renderBlock(Block.blocksList[blox.get(0).getID()], blox.get(0).getMeta(), cx, cy);
 		}*/
 		BlockCoord pickedBlock = getPickedBlock(cx, cy, mousex, mousey);
-		if (curLayer == -1){
-			for (int i = entryMultiblock.getMinLayer(); i <= entryMultiblock.getMaxLayer(); ++i){
+		if(curLayer == -1) {
+			for(int i = entryMultiblock.getMinLayer(); i <= entryMultiblock.getMaxLayer(); ++i) {
 				int y = (i - entryMultiblock.getMinLayer());
 				GL11.glTranslatef(0.0f, 0.0f, 20f * y);
 				drawMultiblockLayer(cx, cy, i, pickedBlock, mousex, mousey);
 			}
-		}else{
+		}
+		else {
 			int i = entryMultiblock.getMinLayer() + curLayer;
 			GL11.glTranslatef(0.0f, 0.0f, 20f * curLayer);
 			drawMultiblockLayer(cx, cy, i, pickedBlock, mousex, mousey);
@@ -1054,14 +1129,14 @@ public class GuiArcaneCompendium extends GuiScreen{
 		GL11.glPopMatrix();
 	}
 
-	private TreeMap<BlockCoord, ArrayList<BlockDec>> getMultiblockLayer(int layer){
+	private TreeMap<BlockCoord, ArrayList<BlockDec>> getMultiblockLayer(int layer) {
 		TreeMap<BlockCoord, ArrayList<BlockDec>> layerBlocksSorted = new TreeMap<BlockCoord, ArrayList<BlockDec>>();
 
-		for (int mutex : entryMultiblock.getMutexList()){
+		for(int mutex: entryMultiblock.getMutexList()) {
 			ArrayList<StructureGroup> groups = entryMultiblock.getGroupsForMutex(mutex);
 			StructureGroup selected = groups.get(AMGuiHelper.instance.getSlowTicker() % groups.size());
 			HashMap<BlockCoord, ArrayList<BlockDec>> layerBlocks = entryMultiblock.getStructureLayer(selected, layer);
-			for (BlockCoord bc : layerBlocks.keySet()){
+			for(BlockCoord bc: layerBlocks.keySet()) {
 				layerBlocksSorted.put(bc, layerBlocks.get(bc));
 			}
 		}
@@ -1069,7 +1144,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		return layerBlocksSorted;
 	}
 
-	private BlockCoord getPickedBlock(int cx, int cy, int mousex, int mousey){
+	private BlockCoord getPickedBlock(int cx, int cy, int mousex, int mousey) {
 		BlockCoord block = null;
 
 		float step_x = 14f;
@@ -1082,13 +1157,13 @@ public class GuiArcaneCompendium extends GuiScreen{
 		int start = curLayer == -1 ? entryMultiblock.getMinLayer() : entryMultiblock.getMinLayer() + curLayer;
 		int end = curLayer == -1 ? entryMultiblock.getMaxLayer() : entryMultiblock.getMinLayer() + curLayer;
 
-		for (int i = start; i <= end; ++i){
+		for(int i = start; i <= end; ++i) {
 			TreeMap<BlockCoord, ArrayList<BlockDec>> layerBlocksSorted = getMultiblockLayer(i);
 
 			float px = cx - (step_x * (entryMultiblock.getWidth() / 2));
 			float py = cy - (step_z * (entryMultiblock.getLength() / 2));
 
-			for (BlockCoord bc : layerBlocksSorted.keySet()){
+			for(BlockCoord bc: layerBlocksSorted.keySet()) {
 				//if (bc.getX() == 0 && bc.getY() == 0 && bc.getZ() == 0) continue;
 				BlockDec bd = layerBlocksSorted.get(bc).get(0);
 				float x = px + ((bc.getX() - bc.getZ()) * step_x);
@@ -1097,8 +1172,8 @@ public class GuiArcaneCompendium extends GuiScreen{
 				x += 20;
 				y -= 10;
 
-				if (mousex > x && mousex < x + 32){
-					if (mousey > y && mousey < y + 32){
+				if(mousex > x && mousex < x + 32) {
+					if(mousey > y && mousey < y + 32) {
 						block = bc;
 					}
 				}
@@ -1107,7 +1182,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		return block;
 	}
 
-	private void drawMultiblockLayer(int cx, int cy, int layer, BlockCoord pickedBlock, int mousex, int mousey){
+	private void drawMultiblockLayer(int cx, int cy, int layer, BlockCoord pickedBlock, int mousex, int mousey) {
 		TreeMap<BlockCoord, ArrayList<BlockDec>> layerBlocksSorted = getMultiblockLayer(layer);
 
 		float step_x = 14f;
@@ -1120,20 +1195,22 @@ public class GuiArcaneCompendium extends GuiScreen{
 		float px = cx - (step_x * (entryMultiblock.getWidth() / 2));
 		float py = cy - (step_z * (entryMultiblock.getLength() / 2));
 
-		for (BlockCoord bc : layerBlocksSorted.keySet()){
+		for(BlockCoord bc: layerBlocksSorted.keySet()) {
 			//if (bc.getX() == 0 && bc.getY() == 0 && bc.getZ() == 0) continue;
-			BlockDec bd = layerBlocksSorted.get(bc).get(AMGuiHelper.instance.getSlowTicker() % layerBlocksSorted.get(bc).size());
+			BlockDec bd = layerBlocksSorted.get(bc)
+										   .get(AMGuiHelper.instance.getSlowTicker() % layerBlocksSorted.get(bc)
+																										.size());
 			float x = px + ((bc.getX() - bc.getZ()) * step_x);
 			float y = py + ((bc.getZ() + bc.getX()) * step_z) + (step_y * layer);
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0, 0, 15 * bc.getX());
-			boolean picked = pickedBlock != null && bc.equals(pickedBlock);
+			boolean picked = bc.equals(pickedBlock);
 			renderBlock(bd.getBlock(), bd.getMeta(), x, y, bc.getX(), bc.getY(), bc.getZ(), picked);
 			GL11.glPopMatrix();
 
-			if (picked){
+			if(picked) {
 				ItemStack stack = new ItemStack(bd.getBlock(), 1, bd.getMeta());
-				if (stack.getItem() != null){
+				if(stack.getItem() != null) {
 					stackTip = stack;
 					tipX = mousex;
 					tipY = mousey;
@@ -1142,7 +1219,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		}
 	}
 
-	private void drawRightPageExtras_Generic(int cx, int cy){
+	private void drawRightPageExtras_Generic(int cx, int cy) {
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
@@ -1154,23 +1231,26 @@ public class GuiArcaneCompendium extends GuiScreen{
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	private void RenderRecipe(int cx, int cy, int mousex, int mousey){
+	private void RenderRecipe(int cx, int cy, int mousex, int mousey) {
 		int step = 32;
 		int sx = cx - step;
 		int sy = cy - step;
 
-		if (craftingComponents == null) return;
+		if(craftingComponents == null) {
+			return;
+		}
 
-		if (this.renderStack.getItem() == ItemsCommonProxy.essence || this.renderStack.getItem() == ItemsCommonProxy.deficitCrystal){
+		if(this.renderStack.getItem() == ItemsCommonProxy.essence || this.renderStack.getItem() == ItemsCommonProxy.deficitCrystal) {
 			renderCraftingComponent(0, cx, cy - 36, mousex, mousey);
 			renderCraftingComponent(1, cx - 30, cy - 2, mousex, mousey);
 			renderCraftingComponent(2, cx, cy - 2, mousex, mousey);
 			renderCraftingComponent(3, cx + 28, cy - 2, mousex, mousey);
 			renderCraftingComponent(4, cx, cy + 30, mousex, mousey);
 			return;
-		}else if (this.renderStack.getItem() == ItemsCommonProxy.spell_component){
+		}
+		else if(this.renderStack.getItem() == ItemsCommonProxy.spell_component) {
 			float angleStep = (360.0f / craftingComponents.length);
-			for (int i = 0; i < craftingComponents.length; ++i){
+			for(int i = 0; i < craftingComponents.length; ++i) {
 				float angle = (float)(Math.toRadians((angleStep * i) + framecount % 360));
 				float nextangle = (float)(Math.toRadians((angleStep * ((i + 1) % craftingComponents.length)) + framecount % 360));
 				float dist = 45;
@@ -1185,9 +1265,9 @@ public class GuiArcaneCompendium extends GuiScreen{
 			return;
 		}
 
-		if (recipeHeight > 0){
-			for (int i = 0; i < recipeHeight; ++i){
-				for (int j = 0; j < recipeWidth; ++j){
+		if(recipeHeight > 0) {
+			for(int i = 0; i < recipeHeight; ++i) {
+				for(int j = 0; j < recipeWidth; ++j) {
 					int index = i * recipeWidth + j;
 
 					renderCraftingComponent(index, sx, sy, mousex, mousey);
@@ -1197,7 +1277,8 @@ public class GuiArcaneCompendium extends GuiScreen{
 				sx = cx - step;
 				sy += step;
 			}
-		}else{
+		}
+		else {
 			int col = 0;
 			int row = 0;
 			int widthSq = (int)Math.ceil(Math.sqrt(recipeWidth));
@@ -1205,11 +1286,11 @@ public class GuiArcaneCompendium extends GuiScreen{
 			String label = "\247nShapeless";
 			fontRendererObj.drawString(label, cx - (int)(fontRendererObj.getStringWidth(label) / 2.5), cy - step * 3, 0x6600FF);
 
-			for (int i = 0; i < recipeWidth; ++i){
+			for(int i = 0; i < recipeWidth; ++i) {
 				sx = cx - step + (step * col);
 				sy = cy - step + (step * row);
 				int index = (row * widthSq) + (col++);
-				if (col >= widthSq){
+				if(col >= widthSq) {
 					row++;
 					col = 0;
 				}
@@ -1221,14 +1302,15 @@ public class GuiArcaneCompendium extends GuiScreen{
 		sx = cx;
 		sy = cy - (int)(2.5 * step);
 
-		if (renderStack != null){
-			AMGuiHelper.instance.DrawItemAtXY(renderStack, sx, sy, this.zLevel);
+		if(renderStack != null) {
+			AMGuiHelper.DrawItemAtXY(renderStack, sx, sy, this.zLevel);
 
-			if (renderStack.stackSize > 1)
+			if(renderStack.stackSize > 1) {
 				fontRendererObj.drawString("x" + renderStack.stackSize, sx + 16, sy + 8, 0, false);
+			}
 
-			if (mousex > sx && mousex < sx + 16){
-				if (mousey > sy && mousey < sy + 16){
+			if(mousex > sx && mousex < sx + 16) {
+				if(mousey > sy && mousey < sy + 16) {
 					stackTip = this.renderStack;
 					tipX = mousex;
 					tipY = mousey;
@@ -1237,18 +1319,22 @@ public class GuiArcaneCompendium extends GuiScreen{
 		}
 	}
 
-	private void renderCraftingComponent(int index, int sx, int sy, int mousex, int mousey){
+	private void renderCraftingComponent(int index, int sx, int sy, int mousex, int mousey) {
 		Object craftingComponent = craftingComponents[index];
 
-		if (craftingComponent == null) return;
+		if(craftingComponent == null) {
+			return;
+		}
 
 		ItemStack stack = null;
 
-		if (craftingComponent instanceof ItemStack){
+		if(craftingComponent instanceof ItemStack) {
 			stack = (ItemStack)craftingComponent;
-		}else if (craftingComponent instanceof List){
-			if (((List)craftingComponent).size() == 0)
+		}
+		else if(craftingComponent instanceof List) {
+			if(((List)craftingComponent).size() == 0) {
 				return;
+			}
 			int idx = new Random(AMGuiHelper.instance.getSlowTicker()).nextInt(((List)craftingComponent).size());
 			stack = ((ItemStack)((List)craftingComponent).get(idx)).copy();
 		}
@@ -1257,23 +1343,25 @@ public class GuiArcaneCompendium extends GuiScreen{
 		ArrayList<ItemStack> alternates = new ArrayList<ItemStack>();
 		alternates.addAll(oredict);
 
-		if (alternates.size() > 0){
+		if(alternates.size() > 0) {
 			alternates.add(stack);
 			stack = alternates.get(new Random(AMGuiHelper.instance.getSlowTicker()).nextInt(alternates.size()));
 		}
 
-		if (forcedMetas.containsKey(stack.getItem()))
+		if(forcedMetas.containsKey(stack.getItem())) {
 			stack = new ItemStack(stack.getItem(), stack.stackSize, forcedMetas.get(stack.getItem()));
+		}
 
-		try{
-			AMGuiHelper.instance.DrawItemAtXY(stack, sx, sy, this.zLevel);
+		try {
+			AMGuiHelper.DrawItemAtXY(stack, sx, sy, this.zLevel);
 			RenderHelper.disableStandardItemLighting();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 			forcedMetas.put(stack.getItem(), 0);
 		}
 
-		if (mousex > sx && mousex < sx + 16){
-			if (mousey > sy && mousey < sy + 16){
+		if(mousex > sx && mousex < sx + 16) {
+			if(mousey > sy && mousey < sy + 16) {
 				stackTip = stack;
 				tipX = mousex;
 				tipY = mousey;
@@ -1281,10 +1369,14 @@ public class GuiArcaneCompendium extends GuiScreen{
 		}
 	}
 
-	private void renderBlock(Block block, int meta, float x, float y, int offsetX, int offsetY, int offsetZ, boolean picked){
+	private void renderBlock(Block block, int meta, float x, float y, int offsetX, int offsetY, int offsetZ, boolean picked) {
 
-		if (meta < 0) meta = 0;
-		if (meta > 15) meta = 15;
+		if(meta < 0) {
+			meta = 0;
+		}
+		if(meta > 15) {
+			meta = 15;
+		}
 
 		RenderHelper.disableStandardItemLighting();
 
@@ -1298,23 +1390,30 @@ public class GuiArcaneCompendium extends GuiScreen{
 		GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 		this.blockAccess.setFakeBlockAndMeta(block, meta);
-		this.blockRenderer.renderAllFaces = true;
+		blockRenderer.renderAllFaces = true;
 
-		if (picked)
+		if(picked) {
 			mc.renderEngine.bindTexture(red);
-		else
+		}
+		else {
 			mc.renderEngine.bindTexture(terrain);
+		}
 
-		if (block.getRenderType() == BlocksCommonProxy.blockRenderID){
+		if(block.getRenderType() == BlocksCommonProxy.blockRenderID) {
 			blockRenderer.useInventoryTint = false;
-			if (picked) GL11.glColor3f(1.0f, 0.0f, 0.0f);
-			else GL11.glColor3f(0.8f, 0.8f, 0.8f);
+			if(picked) {
+				GL11.glColor3f(1.0f, 0.0f, 0.0f);
+			}
+			else {
+				GL11.glColor3f(0.8f, 0.8f, 0.8f);
+			}
 			GL11.glRotatef(-90F, 0, 1.0f, 0);
 			GL11.glTranslatef(0, 0, -1);
-			this.blockRenderer.renderBlockAsItem(block, meta, 0);
-		}else{
+			blockRenderer.renderBlockAsItem(block, meta, 0);
+		}
+		else {
 			Tessellator.instance.startDrawingQuads();
-			this.blockRenderer.renderBlockByRenderType(block, 0, 0, 0);
+			blockRenderer.renderBlockByRenderType(block, 0, 0, 0);
 			Tessellator.instance.draw();
 		}
 
@@ -1322,7 +1421,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 		GL11.glPopMatrix();
 	}
 
-	public static ArrayList<String> splitStringToLines(FontRenderer fontRenderer, String string, int lineWidth, int maxLines){
+	public static ArrayList<String> splitStringToLines(FontRenderer fontRenderer, String string, int lineWidth, int maxLines) {
 		ArrayList<String> toReturn = new ArrayList<String>();
 		int numLines = 0;
 		int len = 0;
@@ -1330,10 +1429,10 @@ public class GuiArcaneCompendium extends GuiScreen{
 		String[] words = string.replace("\n", " ").replace("\t", "").split(" ");
 		StringBuilder sb = new StringBuilder();
 		String curLine = "";
-		for (String s : words){
+		for(String s: words) {
 			s = s.trim();
 			int wordWidth = fontRenderer.getStringWidth(s + " ");
-			if (s.equals(ArcaneCompendium.KEYWORD_NEWPAGE)){
+			if(s.equals(ArcaneCompendium.KEYWORD_NEWPAGE)) {
 				sb.append(curLine);
 				curLine = "";
 				len = 0;
@@ -1343,24 +1442,26 @@ public class GuiArcaneCompendium extends GuiScreen{
 				pageCount++;
 				numLines = 0;
 				continue;
-			}else if (s.equals(ArcaneCompendium.KEYWORD_NEWLINE)){
+			}
+			else if(s.equals(ArcaneCompendium.KEYWORD_NEWLINE)) {
 				sb.append(curLine + "\n");
 				curLine = "";
 				len = 0;
 				numLines++;
-				if ((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)){
+				if((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)) {
 					toReturn.add(sb.toString());
 					sb = new StringBuilder();
 					pageCount++;
 					numLines = 0;
 				}
 				continue;
-			}else if (s.equals(ArcaneCompendium.KEYWORD_DOUBLENEWLINE)){
+			}
+			else if(s.equals(ArcaneCompendium.KEYWORD_DOUBLENEWLINE)) {
 				sb.append(curLine + "\n");
 				curLine = "";
 				len = 0;
 				numLines++;
-				if ((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)){
+				if((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)) {
 					toReturn.add(sb.toString());
 					sb = new StringBuilder();
 					pageCount++;
@@ -1370,19 +1471,20 @@ public class GuiArcaneCompendium extends GuiScreen{
 				curLine = "";
 				len = 0;
 				numLines++;
-				if ((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)){
+				if((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)) {
 					toReturn.add(sb.toString());
 					sb = new StringBuilder();
 					pageCount++;
 					numLines = 0;
 				}
 				continue;
-			}else if (len + wordWidth > lineWidth){
+			}
+			else if(len + wordWidth > lineWidth) {
 				sb.append(curLine);
 				curLine = "";
 				len = 0;
 				numLines++;
-				if ((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)){
+				if((numLines == maxLines && pageCount > 0) || (pageCount == 0 && numLines == maxLines - 2)) {
 					toReturn.add(sb.toString());
 					sb = new StringBuilder();
 					pageCount++;
@@ -1395,29 +1497,31 @@ public class GuiArcaneCompendium extends GuiScreen{
 
 		sb.append(curLine);
 
-		if (sb.length() > 0){
+		if(sb.length() > 0) {
 			toReturn.add(sb.toString());
 		}
 
 		return toReturn;
 	}
 
-	public void drawTexturedModalRect_Classic(int dst_x, int dst_y, int src_x, int src_y, int dst_width, int dst_height, int src_width, int src_height){
+	public void drawTexturedModalRect_Classic(int dst_x, int dst_y, int src_x, int src_y, int dst_width, int dst_height, int src_width, int src_height) {
 		float var7 = 0.00390625F;
 		float var8 = 0.00390625F;
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
-		var9.addVertexWithUV(dst_x + 0, dst_y + dst_height, this.zLevel, (src_x + 0) * var7, (src_y + src_height) * var8);
+		var9.addVertexWithUV(dst_x, dst_y + dst_height, this.zLevel, (src_x) * var7, (src_y + src_height) * var8);
 		var9.addVertexWithUV(dst_x + dst_width, dst_y + dst_height, this.zLevel, (src_x + src_width) * var7, (src_y + src_height) * var8);
-		var9.addVertexWithUV(dst_x + dst_width, dst_y + 0, this.zLevel, (src_x + src_width) * var7, (src_y + 0) * var8);
-		var9.addVertexWithUV(dst_x + 0, dst_y + 0, this.zLevel, (src_x + 0) * var7, (src_y + 0) * var8);
+		var9.addVertexWithUV(dst_x + dst_width, dst_y, this.zLevel, (src_x + src_width) * var7, (src_y) * var8);
+		var9.addVertexWithUV(dst_x, dst_y, this.zLevel, (src_x) * var7, (src_y) * var8);
 		var9.draw();
 	}
 
-	private void DrawIconAtXY(IIcon icon, float x, float y, int w, int h){
+	private void DrawIconAtXY(IIcon icon, float x, float y, int w, int h) {
 
-		if (icon == null) return;
+		if(icon == null) {
+			return;
+		}
 
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
@@ -1431,7 +1535,7 @@ public class GuiArcaneCompendium extends GuiScreen{
 	}
 
 	@Override
-	public void onGuiClosed(){
+	public void onGuiClosed() {
 
 		ArcaneCompendium.instance.saveUnlockData();
 

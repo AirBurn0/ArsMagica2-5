@@ -6,40 +6,46 @@ import am2.api.illeffect.IllEffectSeverity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-public class IllEffectsManager{
+public class IllEffectsManager {
 	private TreeMap<IIllEffect, Integer> DarkNexusBadThings;
 	public static IllEffectsManager instance = new IllEffectsManager();
-	private static Random rand = new Random();
+	private static final Random rand = new Random();
 
-	private IllEffectsManager(){
+	private IllEffectsManager() {
 		DarkNexusBadThings = new TreeMap<IIllEffect, Integer>();
 	}
 
-	public void ApplyRandomBadThing(TileEntity te, IllEffectSeverity maxSev, BadThingTypes type){
+	public void ApplyRandomBadThing(TileEntity te, IllEffectSeverity maxSev, BadThingTypes type) {
 		HashMap<IIllEffect, Integer> possibleBadThings = new HashMap<IIllEffect, Integer>();
 
-		switch (type){
-		case ALL:
-			for (IIllEffect badThing : DarkNexusBadThings.keySet()){
-				if (badThing.GetSeverity().ordinal() <= maxSev.ordinal()){
-					possibleBadThings.put(badThing, DarkNexusBadThings.get(badThing));
+		switch(type) {
+			case ALL:
+				for(IIllEffect badThing: DarkNexusBadThings.keySet()) {
+					if(badThing.GetSeverity().ordinal() <= maxSev.ordinal()) {
+						possibleBadThings.put(badThing, DarkNexusBadThings.get(badThing));
+					}
 				}
-			}
-			break;
-		case DARKNEXUS:
-			for (IIllEffect badThing : DarkNexusBadThings.keySet()){
-				if (badThing.GetSeverity().ordinal() <= maxSev.ordinal()){
-					possibleBadThings.put(badThing, DarkNexusBadThings.get(badThing));
+				break;
+			case DARKNEXUS:
+				for(IIllEffect badThing: DarkNexusBadThings.keySet()) {
+					if(badThing.GetSeverity().ordinal() <= maxSev.ordinal()) {
+						possibleBadThings.put(badThing, DarkNexusBadThings.get(badThing));
+					}
 				}
-			}
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 		//nothing found...lucky you!
-		if (possibleBadThings.size() == 0){
+		if(possibleBadThings.size() == 0) {
 			return;
 		}
 
@@ -47,19 +53,19 @@ public class IllEffectsManager{
 		Map<EntityPlayer, Object> affected = chosenBadThing.ApplyIllEffect(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord);
 	}
 
-	private IIllEffect getWeightedBadthing(HashMap<IIllEffect, Integer> possibilities){
+	private IIllEffect getWeightedBadthing(HashMap<IIllEffect, Integer> possibilities) {
 
 		int totalWeight = 0;
 
-		for (IIllEffect effect : possibilities.keySet()){
+		for(IIllEffect effect: possibilities.keySet()) {
 			totalWeight += possibilities.get(effect);
 		}
 
 		int tWeight = rand.nextInt(totalWeight);
 
-		for (IIllEffect effect : possibilities.keySet()){
+		for(IIllEffect effect: possibilities.keySet()) {
 			tWeight -= possibilities.get(effect);
-			if (tWeight <= 0){
+			if(tWeight <= 0) {
 				return effect;
 			}
 		}
@@ -68,35 +74,35 @@ public class IllEffectsManager{
 	}
 
 	@Deprecated
-	public static void RegisterIllEffect(IIllEffect effect, BadThingTypes type){
+	public static void RegisterIllEffect(IIllEffect effect, BadThingTypes type) {
 		RegisterIllEffect(effect, 10, type);
 	}
 
-	public static void RegisterIllEffect(IIllEffect effect, int weight, BadThingTypes type){
-		switch (type){
-		case ALL:
-			instance.DarkNexusBadThings.put(effect, weight);
-			instance.DarkNexusBadThings = entriesSortedByValues(instance.DarkNexusBadThings);
-			break;
-		case DARKNEXUS:
-		default:
-			instance.DarkNexusBadThings.put(effect, weight);
-			instance.DarkNexusBadThings = entriesSortedByValues(instance.DarkNexusBadThings);
-			break;
+	public static void RegisterIllEffect(IIllEffect effect, int weight, BadThingTypes type) {
+		switch(type) {
+			case ALL:
+				instance.DarkNexusBadThings.put(effect, weight);
+				instance.DarkNexusBadThings = entriesSortedByValues(instance.DarkNexusBadThings);
+				break;
+			case DARKNEXUS:
+			default:
+				instance.DarkNexusBadThings.put(effect, weight);
+				instance.DarkNexusBadThings = entriesSortedByValues(instance.DarkNexusBadThings);
+				break;
 		}
 	}
 
-	static <K, V extends Comparable<? super V>> TreeMap<K, V> entriesSortedByValues(Map<K, V> map){
+	static <K, V extends Comparable<? super V>> TreeMap<K, V> entriesSortedByValues(Map<K, V> map) {
 		SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(
-				new Comparator<Map.Entry<K, V>>(){
+				new Comparator<Map.Entry<K, V>>() {
 					@Override
-					public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2){
+					public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
 						return e1.getValue().compareTo(e2.getValue());
 					}
 				}
 		);
 		TreeMap<K, V> tm = new TreeMap<K, V>();
-		for (Map.Entry<K, V> entry : map.entrySet()){
+		for(Map.Entry<K, V> entry: map.entrySet()) {
 			tm.put(entry.getKey(), entry.getValue());
 		}
 		//sortedEntries.addAll(map.entrySet());

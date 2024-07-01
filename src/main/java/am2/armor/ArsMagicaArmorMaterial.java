@@ -1,7 +1,7 @@
 package am2.armor;
 
 
-public enum ArsMagicaArmorMaterial{
+public enum ArsMagicaArmorMaterial {
 	//{900, 1700, 6400, 4000}
 	MAGE(
 			"MAGE",
@@ -55,15 +55,15 @@ public enum ArsMagicaArmorMaterial{
 			new float[]{0.2f, 0.2f, 0.2f, 0.2f} //cooldown ticks of protection ( n / 20 -> time in seconds)
 	); //stable at L17, 78% DR w/ full set
 
-	private int maxDamageFactor;
-	private int damageReductionAmountArray[];
-	private int enchantability;
-	private float infusionCost;
-	private float infusionRepair;
-	private float[] damageReductionRatios;
-	private float[] protectionCooldownModifiers;
+	private final int maxDamageFactor;
+	private final int[] damageReductionAmountArray;
+	private final int enchantability;
+	private final float infusionCost;
+	private final float infusionRepair;
+	private final float[] damageReductionRatios;
+	private final float[] protectionCooldownModifiers;
 
-	private ArsMagicaArmorMaterial(String identifier, int durability, int armorValueArray[], int enchantability, float infusionCost, float infusionRepair, float[] damageReductionRatios, float[] protectionCooldown){
+	ArsMagicaArmorMaterial(String identifier, int durability, int[] armorValueArray, int enchantability, float infusionCost, float infusionRepair, float[] damageReductionRatios, float[] protectionCooldown) {
 		this.maxDamageFactor = durability;
 		this.damageReductionAmountArray = armorValueArray;
 		this.enchantability = enchantability;
@@ -73,35 +73,35 @@ public enum ArsMagicaArmorMaterial{
 		this.protectionCooldownModifiers = protectionCooldown;
 	}
 
-	public int func_40576_a(int i){
+	public int func_40576_a(int i) {
 		return AMArmor.getMaxDamageArray()[i] * maxDamageFactor;
 	}
 
-	public int getDamageReductionAmount(int i){
+	public int getDamageReductionAmount(int i) {
 		return damageReductionAmountArray[i];
 	}
 
-	public int getEnchantability(){
+	public int getEnchantability() {
 		return enchantability;
 	}
 
-	public float getInfusionCost(){
+	public float getInfusionCost() {
 		return infusionCost;
 	}
 
-	public float getInfusionRepair(){
+	public float getInfusionRepair() {
 		return this.infusionRepair;
 	}
 
-	public int getMaterialID(){
+	public int getMaterialID() {
 		return maxDamageFactor;
 	}
 
-	public float getDamageReduceRatio(int slot){
+	public float getDamageReduceRatio(int slot) {
 		return damageReductionRatios[slot];
 	}
 
-	public float getProtectionCooldownModifier(int slot){
+	public float getProtectionCooldownModifier(int slot) {
 		return this.protectionCooldownModifiers[slot];
 	}
 }

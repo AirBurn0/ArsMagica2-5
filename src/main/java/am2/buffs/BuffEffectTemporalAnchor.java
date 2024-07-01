@@ -3,7 +3,7 @@ package am2.buffs;
 import am2.playerextensions.ExtendedProperties;
 import net.minecraft.entity.EntityLivingBase;
 
-public class BuffEffectTemporalAnchor extends BuffEffect{
+public class BuffEffectTemporalAnchor extends BuffEffect {
 
 	private double x;
 	private double y;
@@ -15,12 +15,12 @@ public class BuffEffectTemporalAnchor extends BuffEffect{
 	private float mana;
 	private float health;
 
-	public BuffEffectTemporalAnchor(int duration, int amplifier){
+	public BuffEffectTemporalAnchor(int duration, int amplifier) {
 		super(BuffList.temporalAnchor.id, duration, amplifier);
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entityliving){
+	public void applyEffect(EntityLivingBase entityliving) {
 		//store values from the entity
 		x = entityliving.posX;
 		y = entityliving.posY;
@@ -35,7 +35,7 @@ public class BuffEffectTemporalAnchor extends BuffEffect{
 	}
 
 	@Override
-	public void stopEffect(EntityLivingBase entityliving){
+	public void stopEffect(EntityLivingBase entityliving) {
 		entityliving.setPositionAndUpdate(x, y, z);
 		entityliving.rotationYawHead = rotationYawHead;
 		entityliving.rotationPitch = rotationPitch;
@@ -47,7 +47,7 @@ public class BuffEffectTemporalAnchor extends BuffEffect{
 	}
 
 	@Override
-	protected String spellBuffName(){
+	protected String spellBuffName() {
 		return "Temporal Anchor";
 	}
 

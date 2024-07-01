@@ -5,12 +5,12 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-public class ModelAirGuardianHoverball extends ModelBase{
+public class ModelAirGuardianHoverball extends ModelBase {
 	//fields
 	ModelRenderer Ball1;
 	ModelRenderer Ball2;
 
-	public ModelAirGuardianHoverball(){
+	public ModelAirGuardianHoverball() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -29,8 +29,8 @@ public class ModelAirGuardianHoverball extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
-		if (entity != null){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+		if(entity != null) {
 			Ball1.rotateAngleX = (float)Math.toRadians(((EntityAirSled)entity).getRotation() + (f2 - entity.ticksExisted)) + 0.7853982F;
 			Ball1.rotateAngleY = (float)-Math.toRadians(-((EntityAirSled)entity).getRotation() - (f2 - entity.ticksExisted));
 			Ball1.rotateAngleZ = (float)-Math.toRadians(-((EntityAirSled)entity).getRotation() - (f2 - entity.ticksExisted));
@@ -38,7 +38,8 @@ public class ModelAirGuardianHoverball extends ModelBase{
 			Ball2.rotateAngleX = (float)-Math.toRadians(((EntityAirSled)entity).getRotation() + (f2 - entity.ticksExisted));
 			Ball2.rotateAngleY = (float)Math.toRadians(((EntityAirSled)entity).getRotation() + (f2 - entity.ticksExisted));
 			Ball2.rotateAngleZ = (float)Math.toRadians(-((EntityAirSled)entity).getRotation() - (f2 - entity.ticksExisted));
-		}else{
+		}
+		else {
 			setRotation(Ball1, 0, 0, 0);
 			setRotation(Ball2, 0.7853982F, 0.7853982F, 0);
 		}
@@ -46,7 +47,7 @@ public class ModelAirGuardianHoverball extends ModelBase{
 		Ball2.render(f5);
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

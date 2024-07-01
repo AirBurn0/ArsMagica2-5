@@ -1,8 +1,8 @@
 package am2.items;
 
-public abstract class ItemFilterFocus extends ItemFocus{
+public abstract class ItemFilterFocus extends ItemFocus {
 
-	protected ItemFilterFocus(){
+	protected ItemFilterFocus() {
 		super();
 	}
 

@@ -17,23 +17,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemHellCowHorn extends Item{
+public class ItemHellCowHorn extends Item {
 
-	public ItemHellCowHorn(){
+	public ItemHellCowHorn() {
 		super();
 		this.setTextureName("arsmagica2:hellcowhorn");
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player){
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 		//testSound(stack, world, player);
 		return stack;
 	}
 
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player,
-									 Entity entity){
-		if (entity instanceof EntityLivingBase){
+									 Entity entity) {
+		if(entity instanceof EntityLivingBase) {
 			/*double dx = player.posX - entity.posX;
 			double dz = player.posZ - entity.posZ;
 			float angle = (float) Math.atan2(dz, dx);
@@ -46,7 +46,7 @@ public class ItemHellCowHorn extends Item{
 		return false;
 	}
 
-	public ItemStack createItemStack(){
+	public ItemStack createItemStack() {
 		ItemStack stack = new ItemStack(this, 1, 0);
 		Map map = new LinkedHashMap();
 		map.put(AMEnchantments.soulbound.effectId, 1);
@@ -56,19 +56,19 @@ public class ItemHellCowHorn extends Item{
 	}
 
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List){
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(createItemStack());
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean shouldRotateAroundWhenRendering(){
+	public boolean shouldRotateAroundWhenRendering() {
 		return true;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean isFull3D(){
+	public boolean isFull3D() {
 		return true;
 	}
 }

@@ -10,7 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-public class ModelDarkling extends ModelBase{
+public class ModelDarkling extends ModelBase {
 	ModelRenderer headMain;
 	ModelRenderer body;
 	ModelRenderer mane;
@@ -49,7 +49,7 @@ public class ModelDarkling extends ModelBase{
 	ModelRenderer Spike6;
 	ModelRenderer Spike8;
 
-	public ModelDarkling(){
+	public ModelDarkling() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -278,7 +278,7 @@ public class ModelDarkling extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f, 0.5f, 0.5f);
@@ -289,19 +289,20 @@ public class ModelDarkling extends ModelBase{
 				: 1.0f;
 
 
-		if (entity.hurtResistantTime > 0 || entity.isDead){
+		if(entity.hurtResistantTime > 0 || entity.isDead) {
 			transparencyFromTime = 1.0f;
 		}
 
-		if (transparencyFromTime < 0.3f){
+		if(transparencyFromTime < 0.3f) {
 			transparencyFromTime = 0.3f;
 		}
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		if (transparencyFromTime >= 1.0f || Minecraft.getMinecraft().thePlayer.isPotionActive(BuffList.trueSight.id)){
+		if(transparencyFromTime >= 1.0f || Minecraft.getMinecraft().thePlayer.isPotionActive(BuffList.trueSight.id)) {
 			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		}else{
+		}
+		else {
 			GL11.glColor4f(1.0f, 0.6f, 0.6f, transparencyFromTime);
 		}
 
@@ -348,11 +349,11 @@ public class ModelDarkling extends ModelBase{
 	}
 
 	/**
-	 * Used for easily adding entity-dependent animations. The second and third float params here are the same second
-	 * and third as in the setRotationAngles method.
+	 Used for easily adding entity-dependent animations. The second and third float params here are the same second
+	 and third as in the setRotationAngles method.
 	 */
 	@Override
-	public void setLivingAnimations(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4){
+	public void setLivingAnimations(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4) {
 		EntityDarkling darkling = (EntityDarkling)par1EntityLivingBase;
 
 		this.tail.rotateAngleY = MathHelper.cos(par2 * 0.6662F) * 1.4F * par3;
@@ -367,12 +368,12 @@ public class ModelDarkling extends ModelBase{
 	}
 
 	/**
-	 * Sets the model's various rotation angles. For bipeds, par1 and par2 are used for animating the movement of arms
-	 * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
-	 * "far" arms and legs can swing at most.
+	 Sets the model's various rotation angles. For bipeds, par1 and par2 are used for animating the movement of arms
+	 and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
+	 "far" arms and legs can swing at most.
 	 */
 	@Override
-	public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity){
+	public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity) {
 		super.setRotationAngles(par1, par2, par3, par4, par5, par6, par7Entity);
 		this.headMain.rotateAngleX = par5 / (180F / (float)Math.PI);
 		this.headMain.rotateAngleY = par4 / (180F / (float)Math.PI);
@@ -398,7 +399,7 @@ public class ModelDarkling extends ModelBase{
 		this.Nose10.rotateAngleX = par5 / (180F / (float)Math.PI);
 		this.Nose10.rotateAngleY = par4 / (180F / (float)Math.PI);
 
-		if (((EntityDarkling)par7Entity).isAngry()){
+		if(((EntityDarkling)par7Entity).isAngry()) {
 			this.Nose5.rotateAngleX += 15f;
 			this.Nose6.rotateAngleX += 15f;
 			this.Nose7.rotateAngleX += 15f;
@@ -409,7 +410,7 @@ public class ModelDarkling extends ModelBase{
 		// this.tail.rotateAngleX = par3;
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

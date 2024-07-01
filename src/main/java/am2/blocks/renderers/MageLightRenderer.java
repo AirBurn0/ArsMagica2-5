@@ -5,17 +5,17 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 
 
-public class MageLightRenderer extends TileEntitySpecialRenderer{
+public class MageLightRenderer extends TileEntitySpecialRenderer {
 
-	private RenderManager renderManager;
+	private final RenderManager renderManager;
 
-	public MageLightRenderer(){
+	public MageLightRenderer() {
 		renderManager = RenderManager.instance;
 	}
 
 	@Override
 	public void renderTileEntityAt(TileEntity var1, double var2, double var4,
-								   double var6, float var8){
+								   double var6, float var8) {
 
 	}
 

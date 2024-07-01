@@ -4,14 +4,14 @@ import am2.texture.ResourceManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Items;
 
-public class ItemFocusStandard extends ItemFocus implements ISpellFocus{
+public class ItemFocusStandard extends ItemFocus implements ISpellFocus {
 
-	public ItemFocusStandard(){
+	public ItemFocusStandard() {
 		super();
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
 				" R ", "RFR", " R ",
 				'R', Items.redstone,
@@ -20,17 +20,17 @@ public class ItemFocusStandard extends ItemFocus implements ISpellFocus{
 	}
 
 	@Override
-	public String getInGameName(){
+	public String getInGameName() {
 		return "Focus";
 	}
 
 	@Override
-	public int getFocusLevel(){
+	public int getFocusLevel() {
 		return 1;
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = ResourceManager.RegisterTexture("focus_standard", par1IconRegister);
 	}
 }

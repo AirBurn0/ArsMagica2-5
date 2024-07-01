@@ -7,7 +7,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
-public class ModelWaterGuardian extends ModelBase{
+public class ModelWaterGuardian extends ModelBase {
 	//fields
 	AM2ModelRenderer Shape1;
 	AM2ModelRenderer Shape2;
@@ -42,7 +42,7 @@ public class ModelWaterGuardian extends ModelBase{
 	AM2ModelRenderer ornament5;
 	AM2ModelRenderer ornament3;
 
-	public ModelWaterGuardian(){
+	public ModelWaterGuardian() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -274,13 +274,15 @@ public class ModelWaterGuardian extends ModelBase{
 		ornament3.storeRestRotations();
 	}
 
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
-		if (!(entity instanceof EntityWaterGuardian)) return;
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+		if(!(entity instanceof EntityWaterGuardian)) {
+			return;
+		}
 
 		EntityWaterGuardian guardian = ((EntityWaterGuardian)entity);
 
-		float offset1 = (((float) Math.sin(f2 / 10f)) / 8f) - 0.19f;
-		float rot1 = (float) Math.toRadians(guardian.getOrbitRotation() + (f2 % 1f * 2 * (guardian.isClone() ? -1 : 1)));
+		float offset1 = (((float)Math.sin(f2 / 10f)) / 8f) - 0.19f;
+		float rot1 = (float)Math.toRadians(guardian.getOrbitRotation() + (f2 % 1f * 2 * (guardian.isClone() ? -1 : 1)));
 
 		GL11.glPushMatrix();
 
@@ -328,7 +330,7 @@ public class ModelWaterGuardian extends ModelBase{
 		bar2.render(f5);
 		bar4.render(f5);
 
-		float offset = (((float) Math.sin(f2 / 20f)) / 4f) - 0.19f;
+		float offset = (((float)Math.sin(f2 / 20f)) / 4f) - 0.19f;
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, offset, 0);
@@ -347,74 +349,79 @@ public class ModelWaterGuardian extends ModelBase{
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	private void updateRotations(EntityWaterGuardian guardian, float f, float f1, float f2, float f3, float f4, float f5){
-		switch (guardian.getCurrentAction()){
-		case IDLE:
-			float rot2 = ((float) Math.sin(f2 / 10f) / 6);
+	private void updateRotations(EntityWaterGuardian guardian, float f, float f1, float f2, float f3, float f4, float f5) {
+		switch(guardian.getCurrentAction()) {
+			case IDLE:
+				float rot2 = ((float)Math.sin(f2 / 10f) / 6);
 
-			tentacleleft.rotateAngleZ = tentacleleft.getRestRotationZ() - rot2;
-			tentacleright.rotateAngleZ = tentacleright.getRestRotationZ() + rot2;
+				tentacleleft.rotateAngleZ = tentacleleft.getRestRotationZ() - rot2;
+				tentacleright.rotateAngleZ = tentacleright.getRestRotationZ() + rot2;
 
-			tentaclefront.rotateAngleX = tentaclefront.getRestRotationX() + rot2;
-			tentacleback.rotateAngleX = tentacleback.getRestRotationX() - rot2;
+				tentaclefront.rotateAngleX = tentaclefront.getRestRotationX() + rot2;
+				tentacleback.rotateAngleX = tentacleback.getRestRotationX() - rot2;
 
-			tentaclefrontright.rotateAngleX = -tentaclefront.rotateAngleX;
-			tentaclefrontright.rotateAngleZ = -tentacleright.rotateAngleZ;
+				tentaclefrontright.rotateAngleX = -tentaclefront.rotateAngleX;
+				tentaclefrontright.rotateAngleZ = -tentacleright.rotateAngleZ;
 
-			tentaclebackright.rotateAngleX = -tentacleback.rotateAngleX;
-			tentaclebackright.rotateAngleZ = -tentacleright.rotateAngleZ;
+				tentaclebackright.rotateAngleX = -tentacleback.rotateAngleX;
+				tentaclebackright.rotateAngleZ = -tentacleright.rotateAngleZ;
 
-			tentaclebackleft.rotateAngleX = -tentacleback.rotateAngleX;
-			tentaclebackleft.rotateAngleZ = -tentacleleft.rotateAngleZ;
+				tentaclebackleft.rotateAngleX = -tentacleback.rotateAngleX;
+				tentaclebackleft.rotateAngleZ = -tentacleleft.rotateAngleZ;
 
-			tentaclefrontleft.rotateAngleX = -tentaclefront.rotateAngleX;
-			tentaclefrontleft.rotateAngleZ = -tentacleleft.rotateAngleZ;
-			break;
-		case SPINNING:
-		case CASTING:
-			float maxAngle = 45;
-			float degrees;
-			float ticks = guardian.getTicksInCurrentAction() + f2 - guardian.ticksExisted;
-			if (ticks < 11)
-				degrees = maxAngle * (ticks / 10f);
-			else if (ticks < 18)
-				degrees = maxAngle;
-			else if (guardian.getCurrentAction() == BossActions.CASTING)
-				degrees = maxAngle * ((23 - ticks)/ 5f);
-			else if (ticks < 150)
-				degrees = maxAngle;
-			else
-				degrees = maxAngle * ((160 - ticks)/ 10f);
-			float angle = degrees > 0 ? (float) Math.toRadians(degrees) : 0;
+				tentaclefrontleft.rotateAngleX = -tentaclefront.rotateAngleX;
+				tentaclefrontleft.rotateAngleZ = -tentacleleft.rotateAngleZ;
+				break;
+			case SPINNING:
+			case CASTING:
+				float maxAngle = 45;
+				float degrees;
+				float ticks = guardian.getTicksInCurrentAction() + f2 - guardian.ticksExisted;
+				if(ticks < 11) {
+					degrees = maxAngle * (ticks / 10f);
+				}
+				else if(ticks < 18) {
+					degrees = maxAngle;
+				}
+				else if(guardian.getCurrentAction() == BossActions.CASTING) {
+					degrees = maxAngle * ((23 - ticks) / 5f);
+				}
+				else if(ticks < 150) {
+					degrees = maxAngle;
+				}
+				else {
+					degrees = maxAngle * ((160 - ticks) / 10f);
+				}
+				float angle = degrees > 0 ? (float)Math.toRadians(degrees) : 0;
 
-			//float halfAngle = angle / 2;
+				//float halfAngle = angle / 2;
 
-			tentacleleft.rotateAngleZ = tentacleleft.getRestRotationZ() - angle;
-			tentacleright.rotateAngleZ = tentacleright.getRestRotationZ() + angle;
+				tentacleleft.rotateAngleZ = tentacleleft.getRestRotationZ() - angle;
+				tentacleright.rotateAngleZ = tentacleright.getRestRotationZ() + angle;
 
-			tentaclefront.rotateAngleX = tentaclefront.getRestRotationX() - angle;
-			tentacleback.rotateAngleX = tentacleback.getRestRotationX() + angle;
+				tentaclefront.rotateAngleX = tentaclefront.getRestRotationX() - angle;
+				tentacleback.rotateAngleX = tentacleback.getRestRotationX() + angle;
 
-			tentaclefrontright.rotateAngleX = -angle;
-			tentaclefrontright.rotateAngleZ = angle;
+				tentaclefrontright.rotateAngleX = -angle;
+				tentaclefrontright.rotateAngleZ = angle;
 
-			tentaclebackright.rotateAngleX = angle;
-			tentaclebackright.rotateAngleZ = angle;
+				tentaclebackright.rotateAngleX = angle;
+				tentaclebackright.rotateAngleZ = angle;
 
-			tentaclebackleft.rotateAngleX = angle;
-			tentaclebackleft.rotateAngleZ = -angle;
+				tentaclebackleft.rotateAngleX = angle;
+				tentaclebackleft.rotateAngleZ = -angle;
 
-			tentaclefrontleft.rotateAngleX = -angle;
-			tentaclefrontleft.rotateAngleZ = -angle;
+				tentaclefrontleft.rotateAngleX = -angle;
+				tentaclefrontleft.rotateAngleZ = -angle;
 
-			GL11.glRotatef(guardian.spinRotation + ((f2 - guardian.ticksExisted) * -30f), 0, 1, 0);
-			break;
-		case CLONE:
-			break;
+				GL11.glRotatef(guardian.spinRotation + ((f2 - guardian.ticksExisted) * -30f), 0, 1, 0);
+				break;
+			case CLONE:
+				break;
 		}
 	}
 
-	private void setRotation(AM2ModelRenderer model, float x, float y, float z){
+	private void setRotation(AM2ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

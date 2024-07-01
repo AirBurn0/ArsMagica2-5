@@ -1,5 +1,5 @@
 /**
- *
+
  */
 package am2.guis;
 
@@ -14,12 +14,12 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author Zero
  */
-public class GuiCrystalMarker extends GuiContainer{
+public class GuiCrystalMarker extends GuiContainer {
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("crystalMarker.png"));
 	private final TileEntityCrystalMarker crystalMarker;
 
-	public GuiCrystalMarker(EntityPlayer player, TileEntityCrystalMarker tileEntityCrystalMarker){
+	public GuiCrystalMarker(EntityPlayer player, TileEntityCrystalMarker tileEntityCrystalMarker) {
 		super(new ContainerCrystalMarker(player, tileEntityCrystalMarker));
 		crystalMarker = tileEntityCrystalMarker;
 		xSize = 176;
@@ -28,7 +28,7 @@ public class GuiCrystalMarker extends GuiContainer{
 
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;

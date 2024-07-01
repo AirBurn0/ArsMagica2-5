@@ -13,28 +13,28 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 
-public class EntityWhirlwind extends EntityFlying{
+public class EntityWhirlwind extends EntityFlying {
 
 	private final HashMap<EntityPlayer, Integer> cooldownList;
 	private AMVector3 currentTarget;
 	private final PathNavigator nav;
 
-	public EntityWhirlwind(World par1World){
+	public EntityWhirlwind(World par1World) {
 		super(par1World);
 		cooldownList = new HashMap<EntityPlayer, Integer>();
 		nav = new PathNavigator(this);
 	}
 
 	@Override
-	public void onCollideWithPlayer(EntityPlayer player){
-		if (!worldObj.isRemote){
+	public void onCollideWithPlayer(EntityPlayer player) {
+		if(!worldObj.isRemote) {
 			Integer cd = cooldownList.get(player);
-			if (cd == null || cd <= 0){
-				if (!worldObj.isRemote && rand.nextInt(100) < 10){
+			if(cd == null || cd <= 0) {
+				if(!worldObj.isRemote && rand.nextInt(100) < 10) {
 					int slot = player.inventory.mainInventory.length + rand.nextInt(4);
-					if (player.inventory.getStackInSlot(slot) != null){
+					if(player.inventory.getStackInSlot(slot) != null) {
 						ItemStack armorStack = player.inventory.getStackInSlot(slot).copy();
-						if (!player.inventory.addItemStackToInventory(armorStack)){
+						if(!player.inventory.addItemStackToInventory(armorStack)) {
 							EntityItem item = new EntityItem(worldObj);
 							item.setPosition(player.posX, player.posY, player.posZ);
 							item.setVelocity(rand.nextDouble() * 0.2 - 0.1, rand.nextDouble() * 0.2 - 0.1, rand.nextDouble() * 0.2 - 0.1);
@@ -55,19 +55,21 @@ public class EntityWhirlwind extends EntityFlying{
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2){
+	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2) {
 		return false;
 	}
 
 	@Override
-	public void onUpdate(){
-		if (currentTarget == null || new AMVector3(this).distanceSqTo(currentTarget) < 2)
+	public void onUpdate() {
+		if(currentTarget == null || new AMVector3(this).distanceSqTo(currentTarget) < 2) {
 			generateNewTarget();
+		}
 
 		nav.tryMoveFlying(worldObj, this);
 
-		if (this.ticksExisted > 140 && !this.worldObj.isRemote)
+		if(this.ticksExisted > 140 && !this.worldObj.isRemote) {
 			this.setDead();
+		}
 
 
 		tickCooldowns();
@@ -75,49 +77,53 @@ public class EntityWhirlwind extends EntityFlying{
 		super.onUpdate();
 	}
 
-	private void generateNewTarget(){
+	private void generateNewTarget() {
 		EntityPlayer closest = null;
-		for (Object player : this.worldObj.playerEntities){
-			if (closest == null || ((EntityPlayer)player).getDistanceSqToEntity(this) < this.getDistanceSqToEntity(closest)){
+		for(Object player: this.worldObj.playerEntities) {
+			if(closest == null || ((EntityPlayer)player).getDistanceSqToEntity(this) < this.getDistanceSqToEntity(closest)) {
 				closest = (EntityPlayer)player;
 			}
 		}
-		if (closest != null && this.getDistanceSqToEntity(closest) < 64D)
+		if(closest != null && this.getDistanceSqToEntity(closest) < 64D) {
 			currentTarget = new AMVector3(closest);
-		else
+		}
+		else {
 			currentTarget = new AMVector3(this).add(new AMVector3(worldObj.rand.nextInt(10) - 5, 0, worldObj.rand.nextInt(10) - 5));
+		}
 
 		nav.SetWaypoint(worldObj, (int)currentTarget.x, (int)currentTarget.y, (int)currentTarget.z, this);
 	}
 
-	private void setCooldownFor(EntityPlayer player){
+	private void setCooldownFor(EntityPlayer player) {
 		cooldownList.put(player, 20);
 	}
 
-	private void tickCooldowns(){
-		for (EntityPlayer player : cooldownList.keySet()){
+	private void tickCooldowns() {
+		for(EntityPlayer player: cooldownList.keySet()) {
 			Integer current = cooldownList.get(player);
-			if (current <= 0) continue;
+			if(current <= 0) {
+				continue;
+			}
 			cooldownList.put(player, --current);
 		}
 	}
 
 	@Override
-	public ItemStack getHeldItem(){
+	public ItemStack getHeldItem() {
 		return null;
 	}
 
 	@Override
-	public void setCurrentItemOrArmor(int i, ItemStack itemstack){
+	public void setCurrentItemOrArmor(int i, ItemStack itemstack) {
 	}
 
 	@Override
-	public boolean canBePushed(){
+	public boolean canBePushed() {
 		return false;
 	}
 
 	@Override
-	public ItemStack[] getLastActiveItems(){
+	public ItemStack[] getLastActiveItems() {
 		return new ItemStack[0];
 	}
 

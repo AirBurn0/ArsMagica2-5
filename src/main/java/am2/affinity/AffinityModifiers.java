@@ -11,7 +11,7 @@ import net.minecraft.util.MathHelper;
 
 import java.util.UUID;
 
-public class AffinityModifiers{
+public class AffinityModifiers {
 
 	public static AffinityModifiers instance = new AffinityModifiers();
 
@@ -40,7 +40,7 @@ public class AffinityModifiers{
 	public static final UUID sunlightWeaknessID = UUID.fromString("3b51a94c-7844-732b-8b69-a1f5cd50a60d");
 	public static final AttributeModifier sunlightWeakness = new AttributeModifier(sunlightWeaknessID, "Sunlight Weakness", -0.25, OPERATION_ADD);
 
-	public void applySpeedModifiersBasedOnDepth(EntityPlayer ent, float natureDepth, float iceDepth, float lightningDepth){
+	public void applySpeedModifiersBasedOnDepth(EntityPlayer ent, float natureDepth, float iceDepth, float lightningDepth) {
 		IAttributeInstance attribute = ent.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
 
 		applyOrRemoveModifier(attribute, natureAffinityRoots, natureDepth >= 0.5f);
@@ -48,32 +48,35 @@ public class AffinityModifiers{
 		applyOrRemoveModifier(attribute, iceAffinityColdBlooded, iceDepth >= 0.1f && !isOnIce(ent));
 	}
 
-	public void applyHealthModifiers(EntityPlayer ent, float enderDepth, float waterDepth, float fireDepth, float lightningDepth){
+	public void applyHealthModifiers(EntityPlayer ent, float enderDepth, float waterDepth, float fireDepth, float lightningDepth) {
 		IAttributeInstance attribute = ent.getEntityAttribute(SharedMonsterAttributes.maxHealth);
 
 		applyOrRemoveModifier(attribute, waterWeakness,
 				((fireDepth >= 0.5f && fireDepth <= 0.9f) ||
 						(enderDepth >= 0.5f && enderDepth <= 0.9f) ||
-						(lightningDepth >= 0.5f && lightningDepth <= 0.9f)) && ent.isWet());
+						(lightningDepth >= 0.5f && lightningDepth <= 0.9f)
+				) && ent.isWet());
 		applyOrRemoveModifier(attribute, fireWeakness, (waterDepth >= 0.5f && waterDepth <= 0.9f) && (ent.isBurning() || ent.worldObj.provider.dimensionId == -1));
 		int worldTime = (int)ent.worldObj.getWorldTime() % 24000;
 		applyOrRemoveModifier(attribute, sunlightWeakness, (enderDepth > 0.65 && enderDepth <= 0.95f) && ent.worldObj.canBlockSeeTheSky((int)ent.posX, (int)ent.posY, (int)ent.posZ) && (worldTime > 23000 || worldTime < 12500));
 	}
 
-	private void applyOrRemoveModifier(IAttributeInstance attribute, AttributeModifier modifier, boolean tryApply){
-		if (tryApply){
-			if (attribute.getModifier(modifier.getID()) == null){
+	private void applyOrRemoveModifier(IAttributeInstance attribute, AttributeModifier modifier, boolean tryApply) {
+		if(tryApply) {
+			if(attribute.getModifier(modifier.getID()) == null) {
 				attribute.applyModifier(modifier);
 			}
-		}else{
-			if (attribute.getModifier(modifier.getID()) != null){
+		}
+		else {
+			if(attribute.getModifier(modifier.getID()) != null) {
 				attribute.removeModifier(modifier);
 			}
 		}
 	}
 
-	private boolean isOnIce(EntityPlayer ent){
-		AxisAlignedBB par1AxisAlignedBB = ent.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D).contract(0.001D, 0.001D, 0.001D);
+	private boolean isOnIce(EntityPlayer ent) {
+		AxisAlignedBB par1AxisAlignedBB = ent.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D)
+														 .contract(0.001D, 0.001D, 0.001D);
 		int i = MathHelper.floor_double(par1AxisAlignedBB.minX);
 		int j = MathHelper.floor_double(par1AxisAlignedBB.maxX + 1.0D);
 		int k = MathHelper.floor_double(par1AxisAlignedBB.minY - 1.0D);
@@ -81,11 +84,11 @@ public class AffinityModifiers{
 		int i1 = MathHelper.floor_double(par1AxisAlignedBB.minZ);
 		int j1 = MathHelper.floor_double(par1AxisAlignedBB.maxZ + 1.0D);
 		boolean isOnIce = false;
-		for (int k1 = i; k1 < j && !isOnIce; ++k1){
-			for (int l1 = k; l1 < l && !isOnIce; ++l1){
-				for (int i2 = i1; i2 < j1 && !isOnIce; ++i2){
+		for(int k1 = i; k1 < j && !isOnIce; ++k1) {
+			for(int l1 = k; l1 < l && !isOnIce; ++l1) {
+				for(int i2 = i1; i2 < j1 && !isOnIce; ++i2) {
 					Block block = ent.worldObj.getBlock(k1, l1, i2);
-					if (block == Blocks.ice){
+					if(block == Blocks.ice) {
 						return true;
 					}
 				}

@@ -11,18 +11,18 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class RenderSpellProjectile extends Render{
+public class RenderSpellProjectile extends Render {
 
 	private static final ResourceLocation projectile = new ResourceLocation("textures/atlas/items.png");
 
 	@Override
-	public void doRender(Entity entity, double d0, double d1, double d2, float f, float f1){
+	public void doRender(Entity entity, double d0, double d1, double d2, float f, float f1) {
 		doRenderSpellProjectile((EntitySpellProjectile)entity, d0, d1, d2, f, f1);
 	}
 
-	private void doRenderSpellProjectile(EntitySpellProjectile entity, double d, double d1, double d2, float f, float f1){
+	private void doRenderSpellProjectile(EntitySpellProjectile entity, double d, double d1, double d2, float f, float f1) {
 		IIcon icon = entity.getIcon();
-		if (icon == null){
+		if(icon == null) {
 			return;
 		}
 
@@ -50,7 +50,7 @@ public class RenderSpellProjectile extends Render{
 		GL11.glPopMatrix();
 	}
 
-	private void renderIcon(IIcon IIcon, int renderColor){
+	private void renderIcon(IIcon IIcon, int renderColor) {
 		Tessellator tessellator = Tessellator.instance;
 		float f = 1.0F;
 		float f1 = 0.5F;
@@ -69,7 +69,7 @@ public class RenderSpellProjectile extends Render{
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(Entity entity){
+	protected ResourceLocation getEntityTexture(Entity entity) {
 		return null;
 	}
 

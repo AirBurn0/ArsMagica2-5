@@ -1,6 +1,6 @@
 package am2.api.spell.enums;
 
-public enum SpellModifiers{
+public enum SpellModifiers {
 	SPEED(1.0D),
 	GRAVITY(0),
 	BOUNCE(0),
@@ -24,7 +24,7 @@ public enum SpellModifiers{
 	public double defaultValue = 0D;
 	public int defaultValueInt = 0;
 
-	private SpellModifiers(double defaultValue){
+	SpellModifiers(double defaultValue) {
 		this.defaultValue = defaultValue;
 		this.defaultValueInt = (int)defaultValue;
 	}

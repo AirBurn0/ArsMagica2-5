@@ -10,7 +10,7 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
-public class ModelSummoner extends ModelBase{
+public class ModelSummoner extends ModelBase {
 	//fields
 	ModelRenderer Shape1;
 	ModelRenderer Shape2;
@@ -24,9 +24,9 @@ public class ModelSummoner extends ModelBase{
 	ModelRenderer Shape9;
 	ModelRenderer Shape11;
 
-	private IModelCustom crystalmodel;
+	private final IModelCustom crystalmodel;
 
-	public ModelSummoner(){
+	public ModelSummoner() {
 		textureWidth = 64;
 		textureHeight = 32;
 
@@ -102,7 +102,7 @@ public class ModelSummoner extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		Shape1.render(f5);
 		Shape2.render(f5);
@@ -117,7 +117,7 @@ public class ModelSummoner extends ModelBase{
 		Shape11.render(f5);
 	}
 
-	public void renderModel(float f5){
+	public void renderModel(float f5) {
 		Shape1.render(f5);
 		Shape2.render(f5);
 		Shape4.render(f5);
@@ -131,27 +131,30 @@ public class ModelSummoner extends ModelBase{
 		Shape11.render(f5);
 	}
 
-	public void renderCrystal(TileEntitySummoner summoner, float f5){
+	public void renderCrystal(TileEntitySummoner summoner, float f5) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glTranslatef(0f, 0.6f, 0f);
 		GL11.glScalef(2f, -2f, 2f);
-		if (summoner.hasSummon()){
+		if(summoner.hasSummon()) {
 			GL11.glColor3f(0.14902f, 0.48627f, 0.70196f);
-		}else if (summoner.canSummon()){
+		}
+		else if(summoner.canSummon()) {
 			GL11.glColor3f(0, 1, 0);
-		}else{
+		}
+		else {
 			GL11.glColor3f(1, 0, 0);
 		}
-		try{
+		try {
 			crystalmodel.renderAll();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

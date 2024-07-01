@@ -7,6 +7,7 @@ import am2.api.spell.enums.Affinity;
 import am2.api.spell.enums.SpellModifiers;
 import am2.blocks.tileentities.TileEntityAstralBarrier;
 import am2.buffs.BuffList;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.particles.AMParticle;
 import am2.particles.ParticleFadeOut;
@@ -30,18 +31,20 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class Blink implements ISpellComponent{
+public class Blink implements ISpellComponent {
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 		return false;
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
-		if (!(target instanceof EntityLivingBase)) return false;
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
+		if(!(target instanceof EntityLivingBase)) {
+			return false;
+		}
 
-		if (world.isRemote){
+		if(world.isRemote) {
 			ExtendedProperties.For((EntityLivingBase)target).astralBarrierBlocked = false;
 		}
 
@@ -76,9 +79,9 @@ public class Blink implements ISpellComponent{
 
 		TileEntityAstralBarrier finalBlocker = null;
 
-		while (!coordsValid && distance > 0){
+		while(!coordsValid && distance > 0) {
 
-			if (caster.isPotionActive(BuffList.astralDistortion.id)){
+			if(caster.isPotionActive(BuffList.astralDistortion.id)) {
 				coordsValid = true;
 				newX = caster.posX;
 				newY = caster.posY;
@@ -86,7 +89,7 @@ public class Blink implements ISpellComponent{
 			}
 
 			TileEntityAstralBarrier blocker = DimensionUtilities.GetBlockingAstralBarrier(world, (int)newX, (int)newY, (int)newZ, keystoneKeys);
-			while (blocker != null){
+			while(blocker != null) {
 				finalBlocker = blocker;
 				astralBarrierBlocked = true;
 
@@ -97,7 +100,9 @@ public class Blink implements ISpellComponent{
 				int sqDist = (dx * dx + dy * dy + dz * dz);
 				int delta = blocker.getRadius() - (int)Math.floor(Math.sqrt(sqDist));
 				distance -= delta;
-				if (distance < 0) break;
+				if(distance < 0) {
+					break;
+				}
 
 				motionX = -MathHelper.sin((target.rotationYaw / 180F) * 3.141593F) * MathHelper.cos((target.rotationPitch / 180F) * 3.141593F) * distance;
 				motionZ = MathHelper.cos((target.rotationYaw / 180F) * 3.141593F) * MathHelper.cos((target.rotationPitch / 180F) * 3.141593F) * distance;
@@ -125,53 +130,59 @@ public class Blink implements ISpellComponent{
 
 				blocker = DimensionUtilities.GetBlockingAstralBarrier(world, (int)newX, (int)newY, (int)newZ, keystoneKeys);
 			}
-			if (distance < 0){
+			if(distance < 0) {
 				coordsValid = false;
 				break;
 			}
 
 			//rounding combinations, normal y
-			if (CheckCoords(world, (int)Math.floor(newX), (int)newY, (int)Math.floor(newZ))){
+			if(CheckCoords(world, (int)Math.floor(newX), (int)newY, (int)Math.floor(newZ))) {
 				newX = Math.floor(newX) + 0.5;
 				newZ = Math.floor(newZ) + 0.5;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.floor(newX), (int)newY, (int)Math.ceil(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.floor(newX), (int)newY, (int)Math.ceil(newZ))) {
 				newX = Math.floor(newX) + 0.5;
 				newZ = Math.ceil(newZ) + 0.5;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.ceil(newX), (int)newY, (int)Math.floor(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.ceil(newX), (int)newY, (int)Math.floor(newZ))) {
 				newX = Math.ceil(newX) + 0.5;
 				newZ = Math.floor(newZ) + 0.5;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.ceil(newX), (int)newY, (int)Math.ceil(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.ceil(newX), (int)newY, (int)Math.ceil(newZ))) {
 				newX = Math.ceil(newX) + 0.5;
 				newZ = Math.ceil(newZ) + 0.5;
 				coordsValid = true;
 				break;
 			}
 			//rounding combinations, y-1
-			if (CheckCoords(world, (int)Math.floor(newX), (int)newY - 1, (int)Math.floor(newZ))){
+			if(CheckCoords(world, (int)Math.floor(newX), (int)newY - 1, (int)Math.floor(newZ))) {
 				newX = Math.floor(newX) + 0.5;
 				newZ = Math.floor(newZ) + 0.5;
 				newY--;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.floor(newX), (int)newY - 1, (int)Math.ceil(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.floor(newX), (int)newY - 1, (int)Math.ceil(newZ))) {
 				newX = Math.floor(newX) + 0.5;
 				newZ = Math.ceil(newZ) + 0.5;
 				newY--;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.ceil(newX), (int)newY - 1, (int)Math.floor(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.ceil(newX), (int)newY - 1, (int)Math.floor(newZ))) {
 				newX = Math.ceil(newX) + 0.5;
 				newZ = Math.floor(newZ) + 0.5;
 				newY--;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.ceil(newX), (int)newY - 1, (int)Math.ceil(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.ceil(newX), (int)newY - 1, (int)Math.ceil(newZ))) {
 				newX = Math.ceil(newX) + 0.5;
 				newZ = Math.ceil(newZ) + 0.5;
 				newY--;
@@ -179,25 +190,28 @@ public class Blink implements ISpellComponent{
 				break;
 			}
 			//rounding combinations, y+1
-			if (CheckCoords(world, (int)Math.floor(newX), (int)newY + 1, (int)Math.floor(newZ))){
+			if(CheckCoords(world, (int)Math.floor(newX), (int)newY + 1, (int)Math.floor(newZ))) {
 				newX = Math.floor(newX) + 0.5;
 				newZ = Math.floor(newZ) + 0.5;
 				newY++;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.floor(newX), (int)newY + 1, (int)Math.ceil(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.floor(newX), (int)newY + 1, (int)Math.ceil(newZ))) {
 				newX = Math.floor(newX) + 0.5;
 				newZ = Math.ceil(newZ) + 0.5;
 				newY++;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.ceil(newX), (int)newY + 1, (int)Math.floor(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.ceil(newX), (int)newY + 1, (int)Math.floor(newZ))) {
 				newX = Math.ceil(newX) + 0.5;
 				newZ = Math.floor(newZ) + 0.5;
 				newY++;
 				coordsValid = true;
 				break;
-			}else if (CheckCoords(world, (int)Math.ceil(newX), (int)newY + 1, (int)Math.ceil(newZ))){
+			}
+			else if(CheckCoords(world, (int)Math.ceil(newX), (int)newY + 1, (int)Math.ceil(newZ))) {
 				newX = Math.ceil(newX) + 0.5;
 				newZ = Math.ceil(newZ) + 0.5;
 				newY++;
@@ -233,21 +247,21 @@ public class Blink implements ISpellComponent{
 
 		}
 
-		if (world.isRemote && astralBarrierBlocked && coordsValid){
+		if(world.isRemote && astralBarrierBlocked && coordsValid) {
 			ExtendedProperties.For((EntityLivingBase)target).astralBarrierBlocked = true;
-			if (finalBlocker != null){
+			if(finalBlocker != null) {
 				finalBlocker.onEntityBlocked((EntityLivingBase)target);
 			}
 		}
 
-		if (!world.isRemote){
-			if (!coordsValid && target instanceof EntityPlayer){
+		if(!world.isRemote) {
+			if(!coordsValid && target instanceof EntityPlayer) {
 				((EntityPlayer)target).addChatMessage(new ChatComponentText("Can't find a place to blink forward to."));
 				return false;
 			}
 		}
 
-		if (!world.isRemote){
+		if(!world.isRemote) {
 			((EntityLivingBase)target).setPositionAndUpdate(newX, newY, newZ);
 		}
 
@@ -255,30 +269,30 @@ public class Blink implements ISpellComponent{
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 160;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
+	public float burnout(EntityLivingBase caster) {
 		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
-		for (int i = 0; i < 25; ++i){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
+		for(int i = 0; i < 25; ++i) {
 			AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "sparkle", x, y, z);
-			if (particle != null){
+			if(particle != null) {
 				particle.addRandomOffset(1, 2, 1);
 				particle.AddParticleController(new ParticleMoveOnHeading(particle, MathHelper.wrapAngleTo180_double((target instanceof EntityLivingBase ? ((EntityLivingBase)target).rotationYawHead : target.rotationYaw) + 90), MathHelper.wrapAngleTo180_double(target.rotationPitch), 0.1 + rand.nextDouble() * 0.5, 1, false));
 				particle.AddParticleController(new ParticleFadeOut(particle, 1, false).setFadeSpeed(0.05f));
 				particle.setMaxAge(20);
-				if (colorModifier > -1){
+				if(colorModifier > -1) {
 					particle.setRGBColorF(((colorModifier >> 16) & 0xFF) / 255.0f, ((colorModifier >> 8) & 0xFF) / 255.0f, (colorModifier & 0xFF) / 255.0f);
 				}
 			}
@@ -286,13 +300,13 @@ public class Blink implements ISpellComponent{
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.ENDER);
 	}
 
-	private boolean CheckCoords(World world, int x, int y, int z){
+	private boolean CheckCoords(World world, int x, int y, int z) {
 
-		if (y < 0){
+		if(y < 0) {
 			return false;
 		}
 
@@ -302,39 +316,36 @@ public class Blink implements ISpellComponent{
 		AxisAlignedBB firstBlockBB = null;
 		AxisAlignedBB secondBlockBB = null;
 
-		if (firstBlock != null){
+		if(firstBlock != null) {
 			firstBlockBB = firstBlock.getCollisionBoundingBoxFromPool(world, x, y, z);
 		}
-		if (secondBlock != null){
+		if(secondBlock != null) {
 			secondBlockBB = secondBlock.getCollisionBoundingBoxFromPool(world, x, y, z);
 		}
 
-		if ((firstBlockBB == null && secondBlockBB == null)){
-			return true;
-		}
-		return false;
+		return firstBlockBB == null && secondBlockBB == null;
 	}
 
-	protected double GetTeleportDistance(ItemStack stack, EntityLivingBase caster, Entity target){
+	protected double GetTeleportDistance(ItemStack stack, EntityLivingBase caster, Entity target) {
 		double distance = 12;
 		return SpellUtils.instance.getModifiedDouble_Add(distance, stack, caster, target, caster.worldObj, 0, SpellModifiers.RANGE);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 5;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_PURPLE),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_PURPLE),
 				Items.ender_pearl
 		};
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0.05f;
 	}
 }

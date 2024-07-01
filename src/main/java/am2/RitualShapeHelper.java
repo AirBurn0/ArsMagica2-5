@@ -10,9 +10,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-public class RitualShapeHelper{
+public class RitualShapeHelper {
 	public MultiblockStructureDefinition ringedCross;
 	public MultiblockStructureDefinition hourglass;
 	public MultiblockStructureDefinition corruption;
@@ -20,84 +24,88 @@ public class RitualShapeHelper{
 
 	public static final RitualShapeHelper instance = new RitualShapeHelper();
 
-	private RitualShapeHelper(){
+	private RitualShapeHelper() {
 		init();
 	}
 
-	public ItemStack[] checkForRitual(IRitualInteraction interaction, World world, int x, int y, int z, boolean itemsMustMatch){
-		if (interaction.getRitualShape().checkStructure(world, x, y, z)){
+	public ItemStack[] checkForRitual(IRitualInteraction interaction, World world, int x, int y, int z, boolean itemsMustMatch) {
+		if(interaction.getRitualShape().checkStructure(world, x, y, z)) {
 			ItemStack[] reagents = interaction.getReagents();
-			if (reagents.length == 0)
+			if(reagents.length == 0) {
 				return reagents;
+			}
 
 			int r = interaction.getReagentSearchRadius();
 			ArrayList<EntityItem> items = (ArrayList<EntityItem>)world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(x - r, y, z - r, x + r + 1, y + 1, z + r + 1));
 
 			Collections.sort(items, new EntityItemComparator());
 
-			if (!itemsMustMatch || matchReagents((List<EntityItem>)items.clone(), reagents)){
+			if(!itemsMustMatch || matchReagents((List<EntityItem>)items.clone(), reagents)) {
 				ItemStack[] toReturn = new ItemStack[items.size()];
-				for (int i = 0; i < items.size(); ++i)
+				for(int i = 0; i < items.size(); ++i) {
 					toReturn[i] = items.get(i).getEntityItem();
+				}
 				return toReturn;
 			}
 		}
 		return null;
 	}
 
-	public ItemStack[] checkForRitual(IRitualInteraction interaction, World world, int x, int y, int z){
+	public ItemStack[] checkForRitual(IRitualInteraction interaction, World world, int x, int y, int z) {
 		return checkForRitual(interaction, world, x, y, z, true);
 	}
 
-	private boolean matchReagents(List<EntityItem> items, ItemStack[] check){
-		if (items.size() != check.length)
+	private boolean matchReagents(List<EntityItem> items, ItemStack[] check) {
+		if(items.size() != check.length) {
 			return false;
+		}
 
 		ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
-		for (ItemStack stack : check)
-			itemList.add(stack);
+		Collections.addAll(itemList, check);
 
 		Iterator it = itemList.iterator();
-		while (it.hasNext()){
+		while(it.hasNext()) {
 			ItemStack stack = (ItemStack)it.next();
 			Iterator eIt = items.iterator();
 			boolean found = false;
-			while (eIt.hasNext()){
+			while(eIt.hasNext()) {
 				EntityItem eItem = (EntityItem)eIt.next();
-				if (InventoryUtilities.compareItemStacks(eItem.getEntityItem(), stack, true, false, true, true)){
+				if(InventoryUtilities.compareItemStacks(eItem.getEntityItem(), stack, true, false, true, true)) {
 					found = true;
 					eIt.remove();
 					break;
 				}
 			}
-			if (!found)
+			if(!found) {
 				return false;
+			}
 		}
 
 		return true;
 	}
 
-	public void consumeRitualShape(IRitualInteraction interaction, World world, int x, int y, int z){
-		for (int i : interaction.getRitualShape().getMutexList()){
+	public void consumeRitualShape(IRitualInteraction interaction, World world, int x, int y, int z) {
+		for(int i: interaction.getRitualShape().getMutexList()) {
 			interaction.getRitualShape().removeMutex(i, world, x, y, z);
 		}
 	}
 
-	public void consumeRitualReagents(IRitualInteraction interaction, World world, int x, int y, int z){
+	public void consumeRitualReagents(IRitualInteraction interaction, World world, int x, int y, int z) {
 		int r = interaction.getReagentSearchRadius();
 		List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(x - r, y, z - r, x + r + 1, y + 1, z + r + 1));
-		for (EntityItem item : items)
+		for(EntityItem item: items) {
 			item.setDead();
+		}
 	}
 
-	public void init(){
+	public void init() {
 		initRingedCross();
 		initHourglass();
 		initCorruption();
 		initPurification();
 	}
 
-	private void initRingedCross(){
+	private void initRingedCross() {
 		ringedCross = new MultiblockStructureDefinition("ringedCross");
 		//center
 		//ringedCross.addAllowedBlock(0, 0, 0, BlocksCommonProxy.wizardChalk);
@@ -126,7 +134,7 @@ public class RitualShapeHelper{
 		ringedCross.addAllowedBlock(-2, 0, -1, BlocksCommonProxy.wizardChalk);
 	}
 
-	private void initHourglass(){
+	private void initHourglass() {
 		hourglass = new MultiblockStructureDefinition("hourglass");
 
 		StructureGroup eastWest = hourglass.createGroup("WE", 2);
@@ -168,7 +176,7 @@ public class RitualShapeHelper{
 
 	}
 
-	private void initCorruption(){
+	private void initCorruption() {
 		corruption = new MultiblockStructureDefinition("corruption");
 		StructureGroup NS = corruption.createGroup("NS", 2);
 		StructureGroup WE = corruption.createGroup("WE", 2);
@@ -224,7 +232,7 @@ public class RitualShapeHelper{
 		corruption.addAllowedBlock(WE, -1, 0, -3, BlocksCommonProxy.wizardChalk);
 	}
 
-	private void initPurification(){
+	private void initPurification() {
 		purification = new MultiblockStructureDefinition("purification");
 
 		purification.addAllowedBlock(-1, 0, 1, BlocksCommonProxy.wizardChalk);
@@ -266,16 +274,19 @@ public class RitualShapeHelper{
 		purification.addAllowedBlock(2, 0, -2, BlocksCommonProxy.candle);
 	}
 
-	private class EntityItemComparator implements Comparator<EntityItem>{
+	private class EntityItemComparator implements Comparator<EntityItem> {
 
 		@Override
-		public int compare(EntityItem o1, EntityItem o2){
-			if (o1.ticksExisted == o2.ticksExisted)
+		public int compare(EntityItem o1, EntityItem o2) {
+			if(o1.ticksExisted == o2.ticksExisted) {
 				return 0;
-			else if (o1.ticksExisted > o2.ticksExisted)
+			}
+			else if(o1.ticksExisted > o2.ticksExisted) {
 				return -1;
-			else
+			}
+			else {
 				return 1;
+			}
 		}
 
 	}

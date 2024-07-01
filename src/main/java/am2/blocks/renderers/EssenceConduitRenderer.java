@@ -9,23 +9,23 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 
-public class EssenceConduitRenderer extends TileEntitySpecialRenderer{
+public class EssenceConduitRenderer extends TileEntitySpecialRenderer {
 
-	private ResourceLocation powered;
-	private ResourceLocation unPowered;
+	private final ResourceLocation powered;
+	private final ResourceLocation unPowered;
 
-	public EssenceConduitRenderer(){
+	public EssenceConduitRenderer() {
 		model = new ModelEssenceConduit();
 
 		powered = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("essenceConduit.png"));
 		unPowered = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("essenceConduitUnpowered.png"));
 	}
 
-	public void renderAModelAt(TileEntityEssenceConduit tile, double d, double d1, double d2, float f){
+	public void renderAModelAt(TileEntityEssenceConduit tile, double d, double d1, double d2, float f) {
 
 		int i = 0;
 
-		if (tile.getWorldObj() != null){
+		if(tile.getWorldObj() != null) {
 			i = tile.getBlockMetadata();
 		}
 
@@ -34,31 +34,31 @@ public class EssenceConduitRenderer extends TileEntitySpecialRenderer{
 		int meta = i;
 
 
-		switch (meta){
-		case 1:
-			GL11.glTranslatef((float)d + 0.5f, (float)d1 - 0.5F, (float)d2 + 0.5F); //size
-			GL11.glRotatef(180, 1.0F, 0.0F, 0.0F); //rotate based on metadata
-			break;
-		case 0:
-		case 2:
-			GL11.glTranslatef((float)d + 0.5f, (float)d1 + 1.5F, (float)d2 + 0.5F); //size
-			break;
-		case 3:
-			GL11.glTranslatef((float)d + 0.5f, (float)d1 + 0.5F, (float)d2 - 0.5F); //size
-			GL11.glRotatef(270, 1.0F, 0.0F, 0.0F); //rotate based on metadata
-			break;
-		case 4:
-			GL11.glTranslatef((float)d + 0.5f, (float)d1 + 0.5F, (float)d2 + 1.5F); //size
-			GL11.glRotatef(90, 1.0F, 0.0F, 0.0F); //rotate based on metadata
-			break;
-		case 5:
-			GL11.glTranslatef((float)d - 0.5f, (float)d1 + 0.5F, (float)d2 + 0.5F); //size
-			GL11.glRotatef(90, 0.0F, 0.0F, 1.0F); //rotate based on metadata
-			break;
-		case 6:
-			GL11.glTranslatef((float)d + 1.5F, (float)d1 + 0.5F, (float)d2 + 0.5F); //size
-			GL11.glRotatef(270, 0.0F, 0.0F, 1.0F); //rotate based on metadata
-			break;
+		switch(meta) {
+			case 1:
+				GL11.glTranslatef((float)d + 0.5f, (float)d1 - 0.5F, (float)d2 + 0.5F); //size
+				GL11.glRotatef(180, 1.0F, 0.0F, 0.0F); //rotate based on metadata
+				break;
+			case 0:
+			case 2:
+				GL11.glTranslatef((float)d + 0.5f, (float)d1 + 1.5F, (float)d2 + 0.5F); //size
+				break;
+			case 3:
+				GL11.glTranslatef((float)d + 0.5f, (float)d1 + 0.5F, (float)d2 - 0.5F); //size
+				GL11.glRotatef(270, 1.0F, 0.0F, 0.0F); //rotate based on metadata
+				break;
+			case 4:
+				GL11.glTranslatef((float)d + 0.5f, (float)d1 + 0.5F, (float)d2 + 1.5F); //size
+				GL11.glRotatef(90, 1.0F, 0.0F, 0.0F); //rotate based on metadata
+				break;
+			case 5:
+				GL11.glTranslatef((float)d - 0.5f, (float)d1 + 0.5F, (float)d2 + 0.5F); //size
+				GL11.glRotatef(90, 0.0F, 0.0F, 1.0F); //rotate based on metadata
+				break;
+			case 6:
+				GL11.glTranslatef((float)d + 1.5F, (float)d1 + 0.5F, (float)d2 + 0.5F); //size
+				GL11.glRotatef(270, 0.0F, 0.0F, 1.0F); //rotate based on metadata
+				break;
 		}
 
 
@@ -75,10 +75,10 @@ public class EssenceConduitRenderer extends TileEntitySpecialRenderer{
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f){
+	public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f) {
 		renderAModelAt((TileEntityEssenceConduit)tileentity, d, d1, d2, f); //where to render
 	}
 
-	private ModelEssenceConduit model;
+	private final ModelEssenceConduit model;
 
 }

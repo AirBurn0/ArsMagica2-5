@@ -8,25 +8,25 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class CandleRenderer extends TileEntitySpecialRenderer{
+public class CandleRenderer extends TileEntitySpecialRenderer {
 
-	private ModelCandle candle;
-	private ResourceLocation rLoc;
+	private final ModelCandle candle;
+	private final ResourceLocation rLoc;
 
-	public CandleRenderer(){
+	public CandleRenderer() {
 		candle = new ModelCandle();
 		rLoc = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("candle.png"));
 	}
 
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double d0, double d1,
-								   double d2, float f){
-		if (tileentity instanceof TileEntityCandle){
+								   double d2, float f) {
+		if(tileentity instanceof TileEntityCandle) {
 			renderCandle((TileEntityCandle)tileentity, d0, d1, d2, f);
 		}
 	}
 
-	private void renderCandle(TileEntityCandle tileentity, double d, double d1, double d2, float var8){
+	private void renderCandle(TileEntityCandle tileentity, double d, double d1, double d2, float var8) {
 		bindTexture(rLoc);
 		GL11.glPushMatrix(); //start
 

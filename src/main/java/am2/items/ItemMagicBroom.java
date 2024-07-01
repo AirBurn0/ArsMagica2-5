@@ -11,19 +11,19 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 
-public class ItemMagicBroom extends ArsMagicaItem{
+public class ItemMagicBroom extends ArsMagicaItem {
 
-	public ItemMagicBroom(){
+	public ItemMagicBroom() {
 		super();
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ){
-		if (!world.isRemote){
+	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+		if(!world.isRemote) {
 			MovingObjectPosition mop = this.getMovingObjectPositionFromPlayer(world, player, true);
-			if (mop != null && mop.typeOfHit == MovingObjectType.BLOCK){
+			if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK) {
 				TileEntity te = world.getTileEntity(mop.blockX, mop.blockY, mop.blockZ);
-				if (te instanceof IInventory){
+				if(te instanceof IInventory) {
 					EntityBroom broom = new EntityBroom(world);
 					broom.setPosition(player.posX, player.posY, player.posZ);
 					broom.setChestLocation(new AMVector3(mop.blockX, mop.blockY, mop.blockZ));
@@ -31,7 +31,7 @@ public class ItemMagicBroom extends ArsMagicaItem{
 
 					stack.stackSize--;
 
-					if (stack.stackSize == 0){
+					if(stack.stackSize == 0) {
 						player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
 					}
 					return true;
@@ -42,6 +42,6 @@ public class ItemMagicBroom extends ArsMagicaItem{
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 	}
 }

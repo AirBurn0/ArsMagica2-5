@@ -12,16 +12,16 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class RenderRiftStorage extends Render{
+public class RenderRiftStorage extends Render {
 
 	private static final ResourceLocation rift = new ResourceLocation("arsmagica2", ResourceManager.getMobTexturePath("Rift.png"));
 	private static final ResourceLocation rift2 = new ResourceLocation("arsmagica2", ResourceManager.getMobTexturePath("Rift2.png"));
 
-	public RenderRiftStorage(){
+	public RenderRiftStorage() {
 	}
 
 	public void renderRift(EntityRiftStorage entityRiftStorage, double d, double d1, double d2,
-						   float f, float f1){
+						   float f, float f1) {
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)d, (float)d1, (float)d2);
@@ -67,7 +67,7 @@ public class RenderRiftStorage extends Render{
 		GL11.glPopMatrix();
 	}
 
-	private void renderSprite(Tessellator tessellator){
+	private void renderSprite(Tessellator tessellator) {
 
 		float TLX = 0;
 		float BRX = 1;
@@ -87,12 +87,12 @@ public class RenderRiftStorage extends Render{
 		tessellator.draw();
 	}
 
-	public void doRender(Entity entity, double d, double d1, double d2, float f, float f1){
+	public void doRender(Entity entity, double d, double d1, double d2, float f, float f1) {
 		renderRift((EntityRiftStorage)entity, d, d1, d2, f, f1);
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(Entity entity){
+	protected ResourceLocation getEntityTexture(Entity entity) {
 		return rift;
 	}
 

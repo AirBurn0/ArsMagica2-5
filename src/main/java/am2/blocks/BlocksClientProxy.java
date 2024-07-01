@@ -5,7 +5,7 @@ import am2.blocks.tileentities.*;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
-public class BlocksClientProxy extends BlocksCommonProxy{
+public class BlocksClientProxy extends BlocksCommonProxy {
 	public static TileEntityEssenceConduit essenceConduitInventoryRender;
 	public static TileEntityObelisk obeliskInventoryRender;
 	public static TileEntityCelestialPrism celestialPrismInventoryRender;
@@ -28,7 +28,7 @@ public class BlocksClientProxy extends BlocksCommonProxy{
 	public static TileEntityFlickerHabitat elementalAttunerInventoryRenderer;
 	public static TileEntityOtherworldAura otherworldAuraInventoryRenderer;
 
-	public BlocksClientProxy(){
+	public BlocksClientProxy() {
 		blockRenderID = RenderingRegistry.getNextAvailableRenderId();
 		commonBlockRenderID = RenderingRegistry.getNextAvailableRenderId();
 
@@ -55,7 +55,7 @@ public class BlocksClientProxy extends BlocksCommonProxy{
 	}
 
 	@Override
-	public void registerRenderInformation(){
+	public void registerRenderInformation() {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEssenceConduit.class, new EssenceConduitRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityObelisk.class, new EssenceGeneratorRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCalefactor.class, new CalefactorRenderer());

@@ -2,21 +2,28 @@ package am2.entities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.*;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.ai.EntityAIBreakDoor;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityEarthElemental extends EntityMob{
+public class EntityEarthElemental extends EntityMob {
 
-	public EntityEarthElemental(World world){
+	public EntityEarthElemental(World world) {
 		super(world);
 		setSize(1F, 2F);
 		initAI();
 	}
 
-	private void initAI(){
+	private void initAI() {
 		this.getNavigator().setBreakDoors(true);
 		this.getNavigator().setAvoidSun(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
@@ -30,53 +37,54 @@ public class EntityEarthElemental extends EntityMob{
 	}
 
 	@Override
-	protected boolean isAIEnabled(){
+	protected boolean isAIEnabled() {
 		return true;
 	}
 
 	@Override
-	protected void applyEntityAttributes(){
+	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(12);
 	}
 
 	@Override
-	public int getTotalArmorValue(){
+	public int getTotalArmorValue() {
 		return 14;
 	}
 
-	protected float MovementSpeed(){
+	protected float MovementSpeed() {
 		return 0.4f;
 	}
 
 	@Override
-	protected String getLivingSound(){
+	protected String getLivingSound() {
 		return "golem_living";
 	}
 
 	@Override
-	protected String getHurtSound(){
+	protected String getHurtSound() {
 		return "golem_hurt";
 	}
 
 	@Override
-	protected String getDeathSound(){
+	protected String getDeathSound() {
 		return "golem_death";
 	}
 
 	@Override
-	protected void attackEntity(Entity entity, float f){
-		if (f < 1.5f && entity.boundingBox.maxY >= boundingBox.minY && entity.boundingBox.minY <= boundingBox.maxY){
-			if (onGround){
+	protected void attackEntity(Entity entity, float f) {
+		if(f < 1.5f && entity.boundingBox.maxY >= boundingBox.minY && entity.boundingBox.minY <= boundingBox.maxY) {
+			if(onGround) {
 				entity.attackEntityFrom(DamageSource.causeMobDamage(this), 1);
 			}
 		}
 	}
 
 	@Override
-	public boolean getCanSpawnHere(){
-		if (!SpawnBlacklists.entityCanSpawnHere(this.posX, this.posZ, worldObj, this))
+	public boolean getCanSpawnHere() {
+		if(!SpawnBlacklists.entityCanSpawnHere(this.posX, this.posZ, worldObj, this)) {
 			return false;
+		}
 		return super.getCanSpawnHere();
 	}
 }

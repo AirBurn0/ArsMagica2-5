@@ -11,39 +11,39 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class KeystoneReceptacleRenderer extends TileEntitySpecialRenderer{
+public class KeystoneReceptacleRenderer extends TileEntitySpecialRenderer {
 
 	private final ModelKeystoneRecepticle model;
 	private static final ResourceLocation portal = new ResourceLocation("textures/atlas/items.png");
 	private final ResourceLocation rLoc;
 
-	public KeystoneReceptacleRenderer(){
+	public KeystoneReceptacleRenderer() {
 		model = new ModelKeystoneRecepticle();
 
 		rLoc = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("KeystoneReceptacle.png"));
 	}
 
-	public void renderAModelAt(TileEntityKeystoneRecepticle tile, double d, double d1, double d2, float f){
+	public void renderAModelAt(TileEntityKeystoneRecepticle tile, double d, double d1, double d2, float f) {
 		int i = 0;
 
-		if (tile.getWorldObj() != null){
+		if(tile.getWorldObj() != null) {
 			i = tile.getBlockMetadata() + 1;
 		}
 		int j = 0;
 
-		if (i == 0 || i == 4){
+		if(i == 0 || i == 4) {
 			j = 0;
 		}
 
-		if (i == 1){
+		if(i == 1) {
 			j = 90;
 		}
 
-		if (i == 2){
+		if(i == 2) {
 			j = 180;
 		}
 
-		if (i == 3){
+		if(i == 3) {
 			j = 270;
 		}
 
@@ -55,7 +55,7 @@ public class KeystoneReceptacleRenderer extends TileEntitySpecialRenderer{
 		model.renderModel(0.0625F); //renders and yes 0.0625 is a random number
 		GL11.glPopMatrix(); //end	
 
-		if (tile.isActive()){
+		if(tile.isActive()) {
 			bindTexture(portal);
 
 			GL11.glPushMatrix();
@@ -84,7 +84,7 @@ public class KeystoneReceptacleRenderer extends TileEntitySpecialRenderer{
 		}
 	}
 
-	private void renderArsMagicaEffect(Tessellator tessellator){
+	private void renderArsMagicaEffect(Tessellator tessellator) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		renderSprite(tessellator);
@@ -92,9 +92,9 @@ public class KeystoneReceptacleRenderer extends TileEntitySpecialRenderer{
 		GL11.glPopMatrix();
 	}
 
-	private void renderSprite(Tessellator tessellator){
+	private void renderSprite(Tessellator tessellator) {
 
-		IIcon IIcon = AMGuiIcons.instance.gatewayPortal;
+		IIcon IIcon = AMGuiIcons.gatewayPortal;
 
 		float min_u = IIcon.getMinU();
 		float max_u = IIcon.getMaxU();
@@ -126,7 +126,7 @@ public class KeystoneReceptacleRenderer extends TileEntitySpecialRenderer{
 
 	@Override
 	public void renderTileEntityAt(TileEntity var1, double var2, double var4,
-								   double var6, float var8){
+								   double var6, float var8) {
 
 		renderAModelAt((TileEntityKeystoneRecepticle)var1, var2, var4, var6, var8);
 

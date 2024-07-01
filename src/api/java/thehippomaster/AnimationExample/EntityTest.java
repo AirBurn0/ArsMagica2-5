@@ -1,7 +1,5 @@
 package thehippomaster.AnimationExample;
 
-import thehippomaster.AnimationAPI.AnimationAPI;
-import thehippomaster.AnimationAPI.IAnimatedEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -14,12 +12,14 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import thehippomaster.AnimationAPI.AnimationAPI;
+import thehippomaster.AnimationAPI.IAnimatedEntity;
 
 public class EntityTest extends EntityCreature implements IAnimals, IAnimatedEntity {
-	
+
 	private int animID;
 	private int animTick;
-	
+
 	public EntityTest(World world) {
 		super(world);
 		animID = 0;
@@ -33,18 +33,18 @@ public class EntityTest extends EntityCreature implements IAnimals, IAnimatedEnt
 		tasks.addTask(5, new EntityAILookIdle(this));
 		targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 	}
-	
+
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(16D); //max health
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.24D); //move speed
 	}
-	
+
 	public boolean isAIEnabled() {
 		return true;
 	}
-	
+
 	/*
 	 * Implemented method from IAnimatedEntity.
 	 * Set the animID field to the id in the parameter.
@@ -52,7 +52,7 @@ public class EntityTest extends EntityCreature implements IAnimals, IAnimatedEnt
 	public void setAnimID(int id) {
 		animID = id;
 	}
-	
+
 	/*
 	 * Implemented method from IAnimatedEntity.
 	 * Set the animTick field to the tick in the parameter.
@@ -60,7 +60,7 @@ public class EntityTest extends EntityCreature implements IAnimals, IAnimatedEnt
 	public void setAnimTick(int tick) {
 		animTick = tick;
 	}
-	
+
 	/*
 	 * Implemented method from IAnimatedEntity.
 	 * Return the animID.
@@ -68,7 +68,7 @@ public class EntityTest extends EntityCreature implements IAnimals, IAnimatedEnt
 	public int getAnimID() {
 		return animID;
 	}
-	
+
 	/*
 	 * Implemented method from IAnimatedEntity.
 	 * Return the animTick.
@@ -76,15 +76,19 @@ public class EntityTest extends EntityCreature implements IAnimals, IAnimatedEnt
 	public int getAnimTick() {
 		return animTick;
 	}
-	
+
 	public void onUpdate() {
 		super.onUpdate();
 		//increment the animTick if there is an animation playing
-		if(animID != 0) animTick++;
+		if(animID != 0) {
+			animTick++;
+		}
 	}
-	
+
 	public boolean attackEntityAsMob(Entity entity) {
-		if(animID == 0) AnimationAPI.sendAnimPacket(this, 1);
+		if(animID == 0) {
+			AnimationAPI.sendAnimPacket(this, 1);
+		}
 		return true;
 	}
 }

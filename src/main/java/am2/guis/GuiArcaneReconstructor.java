@@ -8,14 +8,14 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class GuiArcaneReconstructor extends GuiContainer{
+public class GuiArcaneReconstructor extends GuiContainer {
 
-	private TileEntityArcaneReconstructor reconstructorInventory;
+	private final TileEntityArcaneReconstructor reconstructorInventory;
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("arcaneReconstructorGUI.png"));
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;
@@ -23,7 +23,7 @@ public class GuiArcaneReconstructor extends GuiContainer{
 		drawTexturedModalRect(l, i1, 0, 0, xSize, ySize);
 	}
 
-	public GuiArcaneReconstructor(InventoryPlayer inventoryplayer, TileEntityArcaneReconstructor reconstructorEntity){
+	public GuiArcaneReconstructor(InventoryPlayer inventoryplayer, TileEntityArcaneReconstructor reconstructorEntity) {
 		super(new ContainerArcaneReconstructor(inventoryplayer, reconstructorEntity));
 		reconstructorInventory = reconstructorEntity;
 		xSize = 176;
@@ -31,6 +31,6 @@ public class GuiArcaneReconstructor extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2){
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 	}
 }

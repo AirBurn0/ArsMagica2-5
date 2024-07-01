@@ -15,8 +15,8 @@ import org.lwjgl.opengl.GL11;
 import java.util.Calendar;
 
 @SideOnly(Side.CLIENT)
-public class ModelHecate extends ModelBase{
-	private ModelSantaHat hat;
+public class ModelHecate extends ModelBase {
+	private final ModelSantaHat hat;
 
 	private static final ResourceLocation hatLoc = new ResourceLocation("arsmagica2", ResourceManager.getMobTexturePath("SantaHat.png"));
 
@@ -53,7 +53,7 @@ public class ModelHecate extends ModelBase{
 	ModelRenderer H1;
 
 
-	public ModelHecate(){
+	public ModelHecate() {
 		hat = new ModelSantaHat();
 
 		setupUVMapping();
@@ -62,7 +62,7 @@ public class ModelHecate extends ModelBase{
 		setupHierarchy();
 	}
 
-	private void setupHierarchy(){
+	private void setupHierarchy() {
 		//left arm
 		//********************************************
 		//left outer finger
@@ -112,7 +112,7 @@ public class ModelHecate extends ModelBase{
 		Main.addChild(Head);
 	}
 
-	private void setupUVMapping(){
+	private void setupUVMapping() {
 		textureWidth = 64;
 		textureHeight = 32;
 		setTextureOffset("LeftShoulder.LeftArmUpper", 0, 8);
@@ -144,7 +144,7 @@ public class ModelHecate extends ModelBase{
 		setTextureOffset("H1.Face", 0, 0);
 	}
 
-	private void initRenderers(){
+	private void initRenderers() {
 		Main = new ModelRenderer(this, "Main");
 		Main.setRotationPoint(0F, 0F, 0F);
 		setRotation(Main, 0F, 0F, 0F);
@@ -281,7 +281,7 @@ public class ModelHecate extends ModelBase{
 		H1.mirror = true;
 	}
 
-	private void addBoxes(){
+	private void addBoxes() {
 		//body
 		Main.addBox("Body", -4F, 0F, -1.5F, 8, 10, 4);
 
@@ -319,18 +319,20 @@ public class ModelHecate extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
 		GL11.glPushMatrix();
 
-		if (((EntityHecate)entity).isChild()){
+		if(((EntityHecate)entity).isChild()) {
 			GL11.glScalef(0.5f, 0.5f, 0.5f);
 		}
 		Main.render(f5);
 
-		if (Calendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) >= 23 && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) <= 27){
+		if(Calendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER && Calendar.getInstance()
+																					  .get(Calendar.DAY_OF_MONTH) >= 23 && Calendar.getInstance()
+																																   .get(Calendar.DAY_OF_MONTH) <= 27) {
 			GL11.glScalef(0.5f, 0.5f, 0.5f);
 			GL11.glTranslatef(0, -0.1f, 0.1f);
 			Minecraft.getMinecraft().renderEngine.bindTexture(hatLoc);
@@ -340,28 +342,28 @@ public class ModelHecate extends ModelBase{
 		GL11.glPopMatrix();
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;
 	}
 
-	public void setMainRotationAngle(float angle){
+	public void setMainRotationAngle(float angle) {
 		//base this on movement speed
 		Main.rotateAngleX = angle;
 
 		setBaseRotation();
 	}
 
-	public void setLeftArmRotationOffset(float angle){
+	public void setLeftArmRotationOffset(float angle) {
 		LeftShoulder.rotateAngleX += angle;
 	}
 
-	public void setRightArmRotationOffset(float angle){
+	public void setRightArmRotationOffset(float angle) {
 		RightShoulder.rotateAngleX += angle;
 	}
 
-	private void setBaseRotation(){
+	private void setBaseRotation() {
 		Head.rotateAngleX = -Main.rotateAngleX;
 
 		LeftShoulder.rotateAngleX = (float)Math.toRadians(-80) - Main.rotateAngleX;

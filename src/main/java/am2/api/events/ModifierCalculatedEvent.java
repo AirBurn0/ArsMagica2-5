@@ -6,11 +6,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 
 /**
- * Called whenever a spell's modified variable is calculated
- *
- * @author Mithion
- */
-public class ModifierCalculatedEvent extends Event{
+ Called whenever a spell's modified variable is calculated
+
+ @author Mithion */
+public class ModifierCalculatedEvent extends Event {
 	//The attribute being modified
 	public final SpellModifiers attribute;
 	//The caster of the spell
@@ -25,12 +24,12 @@ public class ModifierCalculatedEvent extends Event{
 	//the final modified value of the variable
 	public double modifiedValue;
 
-	public enum OperationType{
+	public enum OperationType {
 		ADD,
 		MULTIPLY
 	}
 
-	public ModifierCalculatedEvent(ItemStack spell, EntityLivingBase caster, SpellModifiers attribute, double initialValue, double modifiedValue, OperationType operation){
+	public ModifierCalculatedEvent(ItemStack spell, EntityLivingBase caster, SpellModifiers attribute, double initialValue, double modifiedValue, OperationType operation) {
 		this.spell = spell;
 		this.caster = caster;
 		this.attribute = attribute;

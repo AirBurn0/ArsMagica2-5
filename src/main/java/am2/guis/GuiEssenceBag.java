@@ -9,13 +9,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class GuiEssenceBag extends GuiContainer{
+public class GuiEssenceBag extends GuiContainer {
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("essenceBagGUI.png"));
 	private static final ResourceLocation extras = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("spellBookGui_2.png"));
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;
@@ -23,7 +23,7 @@ public class GuiEssenceBag extends GuiContainer{
 		drawTexturedModalRect(l, i1, 0, 0, xSize, ySize);
 	}
 
-	public GuiEssenceBag(InventoryPlayer inventoryplayer, ItemStack spellBookStack, InventoryEssenceBag inventorybag){
+	public GuiEssenceBag(InventoryPlayer inventoryplayer, ItemStack spellBookStack, InventoryEssenceBag inventorybag) {
 		super(new ContainerEssenceBag(inventoryplayer, spellBookStack, inventorybag));
 		bagInventory = inventorybag;
 		xSize = 176;
@@ -31,7 +31,7 @@ public class GuiEssenceBag extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2){
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		mc.renderEngine.bindTexture(extras);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		//special slot
@@ -46,10 +46,11 @@ public class GuiEssenceBag extends GuiContainer{
 	}
 
 	@Override
-	protected void keyTyped(char par1, int par2){
-		if (!Character.isDigit(par1))
+	protected void keyTyped(char par1, int par2) {
+		if(!Character.isDigit(par1)) {
 			super.keyTyped(par1, par2);
+		}
 	}
 
-	private InventoryEssenceBag bagInventory;
+	private final InventoryEssenceBag bagInventory;
 }

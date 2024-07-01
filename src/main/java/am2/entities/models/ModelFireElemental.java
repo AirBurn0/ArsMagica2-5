@@ -5,8 +5,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBiped;
 
 @SideOnly(Side.CLIENT)
-public class ModelFireElemental extends ModelBiped{
-	public ModelFireElemental(){
+public class ModelFireElemental extends ModelBiped {
+	public ModelFireElemental() {
 		super();
 		this.heldItemRight = 1;
 	}

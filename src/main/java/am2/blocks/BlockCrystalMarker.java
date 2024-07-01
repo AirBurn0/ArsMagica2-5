@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class BlockCrystalMarker extends BlockContainer{
+public class BlockCrystalMarker extends BlockContainer {
 
 	public static final int META_IN = 0;
 	public static final int META_OUT = 1;
@@ -58,37 +58,37 @@ public class BlockCrystalMarker extends BlockContainer{
 			"cm_spellExport"
 	};
 
-	protected BlockCrystalMarker(){
+	protected BlockCrystalMarker() {
 		super(Material.glass);
 	}
 
-	private int getCrystalTier(int meta){
-		switch (meta){
-		case META_IN:
-		case META_OUT:
-		case META_FINAL_DEST:
-			return 0;
-		case META_LIKE_EXPORT:
-		case META_SET_EXPORT:
-		case META_SET_IMPORT:
-			return 1;
-		case META_REGULATE_EXPORT:
-		case META_REGULATE_MULTI:
-			return 2;
-		case META_SPELL_EXPORT:
-			return 3;
+	private int getCrystalTier(int meta) {
+		switch(meta) {
+			case META_IN:
+			case META_OUT:
+			case META_FINAL_DEST:
+				return 0;
+			case META_LIKE_EXPORT:
+			case META_SET_EXPORT:
+			case META_SET_IMPORT:
+				return 1;
+			case META_REGULATE_EXPORT:
+			case META_REGULATE_MULTI:
+				return 2;
+			case META_SPELL_EXPORT:
+				return 3;
 		}
 		return 0;
 	}
 
 	@Override
-	public int getLightValue(IBlockAccess world, int x, int y, int z){
+	public int getLightValue(IBlockAccess world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		return 3 + getCrystalTier(meta);
 	}
 
 	@Override
-	public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List par3List){
+	public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this, 1, META_IN));
 		par3List.add(new ItemStack(this, 1, META_OUT));
 		par3List.add(new ItemStack(this, 1, META_LIKE_EXPORT));
@@ -101,37 +101,37 @@ public class BlockCrystalMarker extends BlockContainer{
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i){
+	public TileEntity createNewTileEntity(World world, int i) {
 		int meta = world.getBlockMetadata(this.xCoord, this.yCoord, this.zCoord);
-		if (meta == META_SPELL_EXPORT)
+		if(meta == META_SPELL_EXPORT) {
 			return new TileEntityCrystalMarkerSpellExport(meta);
+		}
 		return new TileEntityCrystalMarker(meta);
 	}
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z,
-									EntityPlayer player, int facing, float impx, float impy, float impz){
+									EntityPlayer player, int facing, float impx, float impy, float impz) {
 		int operandType = world.getBlockMetadata(x, y, z);
 
-		if (player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == ItemsCommonProxy.crystalWrench){
+		if(player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem()
+															.getItem() == ItemsCommonProxy.crystalWrench) {
 			player.swingItem();
 
-			if (world.isRemote){
-				return true;
-			}
-
-			return false;
-		}else if (player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == ItemsCommonProxy.spellStaffMagitech){
+			return world.isRemote;
+		}
+		else if(player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem()
+																 .getItem() == ItemsCommonProxy.spellStaffMagitech) {
 			//if we're here, we are changing the crystal's priority level
 			//swing the item, first off.
 			player.swingItem();
 			//do nothing on client worlds other than this.
-			if (world.isRemote){
+			if(world.isRemote) {
 				return true;
 			}
 
 			//input node?  Nothing more to do here than notify the player.
-			if (operandType == META_IN){
+			if(operandType == META_IN) {
 				player.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("am2.tooltip.noPriIn")));
 				return false;
 			}
@@ -140,7 +140,7 @@ public class BlockCrystalMarker extends BlockContainer{
 			TileEntityCrystalMarker crystalMarkerTE = GetTileEntity(world, x, y, z);
 			TileEntityFlickerHabitat elementalAttunerTE = null;
 
-			if (crystalMarkerTE != null){
+			if(crystalMarkerTE != null) {
 				//store the old priority for use later
 				int oldPriority = crystalMarkerTE.getPriority();
 				//cycle the priority (increment with limits)
@@ -148,13 +148,13 @@ public class BlockCrystalMarker extends BlockContainer{
 				//resolve the attached attuner for this crystal
 				AMVector3 elementalAttunerVector = crystalMarkerTE.getElementalAttuner();
 
-				if (elementalAttunerVector != null){
+				if(elementalAttunerVector != null) {
 					//if we are here, there is an attached attuner to this marker.  Resolve the location into the tile entity.
 					elementalAttunerTE = GetElementalAttunerTileEntity(world,
 							(int)elementalAttunerVector.x,
 							(int)elementalAttunerVector.y,
 							(int)elementalAttunerVector.z);
-					if (elementalAttunerTE != null){
+					if(elementalAttunerTE != null) {
 						//Notify the attuner that this crystal now has a new priority
 						elementalAttunerTE.switchMarkerPriority(new AMVector3(x, y, z), oldPriority, crystalMarkerTE.getPriority());
 					}
@@ -169,7 +169,8 @@ public class BlockCrystalMarker extends BlockContainer{
 			}
 
 			return false;
-		}else if (operandType == this.META_SET_EXPORT || operandType == this.META_REGULATE_EXPORT || operandType == this.META_REGULATE_MULTI || operandType == this.META_SET_IMPORT){
+		}
+		else if(operandType == META_SET_EXPORT || operandType == META_REGULATE_EXPORT || operandType == META_REGULATE_MULTI || operandType == META_SET_IMPORT) {
 			FMLNetworkHandler.openGui(player, AMCore.instance, ArsMagicaGuiIdList.GUI_CRYSTAL_MARKER, world, x, y, z);
 			return true;
 		}
@@ -180,7 +181,7 @@ public class BlockCrystalMarker extends BlockContainer{
 
 	@Override
 	public int onBlockPlaced(World world, int x, int y, int z, int side,
-							 float hitX, float hitY, float hitZ, int meta){
+							 float hitX, float hitY, float hitZ, int meta) {
 		facingHolder = side;
 		this.xCoord = x;
 		this.yCoord = y;
@@ -192,10 +193,10 @@ public class BlockCrystalMarker extends BlockContainer{
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z,
-								EntityLivingBase player, ItemStack itemStack){
+								EntityLivingBase player, ItemStack itemStack) {
 		TileEntity te = world.getTileEntity(x, y, z);
 
-		if (te != null && te instanceof TileEntityCrystalMarker){
+		if(te != null && te instanceof TileEntityCrystalMarker) {
 			((TileEntityCrystalMarker)te).setFacing(facingHolder);
 
 			Block attachedTo = null;
@@ -205,28 +206,28 @@ public class BlockCrystalMarker extends BlockContainer{
 			double maxx = 1;
 			double maxy = 1;
 			double maxz = 1;
-			switch (facingHolder){
-			case 0: //Bottom, Inventory is above
-				attachedTo = world.getBlock(x, y + 1, z);
-				break;
-			case 1: //Top, Inventory is below
-				attachedTo = world.getBlock(x, y - 1, z);
-				break;
-			case 2: //North, Inventory is to the south
-				attachedTo = world.getBlock(x, y, z + 1);
-				break;
-			case 3: //South, Inventory is to the north
-				attachedTo = world.getBlock(x, y, z - 1);
-				break;
-			case 4: //West, Inventory is to the east
-				attachedTo = world.getBlock(x + 1, y, z);
-				break;
-			case 5: //East, Inventory is to the west
-				attachedTo = world.getBlock(x - 1, y, z);
-				break;
+			switch(facingHolder) {
+				case 0: //Bottom, Inventory is above
+					attachedTo = world.getBlock(x, y + 1, z);
+					break;
+				case 1: //Top, Inventory is below
+					attachedTo = world.getBlock(x, y - 1, z);
+					break;
+				case 2: //North, Inventory is to the south
+					attachedTo = world.getBlock(x, y, z + 1);
+					break;
+				case 3: //South, Inventory is to the north
+					attachedTo = world.getBlock(x, y, z - 1);
+					break;
+				case 4: //West, Inventory is to the east
+					attachedTo = world.getBlock(x + 1, y, z);
+					break;
+				case 5: //East, Inventory is to the west
+					attachedTo = world.getBlock(x - 1, y, z);
+					break;
 			}
 
-			if (attachedTo != null){
+			if(attachedTo != null) {
 				minx = attachedTo.getBlockBoundsMinX();
 				miny = attachedTo.getBlockBoundsMinY();
 				minz = attachedTo.getBlockBoundsMinZ();
@@ -240,35 +241,37 @@ public class BlockCrystalMarker extends BlockContainer{
 	}
 
 	private TileEntityCrystalMarker GetTileEntity(World world, int x, int y,
-												  int z){
+												  int z) {
 		TileEntity te = world.getTileEntity(x, y, z);
 
-		if (te != null && te instanceof TileEntityCrystalMarker){
+		if(te != null && te instanceof TileEntityCrystalMarker) {
 			return (TileEntityCrystalMarker)te;
-		}else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y, int z, Block oldBlock, int oldMeta){
+	public void breakBlock(World world, int x, int y, int z, Block oldBlock, int oldMeta) {
 		TileEntityCrystalMarker crystalMarkerTE = GetTileEntity(world, x, y, z);
 		TileEntityFlickerHabitat elementalAttunerTE = null;
 
-		if (crystalMarkerTE != null){
+		if(crystalMarkerTE != null) {
 			AMVector3 elementalAttunerVector = crystalMarkerTE.getElementalAttuner();
 
-			if (elementalAttunerVector != null){
+			if(elementalAttunerVector != null) {
 				elementalAttunerTE = GetElementalAttunerTileEntity(world,
 						(int)elementalAttunerVector.x,
 						(int)elementalAttunerVector.y,
 						(int)elementalAttunerVector.z);
-				if (elementalAttunerTE != null){
+				if(elementalAttunerTE != null) {
 					int operandType = world.getBlockMetadata(x, y, z);
 
-					if (operandType == META_IN){
+					if(operandType == META_IN) {
 						elementalAttunerTE.removeInMarkerLocation(x, y, z);
-					}else if (isOutputMarker(operandType)){
+					}
+					else if(isOutputMarker(operandType)) {
 						elementalAttunerTE.removeOutMarkerLocation(x, y, z);
 					}
 				}
@@ -279,104 +282,106 @@ public class BlockCrystalMarker extends BlockContainer{
 	}
 
 	private TileEntityFlickerHabitat GetElementalAttunerTileEntity(
-			World world, int x, int y, int z){
+			World world, int x, int y, int z) {
 		TileEntity te = world.getTileEntity(x, y, z);
 
-		if (te != null && te instanceof TileEntityFlickerHabitat){
+		if(te != null && te instanceof TileEntityFlickerHabitat) {
 			return (TileEntityFlickerHabitat)te;
-		}else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public int getRenderType(){
+	public int getRenderType() {
 		return BlocksCommonProxy.blockRenderID;
 	}
 
 	@Override
-	public boolean renderAsNormalBlock(){
+	public boolean renderAsNormalBlock() {
 		return false;
 	}
 
 	@Override
-	public boolean isOpaqueCube(){
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess par1iBlockAccess,
-										   int x, int y, int z){
+										   int x, int y, int z) {
 		TileEntity te = par1iBlockAccess.getTileEntity(x, y, z);
 		TileEntityCrystalMarker cm = (TileEntityCrystalMarker)te;
 		int facing = cm.getFacing();
 
 
-		switch (facing){
-		case 0: //Bottom, Inventory is above
-			this.setBlockBounds(0.35f, (float)((1 + cm.GetConnectedBoundingBox().minY)) - 0.1f, 0.32f, 0.65f, (float)((1 + cm.GetConnectedBoundingBox().minY)), 0.68f);
-			break;
-		case 1: //Top, Inventory is below
-			this.setBlockBounds(0.35f, (float)(-1 * (1 - cm.GetConnectedBoundingBox().maxY)), 0.3f, 0.65f, (float)(-1 * (1 - cm.GetConnectedBoundingBox().maxY)) + 0.1f, 0.7f);
-			break;
-		case 2: //North, Inventory is to the south
-			this.setBlockBounds(0.35f, 0.32f, (float)(1 + (1 - cm.GetConnectedBoundingBox().maxZ)) - 0.1f, 0.65f, 0.68f, (float)(1 + (1 - cm.GetConnectedBoundingBox().maxZ)));
-			break;
-		case 3: //South, Inventory is to the north
-			this.setBlockBounds(0.35f, 0.32f, (float)(0 - cm.GetConnectedBoundingBox().minZ), 0.65f, 0.68f, (float)(0 - cm.GetConnectedBoundingBox().minZ) + 0.1f);
-			break;
-		case 4: //West, Inventory is to the east
-			this.setBlockBounds((float)(1 + cm.GetConnectedBoundingBox().minX) - 0.1f, 0.32f, 0.35f, (float)(1 + cm.GetConnectedBoundingBox().minX), 0.68f, 0.65f);
-			break;
-		case 5: //East, Inventory is to the west
-			this.setBlockBounds((float)(-1 * (1 - cm.GetConnectedBoundingBox().maxX)), 0.32f, 0.35f, (float)(-1 * (1 - cm.GetConnectedBoundingBox().maxX)) + 0.1f, 0.68f, 0.65f);
-			break;
+		switch(facing) {
+			case 0: //Bottom, Inventory is above
+				this.setBlockBounds(0.35f, (float)((1 + cm.GetConnectedBoundingBox().minY)) - 0.1f, 0.32f, 0.65f, (float)((1 + cm.GetConnectedBoundingBox().minY)), 0.68f);
+				break;
+			case 1: //Top, Inventory is below
+				this.setBlockBounds(0.35f, (float)(-1 * (1 - cm.GetConnectedBoundingBox().maxY)), 0.3f, 0.65f, (float)(-1 * (1 - cm.GetConnectedBoundingBox().maxY)) + 0.1f, 0.7f);
+				break;
+			case 2: //North, Inventory is to the south
+				this.setBlockBounds(0.35f, 0.32f, (float)(1 + (1 - cm.GetConnectedBoundingBox().maxZ)) - 0.1f, 0.65f, 0.68f, (float)(1 + (1 - cm.GetConnectedBoundingBox().maxZ)));
+				break;
+			case 3: //South, Inventory is to the north
+				this.setBlockBounds(0.35f, 0.32f, (float)(0 - cm.GetConnectedBoundingBox().minZ), 0.65f, 0.68f, (float)(0 - cm.GetConnectedBoundingBox().minZ) + 0.1f);
+				break;
+			case 4: //West, Inventory is to the east
+				this.setBlockBounds((float)(1 + cm.GetConnectedBoundingBox().minX) - 0.1f, 0.32f, 0.35f, (float)(1 + cm.GetConnectedBoundingBox().minX), 0.68f, 0.65f);
+				break;
+			case 5: //East, Inventory is to the west
+				this.setBlockBounds((float)(-1 * (1 - cm.GetConnectedBoundingBox().maxX)), 0.32f, 0.35f, (float)(-1 * (1 - cm.GetConnectedBoundingBox().maxX)) + 0.1f, 0.68f, 0.65f);
+				break;
 		}
 	}
 
 	@Override
 	public void addCollisionBoxesToList(World par1World, int par2, int par3,
 										int par4, AxisAlignedBB par5AxisAlignedBB, List par6List,
-										Entity par7Entity){
+										Entity par7Entity) {
 	}
 
 	@Override
-	public void onNeighborBlockChange(World world, int x, int y, int z, Block blockID){
-		if (world.isRemote){
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block blockID) {
+		if(world.isRemote) {
 			return;
 		}
 		TileEntity te = world.getTileEntity(x, y, z);
 		TileEntityCrystalMarker cm = null;
 		boolean mustDrop = false;
 
-		if (te != null && te instanceof TileEntityCrystalMarker){
+		if(te != null && te instanceof TileEntityCrystalMarker) {
 			cm = (TileEntityCrystalMarker)te;
-		}else{
+		}
+		else {
 			return;
 		}
 
-		switch (cm.getFacing()){
-		case 0: //Bottom, Inventory is above
-			mustDrop = world.isAirBlock(x, y + 1, z);
-			break;
-		case 1: //Top, Inventory is below
-			mustDrop = world.isAirBlock(x, y - 1, z);
-			break;
-		case 2: //North, Inventory is to the south
-			mustDrop = world.isAirBlock(x, y, z + 1);
-			break;
-		case 3: //South, Inventory is to the north
-			mustDrop = world.isAirBlock(x, y, z - 1);
-			break;
-		case 4: //West, Inventory is to the east
-			mustDrop = world.isAirBlock(x + 1, y, z);
-			break;
-		case 5: //East, Inventory is to the west
-			mustDrop = world.isAirBlock(x - 1, y, z);
-			break;
+		switch(cm.getFacing()) {
+			case 0: //Bottom, Inventory is above
+				mustDrop = world.isAirBlock(x, y + 1, z);
+				break;
+			case 1: //Top, Inventory is below
+				mustDrop = world.isAirBlock(x, y - 1, z);
+				break;
+			case 2: //North, Inventory is to the south
+				mustDrop = world.isAirBlock(x, y, z + 1);
+				break;
+			case 3: //South, Inventory is to the north
+				mustDrop = world.isAirBlock(x, y, z - 1);
+				break;
+			case 4: //West, Inventory is to the east
+				mustDrop = world.isAirBlock(x + 1, y, z);
+				break;
+			case 5: //East, Inventory is to the west
+				mustDrop = world.isAirBlock(x - 1, y, z);
+				break;
 		}
 
-		if (mustDrop){
+		if(mustDrop) {
 			Block block = world.getBlock(x, y, z);
 			ItemStack itemStack = new ItemStack(block, 1, world.getBlockMetadata(x, y, z));
 			EntityItem entityItem = new EntityItem(world, x, y, z, itemStack);
@@ -385,7 +390,7 @@ public class BlockCrystalMarker extends BlockContainer{
 		}
 	}
 
-	public static boolean isOutputMarker(int operandType){
+	public static boolean isOutputMarker(int operandType) {
 		return
 				operandType == META_OUT ||
 						operandType == META_LIKE_EXPORT ||
@@ -396,7 +401,7 @@ public class BlockCrystalMarker extends BlockContainer{
 						operandType == META_SPELL_EXPORT;
 	}
 
-	public static boolean isInputMarker(int operandType){
+	public static boolean isInputMarker(int operandType) {
 		return
 				operandType == META_IN ||
 						operandType == META_REGULATE_MULTI ||
@@ -405,12 +410,12 @@ public class BlockCrystalMarker extends BlockContainer{
 	}
 
 	@Override
-	public int damageDropped(int metadata){
+	public int damageDropped(int metadata) {
 		return metadata;
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister p_149651_1_){
+	public void registerBlockIcons(IIconRegister p_149651_1_) {
 		//intentionally left blank
 	}
 }

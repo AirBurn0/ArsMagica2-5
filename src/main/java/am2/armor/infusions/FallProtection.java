@@ -13,37 +13,38 @@ import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
-public class FallProtection implements IArmorImbuement{
+public class FallProtection implements IArmorImbuement {
 
 	@Override
-	public String getID(){
+	public String getID() {
 		return "fallprot";
 	}
 
 	@Override
-	public int getIconIndex(){
+	public int getIconIndex() {
 		return 27;
 	}
 
 	@Override
-	public ImbuementTiers getTier(){
+	public ImbuementTiers getTier() {
 		return ImbuementTiers.FOURTH;
 	}
 
 	@Override
-	public EnumSet<ImbuementApplicationTypes> getApplicationTypes(){
+	public EnumSet<ImbuementApplicationTypes> getApplicationTypes() {
 		return EnumSet.of(ImbuementApplicationTypes.ON_TICK);
 	}
 
 	@Override
-	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params){
-		if (world.isRemote)
+	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params) {
+		if(world.isRemote) {
 			return false;
+		}
 
 		int distanceToGround = MathUtilities.getDistanceToGround(player, world);
 		ExtendedProperties extendedProperties = ExtendedProperties.For(player);
-		if (player.fallDistance >= extendedProperties.getFallProtection() + 4f && distanceToGround < -8 * player.motionY){
-			if (!player.isPotionActive(BuffList.slowfall.id) && !player.capabilities.isFlying){
+		if(player.fallDistance >= extendedProperties.getFallProtection() + 4f && distanceToGround < -8 * player.motionY) {
+			if(!player.isPotionActive(BuffList.slowfall.id) && !player.capabilities.isFlying) {
 
 				BuffEffectSlowfall sf = new BuffEffectSlowfall(distanceToGround * 3, 1);
 				player.addPotionEffect(sf);
@@ -58,22 +59,22 @@ public class FallProtection implements IArmorImbuement{
 	}
 
 	@Override
-	public int[] getValidSlots(){
+	public int[] getValidSlots() {
 		return new int[]{ImbuementRegistry.SLOT_BOOTS};
 	}
 
 	@Override
-	public boolean canApplyOnCooldown(){
+	public boolean canApplyOnCooldown() {
 		return false;
 	}
 
 	@Override
-	public int getCooldown(){
+	public int getCooldown() {
 		return 900;
 	}
 
 	@Override
-	public int getArmorDamage(){
+	public int getArmorDamage() {
 		return 0;
 	}
 }

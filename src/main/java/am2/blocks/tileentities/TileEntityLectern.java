@@ -19,9 +19,8 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntityEnchantmentTable;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class TileEntityLectern extends TileEntityEnchantmentTable{
+public class TileEntityLectern extends TileEntityEnchantmentTable {
 	private ItemStack stack;
 	private ItemStack tooltipStack;
 	private boolean needsBook;
@@ -30,33 +29,34 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 	public int particleMaxAge = 150;
 	private boolean increasing = true;
 
-	public TileEntityLectern(){
+	public TileEntityLectern() {
 	}
 
-	public void resetParticleAge(){
+	public void resetParticleAge() {
 		particleAge = 0;
 		increasing = true;
 	}
 
-	public ItemStack getTooltipStack(){
+	public ItemStack getTooltipStack() {
 		return tooltipStack;
 	}
 
-	public void setTooltipStack(ItemStack stack){
+	public void setTooltipStack(ItemStack stack) {
 		this.tooltipStack = stack;
 	}
 
 	@Override
-	public void updateEntity(){
-		if (worldObj.isRemote){
+	public void updateEntity() {
+		if(worldObj.isRemote) {
 			updateBookRender();
-			if (tooltipStack != null && field_145926_a % 2 == 0){
+			if(tooltipStack != null && field_145926_a % 2 == 0) {
 				AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(worldObj, "sparkle", xCoord + 0.5 + ((worldObj.rand.nextDouble() * 0.2) - 0.1), yCoord + 1, zCoord + 0.5 + ((worldObj.rand.nextDouble() * 0.2) - 0.1));
-				if (particle != null){
+				if(particle != null) {
 					particle.AddParticleController(new ParticleMoveOnHeading(particle, worldObj.rand.nextDouble() * 360, -45 - worldObj.rand.nextInt(90), 0.05f, 1, false));
-					particle.AddParticleController(new ParticleFadeOut(particle, 2, false).setFadeSpeed(0.05f).setKillParticleOnFinish(true));
+					particle.AddParticleController(new ParticleFadeOut(particle, 2, false).setFadeSpeed(0.05f)
+																						  .setKillParticleOnFinish(true));
 					particle.setIgnoreMaxAge(true);
-					if (getOverpowered()){
+					if(getOverpowered()) {
 						particle.setRGBColorF(1.0f, 0.2f, 0.2f);
 					}
 				}
@@ -64,15 +64,18 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 		}
 	}
 
-	private void updateBookRender(){
+	private void updateBookRender() {
 		particleAge++;
-		if (increasing){
+		if(increasing) {
 			particleMaxAge += 2;
-			if (particleMaxAge - particleAge > 120)
+			if(particleMaxAge - particleAge > 120) {
 				increasing = false;
-		}else{
-			if (particleMaxAge - particleAge < 5)
+			}
+		}
+		else {
+			if(particleMaxAge - particleAge < 5) {
 				increasing = true;
+			}
 		}
 
 		this.field_145927_n = this.field_145930_m;
@@ -80,48 +83,47 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 
 		this.field_145930_m += 0.1F;
 
-		if (this.field_145930_m < 0.5F || worldObj.rand.nextInt(40) == 0){
+		if(this.field_145930_m < 0.5F || worldObj.rand.nextInt(40) == 0) {
 			float f1 = this.field_145932_k;
 
-			do{
+			do {
 				this.field_145932_k += (float)(worldObj.rand.nextInt(4) - worldObj.rand.nextInt(4));
 			}
-			while (f1 == this.field_145932_k);
+			while(f1 == this.field_145932_k);
 		}
 
-		while (this.field_145928_o >= (float)Math.PI){
+		while(this.field_145928_o >= (float)Math.PI) {
 			this.field_145928_o -= ((float)Math.PI * 2F);
 		}
 
-		while (this.field_145928_o < -(float)Math.PI){
+		while(this.field_145928_o < -(float)Math.PI) {
 			this.field_145928_o += ((float)Math.PI * 2F);
 		}
 
-		while (this.field_145924_q >= (float)Math.PI){
+		while(this.field_145924_q >= (float)Math.PI) {
 			this.field_145924_q -= ((float)Math.PI * 2F);
 		}
 
-		while (this.field_145924_q < -(float)Math.PI){
+		while(this.field_145924_q < -(float)Math.PI) {
 			this.field_145924_q += ((float)Math.PI * 2F);
 		}
 
 		float f2;
 
-		for (f2 = this.field_145924_q - this.field_145928_o; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F)){
-			;
+		for(f2 = this.field_145924_q - this.field_145928_o; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F)) {
 		}
 
-		while (f2 < -(float)Math.PI){
+		while(f2 < -(float)Math.PI) {
 			f2 += ((float)Math.PI * 2F);
 		}
 
 		this.field_145928_o += f2 * 0.4F;
 
-		if (this.field_145930_m < 0.0F){
+		if(this.field_145930_m < 0.0F) {
 			this.field_145930_m = 0.0F;
 		}
 
-		if (this.field_145930_m > 1.0F){
+		if(this.field_145930_m > 1.0F) {
 			this.field_145930_m = 1.0F;
 		}
 
@@ -130,11 +132,11 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 		float f = (this.field_145932_k - this.field_145933_i) * 0.4F;
 		float f3 = 0.2F;
 
-		if (f < -f3){
+		if(f < -f3) {
 			f = -f3;
 		}
 
-		if (f > f3){
+		if(f > f3) {
 			f = f3;
 		}
 
@@ -201,25 +203,26 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 	}
 
 	@Override
-	public boolean canUpdate(){
+	public boolean canUpdate() {
 		return worldObj != null && worldObj.isRemote;
 	}
 
-	public ItemStack getStack(){
+	public ItemStack getStack() {
 		return stack;
 	}
 
-	public boolean setStack(ItemStack stack){
-		if (stack == null || getValidItems().contains(stack.getItem())){
+	public boolean setStack(ItemStack stack) {
+		if(stack == null || getValidItems().contains(stack.getItem())) {
 			this.stack = stack;
-			if (!this.worldObj.isRemote){
+			if(!this.worldObj.isRemote) {
 				AMDataWriter writer = new AMDataWriter();
 				writer.add(xCoord);
 				writer.add(yCoord);
 				writer.add(zCoord);
-				if (stack == null){
+				if(stack == null) {
 					writer.add(false);
-				}else{
+				}
+				else {
 					writer.add(true);
 					writer.add(stack);
 				}
@@ -230,12 +233,12 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 		return false;
 	}
 
-	public boolean hasStack(){
+	public boolean hasStack() {
 		return stack != null;
 	}
 
 	@Override
-	public Packet getDescriptionPacket(){
+	public Packet getDescriptionPacket() {
 		NBTTagCompound compound = new NBTTagCompound();
 		writeToNBT(compound);
 		S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), compound);
@@ -243,19 +246,19 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.func_148857_g());
 	}
 
-	private ArrayList<Item> getValidItems(){
+	private ArrayList<Item> getValidItems() {
 		ArrayList<Item> validItems = new ArrayList<Item>();
 
 		validItems.add(Items.written_book);
 		validItems.add(ItemsCommonProxy.arcaneCompendium);
 
-		if (Loader.isModLoaded("Thaumcraft")){
+		if(Loader.isModLoaded("Thaumcraft")) {
 			ItemStack item = thaumcraft.api.ItemApi.getItem("itemThaumonomicon", 0);
-			if (item != null){
+			if(item != null) {
 				validItems.add(item.getItem());
 			}
 		}
@@ -264,37 +267,37 @@ public class TileEntityLectern extends TileEntityEnchantmentTable{
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound comp){
+	public void readFromNBT(NBTTagCompound comp) {
 		super.readFromNBT(comp);
-		if (comp.hasKey("placedBook")){
+		if(comp.hasKey("placedBook")) {
 			NBTTagCompound bewk = comp.getCompoundTag("placedBook");
 			stack = ItemStack.loadItemStackFromNBT(bewk);
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound comp){
+	public void writeToNBT(NBTTagCompound comp) {
 		super.writeToNBT(comp);
-		if (stack != null){
+		if(stack != null) {
 			NBTTagCompound bewk = new NBTTagCompound();
 			stack.writeToNBT(bewk);
 			comp.setTag("placedBook", bewk);
 		}
 	}
 
-	public void setNeedsBook(boolean b){
+	public void setNeedsBook(boolean b) {
 		this.needsBook = b;
 	}
 
-	public boolean getNeedsBook(){
+	public boolean getNeedsBook() {
 		return this.needsBook;
 	}
 
-	public void setOverpowered(boolean b){
+	public void setOverpowered(boolean b) {
 		this.overPowered = b;
 	}
 
-	public boolean getOverpowered(){
+	public boolean getOverpowered() {
 		return this.overPowered;
 	}
 

@@ -7,21 +7,21 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
 
-public class EntityAICastSpell extends EntityAIBase{
+public class EntityAICastSpell extends EntityAIBase {
 
 	private final EntityLiving host;
 	private int cooldownTicks = 0;
 	private boolean hasCasted = false;
 	private int castTicks = 0;
 
-	private ItemStack stack;
-	private int castPoint;
-	private int duration;
-	private int cooldown;
-	private BossActions activeAction;
-	private ISpellCastCallback callback;
+	private final ItemStack stack;
+	private final int castPoint;
+	private final int duration;
+	private final int cooldown;
+	private final BossActions activeAction;
+	private final ISpellCastCallback callback;
 
-	public EntityAICastSpell(IArsMagicaBoss host, ItemStack spell, int castPoint, int duration, int cooldown, BossActions activeAction){
+	public EntityAICastSpell(IArsMagicaBoss host, ItemStack spell, int castPoint, int duration, int cooldown, BossActions activeAction) {
 		this.host = (EntityLiving)host;
 		this.stack = spell;
 		this.castPoint = castPoint;
@@ -32,7 +32,7 @@ public class EntityAICastSpell extends EntityAIBase{
 		this.setMutexBits(3);
 	}
 
-	public EntityAICastSpell(IArsMagicaBoss host, ItemStack spell, int castPoint, int duration, int cooldown, BossActions activeAction, ISpellCastCallback callback){
+	public EntityAICastSpell(IArsMagicaBoss host, ItemStack spell, int castPoint, int duration, int cooldown, BossActions activeAction, ISpellCastCallback callback) {
 		this.host = (EntityLiving)host;
 		this.stack = spell;
 		this.castPoint = castPoint;
@@ -43,25 +43,27 @@ public class EntityAICastSpell extends EntityAIBase{
 	}
 
 	@Override
-	public boolean shouldExecute(){
+	public boolean shouldExecute() {
 		cooldownTicks--;
 		boolean execute = ((IArsMagicaBoss)host).getCurrentAction() == BossActions.IDLE && host.getAttackTarget() != null && cooldownTicks <= 0;
-		if (execute){
-			if (callback == null || callback.shouldCast(host, stack))
+		if(execute) {
+			if(callback == null || callback.shouldCast(host, stack)) {
 				hasCasted = false;
-			else
+			}
+			else {
 				execute = false;
+			}
 		}
 		return execute;
 	}
 
 	@Override
-	public boolean continueExecuting(){
+	public boolean continueExecuting() {
 		return !hasCasted && host.getAttackTarget() != null && !host.getAttackTarget().isDead;
 	}
 
 	@Override
-	public void resetTask(){
+	public void resetTask() {
 		((IArsMagicaBoss)host).setCurrentAction(BossActions.IDLE);
 		cooldownTicks = cooldown;
 		hasCasted = true;
@@ -69,9 +71,9 @@ public class EntityAICastSpell extends EntityAIBase{
 	}
 
 	@Override
-	public void updateTask(){
+	public void updateTask() {
 		host.getLookHelper().setLookPositionWithEntity(host.getAttackTarget(), 30, 30);
-		if (host.getDistanceSqToEntity(host.getAttackTarget()) > 64){
+		if(host.getDistanceSqToEntity(host.getAttackTarget()) > 64) {
 
 			double deltaZ = host.getAttackTarget().posZ - host.posZ;
 			double deltaX = host.getAttackTarget().posX - host.posX;
@@ -82,21 +84,25 @@ public class EntityAICastSpell extends EntityAIBase{
 			double newZ = host.getAttackTarget().posZ + (Math.sin(angle) * 6);
 
 			host.getNavigator().tryMoveToXYZ(newX, host.getAttackTarget().posY, newZ, 0.5f);
-		}else if (!host.canEntityBeSeen(host.getAttackTarget())){
+		}
+		else if(!host.canEntityBeSeen(host.getAttackTarget())) {
 			host.getNavigator().tryMoveToEntityLiving(host.getAttackTarget(), 0.5f);
-		}else{
-			if (((IArsMagicaBoss)host).getCurrentAction() != activeAction)
+		}
+		else {
+			if(((IArsMagicaBoss)host).getCurrentAction() != activeAction) {
 				((IArsMagicaBoss)host).setCurrentAction(activeAction);
+			}
 
 			castTicks++;
-			if (castTicks == castPoint){
-				if (!host.worldObj.isRemote)
+			if(castTicks == castPoint) {
+				if(!host.worldObj.isRemote) {
 					host.worldObj.playSoundAtEntity(host, ((IArsMagicaBoss)host).getAttackSound(), 1.0f, 1.0f);
+				}
 				host.faceEntity(host.getAttackTarget(), 180, 180);
 				SpellHelper.instance.applyStackStage(stack, host, host.getAttackTarget(), host.posX, host.posY, host.posZ, 0, host.worldObj, false, false, 0);
 			}
 		}
-		if (castTicks >= duration){
+		if(castTicks >= duration) {
 			resetTask();
 		}
 	}

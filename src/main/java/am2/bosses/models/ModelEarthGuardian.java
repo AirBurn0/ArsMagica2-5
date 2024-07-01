@@ -6,7 +6,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
-public class ModelEarthGuardian extends ModelBase{
+public class ModelEarthGuardian extends ModelBase {
 	//fields
 	AM2ModelRenderer Core2;
 	AM2ModelRenderer Rod3;
@@ -30,7 +30,7 @@ public class ModelEarthGuardian extends ModelBase{
 	AM2ModelRenderer Rock2;
 	AM2ModelRenderer Rock3;
 
-	public ModelEarthGuardian(){
+	public ModelEarthGuardian() {
 		textureWidth = 64;
 		textureHeight = 64;
 
@@ -219,8 +219,8 @@ public class ModelEarthGuardian extends ModelBase{
 		Rock3.storeRestRotations();
 	}
 
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
-		if (entity instanceof EntityEarthGuardian){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+		if(entity instanceof EntityEarthGuardian) {
 
 			GL11.glPushMatrix();
 			GL11.glScalef(1.5f, 1.5f, 1.5f);
@@ -257,7 +257,7 @@ public class ModelEarthGuardian extends ModelBase{
 			Rod2.render(f5);
 			Rod1.render(f5);
 
-			if (((EntityEarthGuardian)entity).shouldRenderRock()){
+			if(((EntityEarthGuardian)entity).shouldRenderRock()) {
 				Rock1.render(f5);
 				Rock2.render(f5);
 				Rock3.render(f5);
@@ -270,7 +270,7 @@ public class ModelEarthGuardian extends ModelBase{
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	private void setRotations(EntityEarthGuardian guardian, float f, float f1, float f2, float f3, float f4, float f5){
+	private void setRotations(EntityEarthGuardian guardian, float f, float f1, float f2, float f3, float f4, float f5) {
 		float ticksInCurrentAction = guardian.getTicksInCurrentAction() + (f2 - guardian.ticksExisted);
 		Rod1.rotateAngleY = guardian.getRodRotations() + (f2 - guardian.ticksExisted) * 0.02f;
 		Rod2.rotateAngleY = guardian.getRodRotations() + (f2 - guardian.ticksExisted) * 0.02f;
@@ -290,90 +290,98 @@ public class ModelEarthGuardian extends ModelBase{
 		float left_shoulder_rotation_z = 0;
 		float right_shoulder_rotation_z = 0;
 
-		switch (guardian.getCurrentAction()){
-		case SMASH:
-			float max_degrees_x = 120;
-			float final_degrees = 90;
-			float action_ticks = 16;
-			float fast_action_ticks = 4;
-			float hold_ticks = 10;
-			float rise_ticks = 10;
-			if (ticksInCurrentAction < action_ticks){
-				left_arm_rotation_x = (float)Math.toRadians(-max_degrees_x * ((float)ticksInCurrentAction / action_ticks));
-			}else if (ticksInCurrentAction < (action_ticks + fast_action_ticks)){
-				float pct = ((ticksInCurrentAction - action_ticks) / fast_action_ticks);
-				float degrees = -max_degrees_x + (final_degrees * pct);
-				left_arm_rotation_x = (float)Math.toRadians(degrees);
-				GL11.glRotatef((max_degrees_x + degrees) / 2, 1, 0, 0);
-				GL11.glTranslatef(0, 1f * pct, 0);
-			}else if (ticksInCurrentAction < (action_ticks + fast_action_ticks + hold_ticks)){
-				left_arm_rotation_x = (float)Math.toRadians(-final_degrees);
-				GL11.glRotatef(final_degrees / 2, 1, 0, 0);
-				GL11.glTranslatef(0, 1f, 0);
-			}else{
-				float pct = 1.0f - ((ticksInCurrentAction - action_ticks - fast_action_ticks - hold_ticks) / rise_ticks);
-				float degrees = -max_degrees_x + (final_degrees * pct);
-				float degrees2 = -max_degrees_x + (final_degrees * (1.0f - pct));
-				left_arm_rotation_x = (float)Math.toRadians(degrees2);
-				GL11.glRotatef((max_degrees_x + degrees) / 2, 1, 0, 0);
-				GL11.glTranslatef(0, 1f * pct, 0);
-			}
-			right_arm_rotation_x = left_arm_rotation_x;
-			right_arm_rotation_y = left_arm_rotation_y = left_arm_rotation_x / 2;
-			left_shoulder_rotation_z = left_arm_rotation_z;
-			right_shoulder_rotation_z = right_arm_rotation_z;
-			break;
-		case STRIKE:
-			max_degrees_x = 50;
-			action_ticks = 4;
-			fast_action_ticks = 11;
-			if (ticksInCurrentAction < action_ticks){
-				left_arm_rotation_z = (float)Math.toRadians(-max_degrees_x * ((float)ticksInCurrentAction / action_ticks));
-			}else if (ticksInCurrentAction < (action_ticks + fast_action_ticks)){
-				float pct = ((ticksInCurrentAction - action_ticks) / fast_action_ticks);
-				float degrees = -max_degrees_x + (max_degrees_x * pct);
-				left_arm_rotation_z = (float)Math.toRadians(degrees);
-				GL11.glRotatef(guardian.leftArm ? 360 * pct : -360 * pct, 0, 1, 0);
-			}
-			if (!guardian.leftArm){
-				right_arm_rotation_z = -left_arm_rotation_z;
-				right_shoulder_rotation_z = left_arm_rotation_z;
-				left_arm_rotation_z = 0;
-			}else{
+		switch(guardian.getCurrentAction()) {
+			case SMASH:
+				float max_degrees_x = 120;
+				float final_degrees = 90;
+				float action_ticks = 16;
+				float fast_action_ticks = 4;
+				float hold_ticks = 10;
+				float rise_ticks = 10;
+				if(ticksInCurrentAction < action_ticks) {
+					left_arm_rotation_x = (float)Math.toRadians(-max_degrees_x * (ticksInCurrentAction / action_ticks));
+				}
+				else if(ticksInCurrentAction < (action_ticks + fast_action_ticks)) {
+					float pct = ((ticksInCurrentAction - action_ticks) / fast_action_ticks);
+					float degrees = -max_degrees_x + (final_degrees * pct);
+					left_arm_rotation_x = (float)Math.toRadians(degrees);
+					GL11.glRotatef((max_degrees_x + degrees) / 2, 1, 0, 0);
+					GL11.glTranslatef(0, pct, 0);
+				}
+				else if(ticksInCurrentAction < (action_ticks + fast_action_ticks + hold_ticks)) {
+					left_arm_rotation_x = (float)Math.toRadians(-final_degrees);
+					GL11.glRotatef(final_degrees / 2, 1, 0, 0);
+					GL11.glTranslatef(0, 1f, 0);
+				}
+				else {
+					float pct = 1.0f - ((ticksInCurrentAction - action_ticks - fast_action_ticks - hold_ticks) / rise_ticks);
+					float degrees = -max_degrees_x + (final_degrees * pct);
+					float degrees2 = -max_degrees_x + (final_degrees * (1.0f - pct));
+					left_arm_rotation_x = (float)Math.toRadians(degrees2);
+					GL11.glRotatef((max_degrees_x + degrees) / 2, 1, 0, 0);
+					GL11.glTranslatef(0, pct, 0);
+				}
+				right_arm_rotation_x = left_arm_rotation_x;
+				right_arm_rotation_y = left_arm_rotation_y = left_arm_rotation_x / 2;
 				left_shoulder_rotation_z = left_arm_rotation_z;
-			}
-			break;
-		case THROWING_ROCK:
-			max_degrees_x = 120;
-			final_degrees = 60;
-			action_ticks = 8;
-			fast_action_ticks = 10;
-			hold_ticks = 7;
-			rise_ticks = 5;
-			if (ticksInCurrentAction < action_ticks){
-				float pct = (ticksInCurrentAction / action_ticks);
-				float degrees = -max_degrees_x * pct;
-				left_arm_rotation_x = (float)Math.toRadians(degrees);
-				GL11.glRotatef(-degrees / 2, 1, 0, 0);
-				GL11.glTranslatef(0, 1f * pct, 0);
+				right_shoulder_rotation_z = right_arm_rotation_z;
+				break;
+			case STRIKE:
+				max_degrees_x = 50;
+				action_ticks = 4;
+				fast_action_ticks = 11;
+				if(ticksInCurrentAction < action_ticks) {
+					left_arm_rotation_z = (float)Math.toRadians(-max_degrees_x * (ticksInCurrentAction / action_ticks));
+				}
+				else if(ticksInCurrentAction < (action_ticks + fast_action_ticks)) {
+					float pct = ((ticksInCurrentAction - action_ticks) / fast_action_ticks);
+					float degrees = -max_degrees_x + (max_degrees_x * pct);
+					left_arm_rotation_z = (float)Math.toRadians(degrees);
+					GL11.glRotatef(guardian.leftArm ? 360 * pct : -360 * pct, 0, 1, 0);
+				}
+				if(!guardian.leftArm) {
+					right_arm_rotation_z = -left_arm_rotation_z;
+					right_shoulder_rotation_z = left_arm_rotation_z;
+					left_arm_rotation_z = 0;
+				}
+				else {
+					left_shoulder_rotation_z = left_arm_rotation_z;
+				}
+				break;
+			case THROWING_ROCK:
+				max_degrees_x = 120;
+				final_degrees = 60;
+				action_ticks = 8;
+				fast_action_ticks = 10;
+				hold_ticks = 7;
+				rise_ticks = 5;
+				if(ticksInCurrentAction < action_ticks) {
+					float pct = (ticksInCurrentAction / action_ticks);
+					float degrees = -max_degrees_x * pct;
+					left_arm_rotation_x = (float)Math.toRadians(degrees);
+					GL11.glRotatef(-degrees / 2, 1, 0, 0);
+					GL11.glTranslatef(0, pct, 0);
 
-			}else if (ticksInCurrentAction < (action_ticks + fast_action_ticks)){
-				float pct = 1.0f - ((ticksInCurrentAction - action_ticks) / fast_action_ticks);
-				float degrees = (-final_degrees * (1.0f - pct)) - max_degrees_x;
-				left_arm_rotation_x = (float)Math.toRadians(degrees);
-				GL11.glRotatef((max_degrees_x * pct) / 2, 1, 0, 0);
-				GL11.glTranslatef(0, 1f * pct, 0);
-			}else if (ticksInCurrentAction < (action_ticks + fast_action_ticks + hold_ticks)){
-				float degrees = -final_degrees - max_degrees_x;
-				left_arm_rotation_x = (float)Math.toRadians(degrees);
-			}else{
-				float pct = 1.0f - ((ticksInCurrentAction - action_ticks - fast_action_ticks - hold_ticks) / rise_ticks);
-				float degrees = (-final_degrees - max_degrees_x) * pct;
-				left_arm_rotation_x = (float)Math.toRadians(degrees);
-			}
-			right_arm_rotation_x = left_arm_rotation_x;
-			right_arm_rotation_y = left_arm_rotation_y = left_arm_rotation_x / 4;
-			break;
+				}
+				else if(ticksInCurrentAction < (action_ticks + fast_action_ticks)) {
+					float pct = 1.0f - ((ticksInCurrentAction - action_ticks) / fast_action_ticks);
+					float degrees = (-final_degrees * (1.0f - pct)) - max_degrees_x;
+					left_arm_rotation_x = (float)Math.toRadians(degrees);
+					GL11.glRotatef((max_degrees_x * pct) / 2, 1, 0, 0);
+					GL11.glTranslatef(0, pct, 0);
+				}
+				else if(ticksInCurrentAction < (action_ticks + fast_action_ticks + hold_ticks)) {
+					float degrees = -final_degrees - max_degrees_x;
+					left_arm_rotation_x = (float)Math.toRadians(degrees);
+				}
+				else {
+					float pct = 1.0f - ((ticksInCurrentAction - action_ticks - fast_action_ticks - hold_ticks) / rise_ticks);
+					float degrees = (-final_degrees - max_degrees_x) * pct;
+					left_arm_rotation_x = (float)Math.toRadians(degrees);
+				}
+				right_arm_rotation_x = left_arm_rotation_x;
+				right_arm_rotation_y = left_arm_rotation_y = left_arm_rotation_x / 4;
+				break;
 		}
 
 		LeftArm1.rotateAngleX = LeftArm1.getRestRotationX() + left_arm_rotation_x;
@@ -411,12 +419,12 @@ public class ModelEarthGuardian extends ModelBase{
 		Rock3.rotateAngleX = Rock3.getRestRotationX() + right_arm_rotation_x;
 	}
 
-	private void setHeadRotations(float yaw, float pitch){
+	private void setHeadRotations(float yaw, float pitch) {
 		Head.rotateAngleX = (float)Math.toRadians(pitch);
 		Head.rotateAngleY = (float)Math.toRadians(yaw);
 	}
 
-	private void setRotation(AM2ModelRenderer model, float x, float y, float z){
+	private void setRotation(AM2ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

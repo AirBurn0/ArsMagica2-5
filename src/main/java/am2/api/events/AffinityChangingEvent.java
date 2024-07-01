@@ -6,12 +6,12 @@ import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.entity.player.EntityPlayer;
 
 @Cancelable
-public class AffinityChangingEvent extends Event{
+public class AffinityChangingEvent extends Event {
 	public final EntityPlayer player;
 	public float amount;
 	public final Affinity affinity;
 
-	public AffinityChangingEvent(EntityPlayer player, Affinity affinity, float amt){
+	public AffinityChangingEvent(EntityPlayer player, Affinity affinity, float amt) {
 		this.player = player;
 		this.amount = amt;
 		this.affinity = affinity;

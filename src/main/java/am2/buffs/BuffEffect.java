@@ -6,25 +6,23 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.PotionEffect;
 
-import java.util.Random;
-
-public abstract class BuffEffect extends PotionEffect{
+public abstract class BuffEffect extends PotionEffect {
 	protected boolean InitialApplication;
 	protected boolean HasNotified;
-	private static float maxExtendDuration = 900; //30 seconds
+	private static final float maxExtendDuration = 900; //30 seconds
 
-	public BuffEffect(int buffID, int duration, int amplifier){
+	public BuffEffect(int buffID, int duration, int amplifier) {
 		super(buffID, duration, amplifier > 0 ? amplifier - 1 : amplifier);
 		InitialApplication = true;
-		HasNotified = ((duration / 20) > 5) ? false : true; //disable notification for effects that last less than 5 seconds
+		HasNotified = (duration / 20) <= 5; //disable notification for effects that last less than 5 seconds
 	}
 
-	public static boolean SetAmplifier(PotionEffect pe, int amplifier){
+	public static boolean SetAmplifier(PotionEffect pe, int amplifier) {
 		ReflectionHelper.setPrivateValue(PotionEffect.class, pe, amplifier, 2);
 		return true;
 	}
 
-	public boolean shouldNotify(){
+	public boolean shouldNotify() {
 		return true;
 	}
 
@@ -34,56 +32,59 @@ public abstract class BuffEffect extends PotionEffect{
 	//effect that is performed when the duration ends
 	public abstract void stopEffect(EntityLivingBase entityliving);
 
-	private void effectEnding(EntityLivingBase entityliving){
+	private void effectEnding(EntityLivingBase entityliving) {
 		BuffList.buffEnding(this.getPotionID());
 		stopEffect(entityliving);
 	}
 
 	//Effect that is performed on intermediate ticks
 	@Override
-	public void performEffect(EntityLivingBase entityliving){
+	public void performEffect(EntityLivingBase entityliving) {
 	}
 
 	@Override
-	public void combine(PotionEffect potioneffect){
+	public void combine(PotionEffect potioneffect) {
 		//don't combine "potion effects" with other buff effects
-		if (!(potioneffect instanceof BuffEffect)){
+		if(!(potioneffect instanceof BuffEffect)) {
 			return;
 		}
 		int thisAmplifier = this.getAmplifier();
-		if (thisAmplifier >= potioneffect.getAmplifier()){
+		if(thisAmplifier >= potioneffect.getAmplifier()) {
 			super.combine(potioneffect);
 			this.HasNotified = false;
 		}
 	}
 
 	@Override
-	public boolean onUpdate(EntityLivingBase entityliving){
+	public boolean onUpdate(EntityLivingBase entityliving) {
 		//check for if we are for the first time applying the effect
-		if (InitialApplication){
+		if(InitialApplication) {
 			InitialApplication = false;
 			applyEffect(entityliving);
 		}
 		//check if we are for the last time applying the effect
-		else if (getDuration() <= 1){
+		else if(getDuration() <= 1) {
 			effectEnding(entityliving);
-		}else if ((getDuration() / 20) < 5 && !HasNotified && shouldNotify() && !entityliving.worldObj.isRemote){
+		}
+		else if((getDuration() / 20) < 5 && !HasNotified && shouldNotify() && !entityliving.worldObj.isRemote) {
 			HasNotified = true;
 		}
 		performEffect(entityliving);
-		if (AMCore.instance.proxy instanceof CommonProxy){
+		if(AMCore.proxy instanceof CommonProxy) {
 			//run the base
 			return super.onUpdate(entityliving);
-		}else{
+		}
+		else {
 			return true;
 		}
 	}
 
-	public boolean isReady(int i, int j){
+	public boolean isReady(int i, int j) {
 		int k = 25 >> j;
-		if (k > 0){
+		if(k > 0) {
 			return i % k == 0;
-		}else{
+		}
+		else {
 			return true;
 		}
 	}
@@ -91,7 +92,7 @@ public abstract class BuffEffect extends PotionEffect{
 	protected abstract String spellBuffName();
 
 	@Override
-	public String getEffectName(){
+	public String getEffectName() {
 		return String.format("Spell: %s", spellBuffName());
 	}
 }

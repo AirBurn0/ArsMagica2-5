@@ -19,18 +19,18 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
-public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
+public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler {
 
 	GuiBlockAccess blockAccess;
 	ModelCandle modelCandle;
 
-	public SimpleBlockRenderHandler(){
+	public SimpleBlockRenderHandler() {
 		blockAccess = new GuiBlockAccess();
 		modelCandle = new ModelCandle();
 	}
 
 	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer){
+	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {
 		Tessellator tessellator = Tessellator.instance;
 		boolean isInlay = block instanceof BlockInlay;
 		block.setBlockBoundsForItemRender();
@@ -38,98 +38,114 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 
-		if (isInlay)
+		if(isInlay) {
 			GL11.glTranslatef(0, 0.5f, 0);
+		}
 
-		try{
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(0.0F, 1.0F, 0.0F);
 		renderer.renderFaceYPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 1, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 
-		if (!isInlay){
-			if (block == BlocksCommonProxy.craftingAltar){
+		if(!isInlay) {
+			if(block == BlocksCommonProxy.craftingAltar) {
 				renderStandardBlock(block, 0, renderer);
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				renderStandardBlock(block, 1, renderer);
 				GL11.glDisable(GL11.GL_BLEND);
-			}else{
+			}
+			else {
 				renderStandardBlock(block, metadata, renderer);
 			}
 		}
 	}
 
-	private void renderStandardBlock(Block block, int metadata, RenderBlocks renderer){
+	private void renderStandardBlock(Block block, int metadata, RenderBlocks renderer) {
 		Tessellator tessellator = Tessellator.instance;
-		try{
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(0.0F, -1.0F, 0.0F);
 		renderer.renderFaceYNeg(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 0, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
 		}
-		try{
+		catch(Throwable t) {
+		}
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(0.0F, 1.0F, 0.0F);
 		renderer.renderFaceYPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 1, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
 		}
-		try{
+		catch(Throwable t) {
+		}
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(0.0F, 0.0F, -1.0F);
 		renderer.renderFaceZNeg(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 2, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
 		}
-		try{
+		catch(Throwable t) {
+		}
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(0.0F, 0.0F, 1.0F);
 		renderer.renderFaceZPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 3, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
 		}
-		try{
+		catch(Throwable t) {
+		}
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
 		renderer.renderFaceXNeg(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 4, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
 		}
-		try{
+		catch(Throwable t) {
+		}
+		try {
 			tessellator.startDrawingQuads();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 		tessellator.setNormal(1.0F, 0.0F, 0.0F);
 		renderer.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 5, metadata));
-		try{
+		try {
 			tessellator.draw();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 		}
 	}
 
-	private void renderWizardChalk(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer){
+	private void renderWizardChalk(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		GL11.glColor4f(1, 1, 1, 1);
 
 		int meta = world.getBlockMetadata(x, y, z);
@@ -164,35 +180,41 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 		tessellator.addVertexWithUV(d11, d13, d15, d8, d10);
 	}
 
-	private void renderCraftingAltar(Block block, Block mimic, int x, int y, int z, int metadata, RenderBlocks renderer){
+	private void renderCraftingAltar(Block block, Block mimic, int x, int y, int z, int metadata, RenderBlocks renderer) {
 		IIcon icon = mimic.getIcon(1, metadata);
-		if (icon == null)
+		if(icon == null) {
 			icon = block.getIcon(1, 0);
+		}
 		renderer.renderFaceYPos(block, x, y, z, icon);
 
 		icon = mimic.getIcon(0, metadata);
-		if (icon == null)
+		if(icon == null) {
 			icon = block.getIcon(0, 0);
+		}
 		renderer.renderFaceYNeg(block, x, y, z, icon);
 
 		icon = mimic.getIcon(2, metadata);
-		if (icon == null)
+		if(icon == null) {
 			icon = block.getIcon(2, 0);
+		}
 		renderer.renderFaceXPos(block, x, y, z, icon);
 
 		icon = mimic.getIcon(3, metadata);
-		if (icon == null)
+		if(icon == null) {
 			icon = block.getIcon(3, 0);
+		}
 		renderer.renderFaceXNeg(block, x, y, z, icon);
 
 		icon = mimic.getIcon(4, metadata);
-		if (icon == null)
+		if(icon == null) {
 			icon = block.getIcon(4, 0);
+		}
 		renderer.renderFaceZPos(block, x, y, z, icon);
 
 		icon = mimic.getIcon(5, metadata);
-		if (icon == null)
+		if(icon == null) {
 			icon = block.getIcon(5, 0);
+		}
 		renderer.renderFaceZNeg(block, x, y, z, icon);
 
 		renderer.renderFaceYPos(block, x, y, z, block.getIcon(1, 1));
@@ -205,19 +227,24 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 		renderer.renderFaceZNeg(block, x, y, z, block.getIcon(5, 1));
 	}
 
-	private void renderBlock(Block block, int meta, RenderBlocks renderer){
+	private void renderBlock(Block block, int meta, RenderBlocks renderer) {
 
-		if (meta < 0) meta = 0;
-		if (meta > 15) meta = 15;
+		if(meta < 0) {
+			meta = 0;
+		}
+		if(meta > 15) {
+			meta = 15;
+		}
 
 		GL11.glPushMatrix();
 		this.blockAccess.setFakeBlockAndMeta(block, meta);
 		renderer.renderAllFaces = true;
 
-		if (block.getRenderType() == BlocksCommonProxy.blockRenderID){
+		if(block.getRenderType() == BlocksCommonProxy.blockRenderID) {
 			renderer.useInventoryTint = false;
 			RenderInlayBlock(blockAccess, 0, 0, 0, block, 0, renderer);
-		}else if (block == BlocksCommonProxy.everstone){
+		}
+		else if(block == BlocksCommonProxy.everstone) {
 			renderer.useInventoryTint = false;
 			renderEverstoneBlock(blockAccess, 0, 0, 0, block, 0, renderer);
 		}
@@ -226,31 +253,38 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 	}
 
 	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer){
-		if (block == BlocksCommonProxy.wizardChalk){
+	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+		if(block == BlocksCommonProxy.wizardChalk) {
 			renderWizardChalk(world, x, y, z, block, modelId, renderer);
 			return true;
-		}else if (block instanceof BlockInlay){
+		}
+		else if(block instanceof BlockInlay) {
 			RenderInlayBlock(world, x, y, z, block, modelId, renderer);
 			return true;
-		}else if (block == BlocksCommonProxy.everstone){
+		}
+		else if(block == BlocksCommonProxy.everstone) {
 			renderEverstoneBlock(world, x, y, z, block, modelId, renderer);
 			return true;
-		}else if (block == BlocksCommonProxy.craftingAltar){
+		}
+		else if(block == BlocksCommonProxy.craftingAltar) {
 			Block mimic = BlocksCommonProxy.craftingAltar.getAltarMimicBlock(world, x, y, z);
 			renderCraftingAltar(block, mimic, x, y, z, world.getBlockMetadata(x, y, z), renderer);
-		}else if (block == BlocksCommonProxy.manaBattery){
+		}
+		else if(block == BlocksCommonProxy.manaBattery) {
 			renderManaBattery(world, x, y, z, block, modelId, renderer);
-		}else if (block == BlocksCommonProxy.brokenLinkBlock){
+		}
+		else if(block == BlocksCommonProxy.brokenLinkBlock) {
 			RenderBrokenPowerLink(renderer, x, y, z);
 			return true;
 		}
 		return false;
 	}
 
-	private void RenderBrokenPowerLink(RenderBlocks renderer, int x, int y, int z){
+	private void RenderBrokenPowerLink(RenderBlocks renderer, int x, int y, int z) {
 		EntityPlayer player = AMCore.proxy.getLocalPlayer();
-		if ((x == 0 && y == 0 && z == 0) || (player != null && player.getCurrentArmor(3) != null && player.getCurrentArmor(3).getItem() == ItemsCommonProxy.magitechGoggles)){
+		if((x == 0 && y == 0 && z == 0) || (player != null && player.getCurrentArmor(3) != null && player.getCurrentArmor(3)
+																										 .getItem() == ItemsCommonProxy.magitechGoggles
+		)) {
 			Block block = BlocksCommonProxy.brokenLinkBlock;
 			renderer.overrideBlockTexture = block.getIcon(0, 0);
 			renderer.renderStandardBlock(block, x, y, z);
@@ -258,35 +292,35 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 		}
 	}
 
-	private void RenderInlayBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer){
+	private void RenderInlayBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		int meta = world != null ? world.getBlockMetadata(x, y, z) : 0;
 		IIcon renderIcon = block.getIcon(0, meta);
 
 		renderer.uvRotateTop = 0;
 		renderer.uvRotateBottom = 0;
 
-		switch (meta){
-		case 0:
-			break;
-		case 1:
-			renderer.uvRotateTop = 2;
-			renderer.uvRotateBottom = 2;
-			break;
-		case 6:
+		switch(meta) {
+			case 0:
+				break;
+			case 1:
+				renderer.uvRotateTop = 2;
+				renderer.uvRotateBottom = 2;
+				break;
+			case 6:
 
-			break;
-		case 7:
-			renderer.uvRotateTop = 1;
-			renderer.uvRotateBottom = 2;
-			break;
-		case 8:
-			renderer.uvRotateTop = 3;
-			renderer.uvRotateBottom = 3;
-			break;
-		case 9:
-			renderer.uvRotateTop = 2;
-			renderer.uvRotateBottom = 1;
-			break;
+				break;
+			case 7:
+				renderer.uvRotateTop = 1;
+				renderer.uvRotateBottom = 2;
+				break;
+			case 8:
+				renderer.uvRotateTop = 3;
+				renderer.uvRotateBottom = 3;
+				break;
+			case 9:
+				renderer.uvRotateTop = 2;
+				renderer.uvRotateBottom = 1;
+				break;
 		}
 
 		renderer.overrideBlockTexture = renderIcon;
@@ -297,20 +331,22 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 		renderer.uvRotateBottom = 0;
 	}
 
-	private void renderEverstoneBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer){
+	private void renderEverstoneBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 
-		if (world == null)
+		if(world == null) {
 			return;
-		if (block == null)
+		}
+		if(block == null) {
 			return;
+		}
 
 		GL11.glColor4f(1, 1, 1, 1);
 
 		TileEntityEverstone te = (TileEntityEverstone)Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z);
-		if (te != null){
+		if(te != null) {
 			Block fBlock = te.getFacade();
-			if (fBlock != null){
-				if (te.isSolid()){
+			if(fBlock != null) {
+				if(te.isSolid()) {
 					IBlockAccess old = renderer.blockAccess;
 					renderer.blockAccess = this.blockAccess;
 					this.blockAccess.setControllingTileEntity(te);
@@ -320,7 +356,8 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 					renderer.renderStandardBlock(fBlock, x, y, z);
 					this.blockAccess.setOuterBlockAccess(null);
 					renderer.blockAccess = old;
-				}else{
+				}
+				else {
 					Tessellator.instance.setColorRGBA(te.getFadeStrength(), te.getFadeStrength(), te.getFadeStrength(), te.getFadeStrength());
 
 					renderer.renderFaceYPos(block, x, y, z, fBlock.getIcon(1, te.getFacadeMeta()));
@@ -332,17 +369,18 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 					renderer.renderFaceZPos(block, x, y, z, fBlock.getIcon(4, te.getFacadeMeta()));
 					renderer.renderFaceZNeg(block, x, y, z, fBlock.getIcon(5, te.getFacadeMeta()));
 				}
-			}else{
+			}
+			else {
 				renderer.renderStandardBlock(block, x, y, z);
 			}
 		}
 	}
 
-	private void renderManaBattery(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer){
+	private void renderManaBattery(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		GL11.glColor4f(1, 1, 1, 1);
 
 		TileEntityManaBattery te = (TileEntityManaBattery)world.getTileEntity(x, y, z);
-		if (te != null){
+		if(te != null) {
 
 			IBlockAccess old = renderer.blockAccess;
 			renderer.blockAccess = this.blockAccess;
@@ -369,12 +407,12 @@ public class SimpleBlockRenderHandler implements ISimpleBlockRenderingHandler{
 	}
 
 	@Override
-	public boolean shouldRender3DInInventory(int arg0){
+	public boolean shouldRender3DInInventory(int arg0) {
 		return true;
 	}
 
 	@Override
-	public int getRenderId(){
+	public int getRenderId() {
 		return BlocksClientProxy.blockRenderID;
 	}
 

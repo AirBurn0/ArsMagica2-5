@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class GuiMagiciansWorkbench extends GuiContainer{
+public class GuiMagiciansWorkbench extends GuiContainer {
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("magicians_workbench.png"));
 
@@ -35,7 +35,7 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 	private int recipeIndex = -1;
 	private int hoverRecipeIndex = -1;
 
-	public GuiMagiciansWorkbench(InventoryPlayer playerInventory, TileEntityMagiciansWorkbench tileEntity){
+	public GuiMagiciansWorkbench(InventoryPlayer playerInventory, TileEntityMagiciansWorkbench tileEntity) {
 		super(new ContainerMagiciansWorkbench(playerInventory, tileEntity));
 		this.workbenchInventory = tileEntity;
 		xSize = 220;
@@ -44,7 +44,7 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 	}
 
 	@Override
-	public void initGui(){
+	public void initGui() {
 		super.initGui();
 
 		int l = (width - xSize) / 2;
@@ -62,16 +62,18 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton){
+	protected void actionPerformed(GuiButton par1GuiButton) {
 		super.actionPerformed(par1GuiButton);
-		if (par1GuiButton == clearGridOne){
-			for (int i = 0; i < 9; ++i){
+		if(par1GuiButton == clearGridOne) {
+			for(int i = 0; i < 9; ++i) {
 				Slot slot = this.inventorySlots.getSlot(i);
 				this.mc.playerController.windowClick(this.inventorySlots.windowId, slot.slotNumber, 0, 1, this.mc.thePlayer);
 			}
-		}else if (par1GuiButton == clearGridTwo){
-			int stop = ((ContainerMagiciansWorkbench)this.inventorySlots).getWorkbench().getUpgradeStatus(TileEntityMagiciansWorkbench.UPG_CRAFT) ? 9 : 4;
-			for (int i = 10; i < 10 + stop; ++i){
+		}
+		else if(par1GuiButton == clearGridTwo) {
+			int stop = ((ContainerMagiciansWorkbench)this.inventorySlots).getWorkbench()
+																		 .getUpgradeStatus(TileEntityMagiciansWorkbench.UPG_CRAFT) ? 9 : 4;
+			for(int i = 10; i < 10 + stop; ++i) {
 				Slot slot = this.inventorySlots.getSlot(i);
 				this.mc.playerController.windowClick(this.inventorySlots.windowId, slot.slotNumber, 0, 1, this.mc.thePlayer);
 			}
@@ -79,18 +81,19 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3){
+	protected void mouseClicked(int par1, int par2, int par3) {
 		super.mouseClicked(par1, par2, par3);
-		if (hoverRecipeIndex > -1 && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+		if(hoverRecipeIndex > -1 && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			((ContainerMagiciansWorkbench)this.inventorySlots).getWorkbench().toggleRecipeLocked(hoverRecipeIndex);
-		}else if (recipeIndex > -1){
+		}
+		else if(recipeIndex > -1) {
 			((ContainerMagiciansWorkbench)this.inventorySlots).moveRecipeToCraftingGrid(recipeIndex);
 		}
 
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY){
+	protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;
@@ -107,10 +110,12 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 		drawTexturedModalRect(l + 18, i1 + 28, 202, 162, 54, 54); //grid
 		drawTexturedModalRect(l + 35, i1 + 87, 19, 225, 20, 20); //output
 		//crafting grid and output 2
-		if (this.workbenchInventory.getUpgradeStatus(workbenchInventory.UPG_CRAFT))
+		if(this.workbenchInventory.getUpgradeStatus(TileEntityMagiciansWorkbench.UPG_CRAFT)) {
 			drawTexturedModalRect(l + 92, i1 + 28, 202, 162, 54, 54); //grid 3x3
-		else
+		}
+		else {
 			drawTexturedModalRect(l + 101, i1 + 37, 202, 162, 36, 36); //grid 2x2
+		}
 		drawTexturedModalRect(l + 109, i1 + 87, 19, 225, 20, 20); //output
 
 		GL11.glDisable(GL11.GL_BLEND);
@@ -120,17 +125,17 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 		int n = 0;
 		recipeIndex = -1;
 		hoverRecipeIndex = -1;
-		for (n = 0; n < this.workbenchInventory.getRememberedRecipeItems().size(); ++n){
+		for(n = 0; n < this.workbenchInventory.getRememberedRecipeItems().size(); ++n) {
 			int x = l + n * 20;
 			int y = i1 + 136;
 			drawTexturedModalRect(x, y, 0, 229, 19, 24);
 
-			if (this.workbenchInventory.getRememberedRecipeItems().get(n).isLocked()){
+			if(this.workbenchInventory.getRememberedRecipeItems().get(n).isLocked()) {
 				drawTexturedModalRect(x + 5, y + 20, 39, 225, 8, 10);
 			}
 
-			if (mouseX >= x && mouseX < x + 19){
-				if (mouseY >= y && mouseY < y + 24){
+			if(mouseX >= x && mouseX < x + 19) {
+				if(mouseY >= y && mouseY < y + 24) {
 					recipeIndex = n;
 					hoverRecipeIndex = n;
 				}
@@ -138,55 +143,62 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 		}
 		n = 0;
 		ttList.clear();
-		while (it.hasNext()){
+		while(it.hasNext()) {
 			RememberedRecipe stack = (RememberedRecipe)it.next();
 
 			renderItemStack(stack.output, l + 1 + n * 20, i1 + 140);
-			if (n == recipeIndex){
-				if (((ContainerMagiciansWorkbench)this.inventorySlots).isRecipeAlreadyInGrid(recipeIndex)){
+			if(n == recipeIndex) {
+				if(((ContainerMagiciansWorkbench)this.inventorySlots).isRecipeAlreadyInGrid(recipeIndex)) {
 					ttList.add(stack.output.getDisplayName());
 					color = 0x40FF40;
-				}else if (!((ContainerMagiciansWorkbench)this.inventorySlots).gridIsFreeFor(recipeIndex)){
+				}
+				else if(!((ContainerMagiciansWorkbench)this.inventorySlots).gridIsFreeFor(recipeIndex)) {
 					ttList.add("\247o" + StatCollector.translateToLocal("am2.gui.gridInUse1"));
 					ttList.add("\247o" + StatCollector.translateToLocal("am2.gui.gridInUse2"));
 					color = 0x666666;
 					recipeIndex = -1;
-				}else if (((ContainerMagiciansWorkbench)this.inventorySlots).hasComponents(recipeIndex)){
+				}
+				else if(((ContainerMagiciansWorkbench)this.inventorySlots).hasComponents(recipeIndex)) {
 					ttList.add(stack.output.getDisplayName());
 					color = -1;
-				}else{
+				}
+				else {
 					ttList.add(stack.output.getDisplayName() + " (" + StatCollector.translateToLocal("am2.gui.componentsMissing") + ")");
 					color = 0xFF0000;
 					recipeIndex = -1;
 				}
-				if (stack.isLocked())
+				if(stack.isLocked()) {
 					ttList.add(StatCollector.translateToLocal("am2.tooltip.mwUnlock"));
-				else
+				}
+				else {
 					ttList.add(StatCollector.translateToLocal("am2.tooltip.mwLock"));
+				}
 
-				if (stack.is2x2)
+				if(stack.is2x2) {
 					ttList.add("(2x2)");
-				else
+				}
+				else {
 					ttList.add("(3x3)");
+				}
 			}
 			n++;
 		}
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY){
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
-		if (ttList.size() > 0){
+		if(ttList.size() > 0) {
 			drawHoveringText(ttList, mouseX - l, mouseY - i1, fontRendererObj, color);
 		}
 	}
 
-	private void renderItemStack(ItemStack stack, int x, int y){
-		if (stack != null){
+	private void renderItemStack(ItemStack stack, int x, int y) {
+		if(stack != null) {
 			GL11.glPushMatrix();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			itemRender.renderItemIntoGUI(mc.fontRenderer, mc.renderEngine, stack, x, y);
@@ -195,8 +207,8 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 		}
 	}
 
-	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font, int color){
-		if (!par1List.isEmpty()){
+	protected void drawHoveringText(List par1List, int par2, int par3, FontRenderer font, int color) {
+		if(!par1List.isEmpty()) {
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -204,11 +216,11 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 			int k = 0;
 			Iterator iterator = par1List.iterator();
 
-			while (iterator.hasNext()){
+			while(iterator.hasNext()) {
 				String s = (String)iterator.next();
 				int l = font.getStringWidth(s);
 
-				if (l > k){
+				if(l > k) {
 					k = l;
 				}
 			}
@@ -217,15 +229,15 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 			int j1 = par3 - 12;
 			int k1 = 8;
 
-			if (par1List.size() > 1){
+			if(par1List.size() > 1) {
 				k1 += 2 + (par1List.size() - 1) * 10;
 			}
 
-			if (i1 + k > this.width){
+			if(i1 + k > this.width) {
 				i1 -= 28 + k;
 			}
 
-			if (j1 + k1 + 6 > this.height){
+			if(j1 + k1 + 6 > this.height) {
 				j1 = this.height - k1 - 6;
 			}
 
@@ -244,11 +256,11 @@ public class GuiMagiciansWorkbench extends GuiContainer{
 			this.drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 - 3 + 1, i2, i2);
 			this.drawGradientRect(i1 - 3, j1 + k1 + 2, i1 + k + 3, j1 + k1 + 3, j2, j2);
 
-			for (int k2 = 0; k2 < par1List.size(); ++k2){
+			for(int k2 = 0; k2 < par1List.size(); ++k2) {
 				String s1 = (String)par1List.get(k2);
 				font.drawStringWithShadow(s1, i1, j1, color);
 
-				if (k2 == 0){
+				if(k2 == 0) {
 					j1 += 2;
 				}
 

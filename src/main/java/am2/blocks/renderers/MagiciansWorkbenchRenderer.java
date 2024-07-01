@@ -8,19 +8,19 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class MagiciansWorkbenchRenderer extends TileEntitySpecialRenderer{
+public class MagiciansWorkbenchRenderer extends TileEntitySpecialRenderer {
 
 	private final ResourceLocation rLoc;
 
-	public MagiciansWorkbenchRenderer(){
+	public MagiciansWorkbenchRenderer() {
 		model = new ModelMagiciansWorkbench();
 		rLoc = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("magiciansWorkbench.png"));
 	}
 
-	public void renderAModelAt(TileEntityMagiciansWorkbench tile, double d, double d1, double d2, float f){
+	public void renderAModelAt(TileEntityMagiciansWorkbench tile, double d, double d1, double d2, float f) {
 		int i = 0;
 
-		if (tile.getWorldObj() != null){
+		if(tile.getWorldObj() != null) {
 			i = tile.getBlockMetadata();
 		}
 		int j = i * 90;
@@ -37,7 +37,7 @@ public class MagiciansWorkbenchRenderer extends TileEntitySpecialRenderer{
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f){
+	public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float f) {
 		renderAModelAt((TileEntityMagiciansWorkbench)tileentity, d, d1, d2, f); //where to render
 	}
 

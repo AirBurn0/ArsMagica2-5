@@ -21,47 +21,52 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.List;
 
-public class ItemNatureGuardianSickle extends ArsMagicaItem{
+public class ItemNatureGuardianSickle extends ArsMagicaItem {
 
-	public ItemNatureGuardianSickle(){
+	public ItemNatureGuardianSickle() {
 		super();
 		setMaxStackSize(1);
 	}
 
 	@Override
-	public Multimap getItemAttributeModifiers(){
+	public Multimap getItemAttributeModifiers() {
 		Multimap multimap = super.getItemAttributeModifiers();
 		multimap.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", 7, 0));
 		return multimap;
 	}
 
 	@Override
-	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4){
+	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		par3List.add(StatCollector.translateToLocal("am2.tooltip.nature_scythe"));
 		super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
 	}
 
 	@Override
-	public boolean onBlockDestroyed(ItemStack par1ItemStack, World par2World, Block par3, int par4, int par5, int par6, EntityLivingBase par7EntityLivingBase){
+	public boolean onBlockDestroyed(ItemStack par1ItemStack, World par2World, Block par3, int par4, int par5, int par6, EntityLivingBase par7EntityLivingBase) {
 
 		int radius = 1;
 
-		for (int i = -radius; i <= radius; ++i){
-			for (int j = -radius; j <= radius; ++j){
-				for (int k = -radius; k <= radius; ++k){
+		for(int i = -radius; i <= radius; ++i) {
+			for(int j = -radius; j <= radius; ++j) {
+				for(int k = -radius; k <= radius; ++k) {
 
-					if (ExtendedProperties.For(par7EntityLivingBase).getCurrentMana() < 5f){
-						if (par2World.isRemote)
+					if(ExtendedProperties.For(par7EntityLivingBase).getCurrentMana() < 5f) {
+						if(par2World.isRemote) {
 							AMCore.proxy.flashManaBar();
+						}
 						return false;
 					}
 
 					Block nextBlock = par2World.getBlock(par4 + i, par5 + j, par6 + k);
-					if (nextBlock == null) continue;
-					if (nextBlock instanceof BlockLeaves){
-						if (ForgeEventFactory.doPlayerHarvestCheck(DummyEntityPlayer.fromEntityLiving(par7EntityLivingBase), nextBlock, true))
-							if (!par2World.isRemote)
+					if(nextBlock == null) {
+						continue;
+					}
+					if(nextBlock instanceof BlockLeaves) {
+						if(ForgeEventFactory.doPlayerHarvestCheck(DummyEntityPlayer.fromEntityLiving(par7EntityLivingBase), nextBlock, true)) {
+							if(!par2World.isRemote) {
 								par2World.func_147478_e(par4 + i, par5 + j, par6 + k, true);
+							}
+						}
 						ExtendedProperties.For(par7EntityLivingBase).deductMana(5f);
 					}
 				}
@@ -72,24 +77,25 @@ public class ItemNatureGuardianSickle extends ArsMagicaItem{
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer){
-		if (flingSickle(par1ItemStack, par2World, par3EntityPlayer)){
+	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
+		if(flingSickle(par1ItemStack, par2World, par3EntityPlayer)) {
 			par3EntityPlayer.inventory.setInventorySlotContents(par3EntityPlayer.inventory.currentItem, null);
 		}
 		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
 	}
 
-	public boolean flingSickle(ItemStack stack, World world, EntityPlayer player){
-		if (ExtendedProperties.For(player).getCurrentMana() < 250 && !player.capabilities.isCreativeMode){
-			if (world.isRemote)
+	public boolean flingSickle(ItemStack stack, World world, EntityPlayer player) {
+		if(ExtendedProperties.For(player).getCurrentMana() < 250 && !player.capabilities.isCreativeMode) {
+			if(world.isRemote) {
 				AMCore.proxy.flashManaBar();
+			}
 			return false;
 		}
-		if (!world.isRemote){
+		if(!world.isRemote) {
 			EntityThrownSickle projectile = new EntityThrownSickle(world, player, 1.25f);
 			projectile.setThrowingEntity(player);
 			projectile.setProjectileSpeed(2.0);
@@ -100,7 +106,7 @@ public class ItemNatureGuardianSickle extends ArsMagicaItem{
 	}
 
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List){
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(ItemsCommonProxy.natureScytheEnchanted.copy());
 	}
 }

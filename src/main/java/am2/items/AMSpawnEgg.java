@@ -1,6 +1,15 @@
 package am2.items;
 
-import am2.bosses.*;
+import am2.bosses.EntityAirGuardian;
+import am2.bosses.EntityArcaneGuardian;
+import am2.bosses.EntityEarthGuardian;
+import am2.bosses.EntityEnderGuardian;
+import am2.bosses.EntityFireGuardian;
+import am2.bosses.EntityLifeGuardian;
+import am2.bosses.EntityLightningGuardian;
+import am2.bosses.EntityNatureGuardian;
+import am2.bosses.EntityWaterGuardian;
+import am2.bosses.EntityWinterGuardian;
 import am2.entities.*;
 import am2.guis.AMGuiIcons;
 import am2.particles.AMParticleIcons;
@@ -16,8 +25,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.Facing;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Constructor;
@@ -25,12 +38,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AMSpawnEgg extends ArsMagicaItem{
+public class AMSpawnEgg extends ArsMagicaItem {
 
 	private final int numClasses = 23;
 	private final ArrayList<ColorPair> colorPairs;
 
-	public AMSpawnEgg(){
+	public AMSpawnEgg() {
 		super();
 		colorPairs = new ArrayList<AMSpawnEgg.ColorPair>();
 
@@ -63,34 +76,34 @@ public class AMSpawnEgg extends ArsMagicaItem{
 	}
 
 	@Override
-	public boolean hasEffect(ItemStack stack, int pass){
+	public boolean hasEffect(ItemStack stack, int pass) {
 		return pass == 0 && stack.getItemDamage() > 8;
 	}
 
 	@Override
-	public boolean requiresMultipleRenderPasses(){
+	public boolean requiresMultipleRenderPasses() {
 		return true;
 	}
 
 	@Override
-	public int getRenderPasses(int metadata){
+	public int getRenderPasses(int metadata) {
 		return 2;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister){
+	public void registerIcons(IIconRegister iconRegister) {
 		AMGuiIcons.instance.init(iconRegister);
 		AMParticleIcons.instance.init(iconRegister);
 		SpellTextureHelper.instance.loadAllIcons(iconRegister);
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack stack){
-		String s = ("" + StatCollector.translateToLocal(Items.spawn_egg.getUnlocalizedName() + ".name")).trim();
+	public String getItemStackDisplayName(ItemStack stack) {
+		String s = (StatCollector.translateToLocal(Items.spawn_egg.getUnlocalizedName() + ".name")).trim();
 		String s1 = getSpawnStringFromMeta(stack.getItemDamage());
 
-		if (s1 != null){
+		if(s1 != null) {
 			s = s + " " + s1;
 		}
 
@@ -99,121 +112,122 @@ public class AMSpawnEgg extends ArsMagicaItem{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getColorFromItemStack(ItemStack stack, int pass){
+	public int getColorFromItemStack(ItemStack stack, int pass) {
 		return colorPairs.get(stack.getItemDamage()).colors[pass];
 	}
 
-	private static Class getSpawnClassFromMeta(int meta){
-		switch (meta){
-		case 0:
-			return EntityManaCreeper.class;
-		case 1:
-			return EntityDryad.class;
-		case 2:
-			return EntityHecate.class;
-		case 3:
-			return EntityMageVillager.class;
-		case 4:
-			return EntityManaElemental.class;
-		case 5:
-			return EntityWaterElemental.class;
-		case 6:
-			return EntityLightMage.class;
-		case 7:
-			return EntityDarkMage.class;
-		case 8:
-			return EntityHellCow.class;
-		case 9:
-			return EntityFlicker.class;
-		case 10:
-			return EntityEarthElemental.class;
-		case 11:
-			return EntityFireElemental.class;
-		case 12:
-			return EntityDarkling.class;
-		case 13:
-			return EntityNatureGuardian.class;
-		case 14:
-			return EntityArcaneGuardian.class;
-		case 15:
-			return EntityEarthGuardian.class;
-		case 16:
-			return EntityWaterGuardian.class;
-		case 17:
-			return EntityWinterGuardian.class;
-		case 18:
-			return EntityAirGuardian.class;
-		case 19:
-			return EntityFireGuardian.class;
-		case 20:
-			return EntityLifeGuardian.class;
-		case 21:
-			return EntityLightningGuardian.class;
-		case 22:
-			return EntityEnderGuardian.class;
+	private static Class getSpawnClassFromMeta(int meta) {
+		switch(meta) {
+			case 0:
+				return EntityManaCreeper.class;
+			case 1:
+				return EntityDryad.class;
+			case 2:
+				return EntityHecate.class;
+			case 3:
+				return EntityMageVillager.class;
+			case 4:
+				return EntityManaElemental.class;
+			case 5:
+				return EntityWaterElemental.class;
+			case 6:
+				return EntityLightMage.class;
+			case 7:
+				return EntityDarkMage.class;
+			case 8:
+				return EntityHellCow.class;
+			case 9:
+				return EntityFlicker.class;
+			case 10:
+				return EntityEarthElemental.class;
+			case 11:
+				return EntityFireElemental.class;
+			case 12:
+				return EntityDarkling.class;
+			case 13:
+				return EntityNatureGuardian.class;
+			case 14:
+				return EntityArcaneGuardian.class;
+			case 15:
+				return EntityEarthGuardian.class;
+			case 16:
+				return EntityWaterGuardian.class;
+			case 17:
+				return EntityWinterGuardian.class;
+			case 18:
+				return EntityAirGuardian.class;
+			case 19:
+				return EntityFireGuardian.class;
+			case 20:
+				return EntityLifeGuardian.class;
+			case 21:
+				return EntityLightningGuardian.class;
+			case 22:
+				return EntityEnderGuardian.class;
 		}
 
 		return null;
 	}
 
-	private String getSpawnStringFromMeta(int meta){
-		switch (meta){
-		case 0:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobManaCreeper.name");
-		case 1:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobDryad.name");
-		case 2:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobHecate.name");
-		case 3:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobMageVillager.name");
-		case 4:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobManaElemental.name");
-		case 5:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobWaterElemental.name");
-		case 6:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobLightMage.name");
-		case 7:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobDarkMage.name");
-		case 8:
-			return StatCollector.translateToLocal("entity.arsmagica2.HellCow.name");
-		case 9:
-			return StatCollector.translateToLocal("entity.arsmagica2.Flicker.name");
-		case 10:
-			return StatCollector.translateToLocal("entity.arsmagica2.EarthElemental.name");
-		case 11:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobFireElemental.name");
-		case 12:
-			return StatCollector.translateToLocal("entity.arsmagica2.MobDarkling.name");
-		case 13:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossNatureGuardian.name");
-		case 14:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossArcaneGuardian.name");
-		case 15:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossEarthGuardian.name");
-		case 16:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossWaterGuardian.name");
-		case 17:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossWinterGuardian.name");
-		case 18:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossAirGuardian.name");
-		case 19:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossFireGuardian.name");
-		case 20:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossLifeGuardian.name");
-		case 21:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossLightningGuardian.name");
-		case 22:
-			return StatCollector.translateToLocal("entity.arsmagica2.BossEnderGuardian.name");
+	private String getSpawnStringFromMeta(int meta) {
+		switch(meta) {
+			case 0:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobManaCreeper.name");
+			case 1:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobDryad.name");
+			case 2:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobHecate.name");
+			case 3:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobMageVillager.name");
+			case 4:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobManaElemental.name");
+			case 5:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobWaterElemental.name");
+			case 6:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobLightMage.name");
+			case 7:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobDarkMage.name");
+			case 8:
+				return StatCollector.translateToLocal("entity.arsmagica2.HellCow.name");
+			case 9:
+				return StatCollector.translateToLocal("entity.arsmagica2.Flicker.name");
+			case 10:
+				return StatCollector.translateToLocal("entity.arsmagica2.EarthElemental.name");
+			case 11:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobFireElemental.name");
+			case 12:
+				return StatCollector.translateToLocal("entity.arsmagica2.MobDarkling.name");
+			case 13:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossNatureGuardian.name");
+			case 14:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossArcaneGuardian.name");
+			case 15:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossEarthGuardian.name");
+			case 16:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossWaterGuardian.name");
+			case 17:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossWinterGuardian.name");
+			case 18:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossAirGuardian.name");
+			case 19:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossFireGuardian.name");
+			case 20:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossLifeGuardian.name");
+			case 21:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossLightningGuardian.name");
+			case 22:
+				return StatCollector.translateToLocal("entity.arsmagica2.BossEnderGuardian.name");
 		}
 
 		return null;
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10){
-		if (par3World.isRemote){
+	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
+		if(par3World.isRemote) {
 			return true;
-		}else{
+		}
+		else {
 
 			Block block = par3World.getBlock(par4, par5, par6);
 			par4 += Facing.offsetsXForSide[par7];
@@ -221,18 +235,18 @@ public class AMSpawnEgg extends ArsMagicaItem{
 			par6 += Facing.offsetsZForSide[par7];
 			double d0 = 0.0D;
 
-			if (par7 == 1 && block != null && block.getRenderType() == 11){
+			if(par7 == 1 && block != null && block.getRenderType() == 11) {
 				d0 = 0.5D;
 			}
 
 			Entity entity = spawnCreature(par3World, par1ItemStack.getItemDamage(), par4 + 0.5D, par5 + d0, par6 + 0.5D);
 
-			if (entity != null){
-				if (entity instanceof EntityLiving && par1ItemStack.hasDisplayName()){
+			if(entity != null) {
+				if(entity instanceof EntityLiving && par1ItemStack.hasDisplayName()) {
 					((EntityLiving)entity).setCustomNameTag(par1ItemStack.getDisplayName());
 				}
 
-				if (!par2EntityPlayer.capabilities.isCreativeMode){
+				if(!par2EntityPlayer.capabilities.isCreativeMode) {
 					--par1ItemStack.stackSize;
 				}
 			}
@@ -242,23 +256,23 @@ public class AMSpawnEgg extends ArsMagicaItem{
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer){
+	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
 		MovingObjectPosition mop = ItemsCommonProxy.spell.getMovingObjectPosition(par3EntityPlayer, par2World, 8.0f, true, false);
 
-		if (mop != null && mop.typeOfHit == MovingObjectType.ENTITY && !par2World.isRemote){
+		if(mop != null && mop.typeOfHit == MovingObjectType.ENTITY && !par2World.isRemote) {
 
 			Entity entity = spawnCreature(par2World, par1ItemStack.getItemDamage(), mop.entityHit.posX, mop.entityHit.posY, mop.entityHit.posZ);
 
-			if (entity != null){
-				if (entity instanceof EntityLiving && par1ItemStack.hasDisplayName()){
+			if(entity != null) {
+				if(entity instanceof EntityLiving && par1ItemStack.hasDisplayName()) {
 					((EntityLiving)entity).setCustomNameTag(par1ItemStack.getDisplayName());
 				}
 
-				if (!par3EntityPlayer.capabilities.isCreativeMode){
+				if(!par3EntityPlayer.capabilities.isCreativeMode) {
 					--par1ItemStack.stackSize;
 				}
 
-				if (mop.entityHit instanceof EntityHecate && getSpawnClassFromMeta(par1ItemStack.getItemDamage()) == EntityHecate.class){
+				if(mop.entityHit instanceof EntityHecate && getSpawnClassFromMeta(par1ItemStack.getItemDamage()) == EntityHecate.class) {
 					((EntityHecate)entity).setChild(true);
 				}
 			}
@@ -267,30 +281,37 @@ public class AMSpawnEgg extends ArsMagicaItem{
 		return par1ItemStack;
 	}
 
-	public static Entity spawnCreature(World par0World, int par1, double par2, double par4, double par6){
+	public static Entity spawnCreature(World par0World, int par1, double par2, double par4, double par6) {
 		Class entityClass = getSpawnClassFromMeta(par1);
-		if (entityClass == null){
+		if(entityClass == null) {
 			return null;
-		}else{
+		}
+		else {
 			Entity entity = null;
-			try{
+			try {
 				Constructor c = entityClass.getConstructor(World.class);
 				entity = (Entity)c.newInstance(par0World);
-			}catch (InstantiationException e){
+			}
+			catch(InstantiationException e) {
 				e.printStackTrace();
-			}catch (IllegalAccessException e){
+			}
+			catch(IllegalAccessException e) {
 				e.printStackTrace();
-			}catch (NoSuchMethodException e){
+			}
+			catch(NoSuchMethodException e) {
 				e.printStackTrace();
-			}catch (SecurityException e){
+			}
+			catch(SecurityException e) {
 				e.printStackTrace();
-			}catch (IllegalArgumentException e){
+			}
+			catch(IllegalArgumentException e) {
 				e.printStackTrace();
-			}catch (InvocationTargetException e){
+			}
+			catch(InvocationTargetException e) {
 				e.printStackTrace();
 			}
 
-			if (entity != null && entity instanceof EntityLiving){
+			if(entity != null && entity instanceof EntityLiving) {
 				EntityLiving entityliving = (EntityLiving)entity;
 				entity.setLocationAndAngles(par2, par4, par6, MathHelper.wrapAngleTo180_float(par0World.rand.nextFloat() * 360.0F), 0.0F);
 				entityliving.rotationYawHead = entityliving.rotationYaw;
@@ -304,38 +325,38 @@ public class AMSpawnEgg extends ArsMagicaItem{
 	}
 
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List){
-		for (int i = 0; i < numClasses; ++i){
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
+		for(int i = 0; i < numClasses; ++i) {
 			par3List.add(new ItemStack(par1, 1, i));
 		}
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int par1){
+	public IIcon getIconFromDamage(int par1) {
 		return Items.spawn_egg.getIconFromDamage(par1);
 	}
 
 	@Override
-	public IIcon getIcon(ItemStack stack, int pass){
+	public IIcon getIcon(ItemStack stack, int pass) {
 		return Items.spawn_egg.getIcon(stack, pass);
 	}
 
 	@Override
-	public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining){
+	public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining) {
 		return Items.spawn_egg.getIcon(stack, renderPass, player, usingItem, useRemaining);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamageForRenderPass(int par1, int par2){
+	public IIcon getIconFromDamageForRenderPass(int par1, int par2) {
 		return Items.spawn_egg.getIconFromDamageForRenderPass(par1, par2);
 	}
 
-	class ColorPair{
+	class ColorPair {
 		public int[] colors;
 
-		public ColorPair(int primary, int secondary){
+		public ColorPair(int primary, int secondary) {
 			colors = new int[2];
 			colors[0] = primary;
 			colors[1] = secondary;

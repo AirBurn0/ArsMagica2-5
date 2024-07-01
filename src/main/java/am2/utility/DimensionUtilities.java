@@ -13,13 +13,14 @@ import net.minecraft.world.WorldServer;
 
 import java.util.ArrayList;
 
-public class DimensionUtilities{
-	public static void doDimensionTransfer(EntityLivingBase entity, int dimension){
+public class DimensionUtilities {
+	public static void doDimensionTransfer(EntityLivingBase entity, int dimension) {
 
-		if (entity instanceof EntityPlayerMP){
+		if(entity instanceof EntityPlayerMP) {
 			EntityPlayerMP player = (EntityPlayerMP)entity;
 			new AMTeleporter(player.mcServer.worldServerForDimension(dimension)).teleport(entity);
-		}else{
+		}
+		else {
 			entity.worldObj.theProfiler.startSection("changeDimension");
 			MinecraftServer minecraftserver = MinecraftServer.getServer();
 			int j = entity.dimension;
@@ -29,11 +30,12 @@ public class DimensionUtilities{
 			entity.worldObj.removeEntity(entity);
 			entity.isDead = false;
 			entity.worldObj.theProfiler.startSection("reposition");
-			minecraftserver.getConfigurationManager().transferEntityToWorld(entity, j, worldserver, worldserver1, new AMTeleporter(worldserver1));
+			minecraftserver.getConfigurationManager()
+						   .transferEntityToWorld(entity, j, worldserver, worldserver1, new AMTeleporter(worldserver1));
 			entity.worldObj.theProfiler.endStartSection("reloading");
 			Entity e = EntityList.createEntityByName(EntityList.getEntityString(entity), worldserver1);
 
-			if (e != null){
+			if(e != null) {
 				e.copyDataFrom(entity, true);
 				worldserver1.spawnEntityInWorld(e);
 			}
@@ -46,21 +48,23 @@ public class DimensionUtilities{
 		}
 	}
 
-	public static TileEntityAstralBarrier GetBlockingAstralBarrier(World world, int x, int y, int z, ArrayList<Long> keys){
+	public static TileEntityAstralBarrier GetBlockingAstralBarrier(World world, int x, int y, int z, ArrayList<Long> keys) {
 		//check for Astral Barrier
-		for (int i = -20; i <= 20; ++i){
-			for (int j = -20; j <= 20; ++j){
-				for (int k = -20; k <= 20; ++k){
-					if (world.getBlock(x + i, y + j, z + k) == BlocksCommonProxy.astralBarrier){
+		for(int i = -20; i <= 20; ++i) {
+			for(int j = -20; j <= 20; ++j) {
+				for(int k = -20; k <= 20; ++k) {
+					if(world.getBlock(x + i, y + j, z + k) == BlocksCommonProxy.astralBarrier) {
 
 						TileEntity te = world.getTileEntity(x + i, y + j, z + k);
-						if (te == null || !(te instanceof TileEntityAstralBarrier)){
+						if(te == null || !(te instanceof TileEntityAstralBarrier)) {
 							continue;
 						}
 						TileEntityAstralBarrier barrier = (TileEntityAstralBarrier)te;
 
 						long barrierKey = KeystoneUtilities.instance.getKeyFromRunes(barrier.getRunesInKey());
-						if ((barrierKey != 0 && keys.contains(barrierKey)) || !barrier.IsActive()) continue;
+						if((barrierKey != 0 && keys.contains(barrierKey)) || !barrier.IsActive()) {
+							continue;
+						}
 
 						int dx = x - barrier.xCoord;
 						int dy = y - barrier.yCoord;
@@ -68,7 +72,9 @@ public class DimensionUtilities{
 
 						int sqDist = (dx * dx + dy * dy + dz * dz);
 
-						if (sqDist < (barrier.getRadius() * barrier.getRadius())) return barrier;
+						if(sqDist < (barrier.getRadius() * barrier.getRadius())) {
+							return barrier;
+						}
 					}
 				}
 			}

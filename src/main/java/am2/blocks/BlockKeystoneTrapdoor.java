@@ -16,32 +16,34 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockKeystoneTrapdoor extends BlockTrapDoor implements ITileEntityProvider{
+public class BlockKeystoneTrapdoor extends BlockTrapDoor implements ITileEntityProvider {
 
-	protected BlockKeystoneTrapdoor(){
+	protected BlockKeystoneTrapdoor() {
 		super(Material.wood);
 		this.setHardness(2.5f);
 		this.setResistance(2.0f);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i){
+	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntityKeystoneDoor();
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int direction, float xOffset, float yOffset, float zOffset){
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int direction, float xOffset, float yOffset, float zOffset) {
 		TileEntity te = world.getTileEntity(x, y, z);
 
 		player.swingItem();
 
-		if (!world.isRemote){
-			if (KeystoneUtilities.HandleKeystoneRecovery(player, (IKeystoneLockable)te))
+		if(!world.isRemote) {
+			if(KeystoneUtilities.HandleKeystoneRecovery(player, (IKeystoneLockable)te)) {
 				return true;
-			if (KeystoneUtilities.instance.canPlayerAccess((IKeystoneLockable)te, player, KeystoneAccessType.USE)){
-				if (player.isSneaking()){
+			}
+			if(KeystoneUtilities.instance.canPlayerAccess((IKeystoneLockable)te, player, KeystoneAccessType.USE)) {
+				if(player.isSneaking()) {
 					FMLNetworkHandler.openGui(player, AMCore.instance, ArsMagicaGuiIdList.GUI_KEYSTONE_LOCKABLE, world, x, y, z);
-				}else{
+				}
+				else {
 					world.playSoundEffect(x, y, z, "random.door_open", 1.0f, 1.0f);
 					return super.onBlockActivated(world, x, y, z, player, direction, xOffset, yOffset, zOffset);
 				}
@@ -52,15 +54,17 @@ public class BlockKeystoneTrapdoor extends BlockTrapDoor implements ITileEntityP
 	}
 
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z){
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
 		IKeystoneLockable lockable = (IKeystoneLockable)world.getTileEntity(x, y, z);
-		if (!KeystoneUtilities.instance.canPlayerAccess(lockable, player, KeystoneAccessType.BREAK)) return false;
+		if(!KeystoneUtilities.instance.canPlayerAccess(lockable, player, KeystoneAccessType.BREAK)) {
+			return false;
+		}
 
 		return super.removedByPlayer(world, player, x, y, z);
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		this.blockIcon = ResourceManager.RegisterTexture("keystone_trapdoor", par1IconRegister);
 	}
 

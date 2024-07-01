@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 
 
-public class AMGuiIcons{
+public class AMGuiIcons {
 	public static boolean initialized = false;
 	public static IIcon manaBar;
 	public static IIcon manaLevel;
@@ -29,11 +29,11 @@ public class AMGuiIcons{
 	public static AMGuiIcons instance = new AMGuiIcons();
 
 
-	private AMGuiIcons(){
+	private AMGuiIcons() {
 
 	}
 
-	public void init(IIconRegister IIconRegister){
+	public void init(IIconRegister IIconRegister) {
 		manaBar = ResourceManager.RegisterTexture("arsmagica2:gui_icons/Mana_Bar", IIconRegister);
 		manaLevel = ResourceManager.RegisterTexture("arsmagica2:gui_icons/Mana_Level", IIconRegister);
 

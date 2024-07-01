@@ -2,8 +2,20 @@ package am2.spell;
 
 import am2.LogHelper;
 import am2.api.spell.ISpellPartManager;
-import am2.api.spell.component.interfaces.*;
-import am2.skills.*;
+import am2.api.spell.component.interfaces.ISkillTreeEntry;
+import am2.api.spell.component.interfaces.ISpellComponent;
+import am2.api.spell.component.interfaces.ISpellModifier;
+import am2.api.spell.component.interfaces.ISpellPart;
+import am2.api.spell.component.interfaces.ISpellShape;
+import am2.skills.AffinityGainsBoost;
+import am2.skills.AugmentedCasting;
+import am2.skills.ExtraSummon;
+import am2.skills.MagePosseI;
+import am2.skills.MagePosseII;
+import am2.skills.ManaRegenBoostI;
+import am2.skills.ManaRegenBoostII;
+import am2.skills.ManaRegenBoostIII;
+import am2.skills.SpellMovement;
 import am2.spell.components.*;
 import am2.spell.modifiers.*;
 import am2.spell.shapes.*;
@@ -13,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
-public class SkillManager implements ISpellPartManager{
+public class SkillManager implements ISpellPartManager {
 
 	public static final int COMPONENT_OFFSET = 1000;
 	public static final int MODIFIER_OFFSET = 5000;
@@ -29,7 +41,7 @@ public class SkillManager implements ISpellPartManager{
 	public ISpellComponent missingComponent;
 	public ISpellModifier missingModifier;
 
-	private SkillManager(){
+	private SkillManager() {
 		registeredParts = new HashMap<Integer, ISkillTreeEntry>();
 		registeredPartNames = new CaseInsensitiveMap<String, Integer>();
 		reversedPartNames = new HashMap<Integer, String>();
@@ -39,63 +51,66 @@ public class SkillManager implements ISpellPartManager{
 		missingShape = new MissingShape();
 	}
 
-	public ArrayList<Integer> getAllShapes(){
+	public ArrayList<Integer> getAllShapes() {
 		ArrayList<Integer> shapes = new ArrayList<Integer>();
-		for (Integer i : registeredParts.keySet()){
-			if (registeredParts.get(i) instanceof ISpellShape){
+		for(Integer i: registeredParts.keySet()) {
+			if(registeredParts.get(i) instanceof ISpellShape) {
 				shapes.add(i);
 			}
 		}
 		return shapes;
 	}
 
-	public ArrayList<Integer> getAllComponents(){
+	public ArrayList<Integer> getAllComponents() {
 		ArrayList<Integer> components = new ArrayList<Integer>();
-		for (Integer i : registeredParts.keySet()){
-			if (registeredParts.get(i) instanceof ISpellComponent){
+		for(Integer i: registeredParts.keySet()) {
+			if(registeredParts.get(i) instanceof ISpellComponent) {
 				components.add(i);
 			}
 		}
 		return components;
 	}
 
-	public ArrayList<Integer> getAllModifiers(){
+	public ArrayList<Integer> getAllModifiers() {
 		ArrayList<Integer> modifiers = new ArrayList<Integer>();
-		for (Integer i : registeredParts.keySet()){
-			if (registeredParts.get(i) instanceof ISpellModifier){
+		for(Integer i: registeredParts.keySet()) {
+			if(registeredParts.get(i) instanceof ISpellModifier) {
 				modifiers.add(i);
 			}
 		}
 		return modifiers;
 	}
 
-	public ArrayList<Integer> getAllTalents(){
+	public ArrayList<Integer> getAllTalents() {
 		ArrayList<Integer> modifiers = new ArrayList<Integer>();
-		for (Integer i : registeredParts.keySet()){
-			if (!(registeredParts.get(i) instanceof ISpellShape) && !(registeredParts.get(i) instanceof ISpellComponent) && !(registeredParts.get(i) instanceof ISpellModifier)){
+		for(Integer i: registeredParts.keySet()) {
+			if(!(registeredParts.get(i) instanceof ISpellShape) && !(registeredParts.get(i) instanceof ISpellComponent) && !(registeredParts.get(i) instanceof ISpellModifier)) {
 				modifiers.add(i);
 			}
 		}
 		return modifiers;
 	}
 
-	public Set<String> getAllSkillNames(){
+	public Set<String> getAllSkillNames() {
 		return registeredPartNames.keySet();
 	}
 
 	@Override
-	public int registerSkillTreeEntry(ISkillTreeEntry part, String name){
+	public int registerSkillTreeEntry(ISkillTreeEntry part, String name) {
 
 		int id = part.getID();
 
-		if (part instanceof ISpellComponent)
+		if(part instanceof ISpellComponent) {
 			id += COMPONENT_OFFSET;
-		else if (part instanceof ISpellModifier)
+		}
+		else if(part instanceof ISpellModifier) {
 			id += MODIFIER_OFFSET;
-		else if (!(part instanceof ISpellShape))
+		}
+		else if(!(part instanceof ISpellShape)) {
 			id += TALENT_OFFSET;
+		}
 
-		if (registeredParts.containsKey(id)){
+		if(registeredParts.containsKey(id)) {
 			String existing = reversedPartNames.get(id);
 			LogHelper.info("Attempted to register duplicate spell part name, %s (which would overwrite %s).  The part was NOT registered.", name, existing);
 			return -1;
@@ -106,73 +121,94 @@ public class SkillManager implements ISpellPartManager{
 		registeredPartNames.put(name, id);
 		reversedPartNames.put(id, name);
 
-		if (part instanceof ISpellPart)
+		if(part instanceof ISpellPart) {
 			SpellRecipeManager.instance.RegisterRecipe((ISpellPart)part);
+		}
 
 		return id;
 	}
 
 	@Override
-	public ISkillTreeEntry getSkill(int id){
+	public ISkillTreeEntry getSkill(int id) {
 		ISkillTreeEntry component = registeredParts.get(id);
-		if (component == null) return missingComponent;
+		if(component == null) {
+			return missingComponent;
+		}
 		return component;
 	}
 
-	public ISpellModifier getModifier(int id){
+	public ISpellModifier getModifier(int id) {
 		ISkillTreeEntry mod = registeredParts.get(id);
-		if (mod == null || !(mod instanceof ISpellModifier)) return missingModifier;
+		if(mod == null || !(mod instanceof ISpellModifier)) {
+			return missingModifier;
+		}
 		return (ISpellModifier)mod;
 	}
 
-	public ISpellShape getShape(int id){
+	public ISpellShape getShape(int id) {
 		ISkillTreeEntry mod = registeredParts.get(id);
-		if (mod == null || !(mod instanceof ISpellShape)) return missingShape;
+		if(mod == null || !(mod instanceof ISpellShape)) {
+			return missingShape;
+		}
 		return (ISpellShape)mod;
 	}
 
-	public ISpellComponent getComponent(int id){
+	public ISpellComponent getComponent(int id) {
 		ISkillTreeEntry mod = registeredParts.get(id);
-		if (mod == null || !(mod instanceof ISpellComponent)) return missingComponent;
+		if(mod == null || !(mod instanceof ISpellComponent)) {
+			return missingComponent;
+		}
 		return (ISpellComponent)mod;
 	}
 
 	@Override
-	public ISkillTreeEntry getSkill(String name){
+	public ISkillTreeEntry getSkill(String name) {
 		Integer ID = registeredPartNames.get(name);
-		if (ID == null) return null;
+		if(ID == null) {
+			return null;
+		}
 		return registeredParts.get(ID);
 	}
 
-	public String getSkillName(ISkillTreeEntry component){
+	public String getSkillName(ISkillTreeEntry component) {
 		int id = component.getID();
-		if (component instanceof ISpellComponent)
+		if(component instanceof ISpellComponent) {
 			id += COMPONENT_OFFSET;
-		else if (component instanceof ISpellModifier)
+		}
+		else if(component instanceof ISpellModifier) {
 			id += MODIFIER_OFFSET;
-		else if (!(component instanceof ISpellShape))
+		}
+		else if(!(component instanceof ISpellShape)) {
 			id += TALENT_OFFSET;
+		}
 		return reversedPartNames.get(id);
 	}
 
-	public int getSpellPartID(Class clazz){
-		for (Integer id : registeredParts.keySet()){
+	public int getSpellPartID(Class clazz) {
+		for(Integer id: registeredParts.keySet()) {
 			ISkillTreeEntry entry = registeredParts.get(id);
-			if (clazz.isAssignableFrom(entry.getClass()))
+			if(clazz.isAssignableFrom(entry.getClass())) {
 				return id;
+			}
 		}
 		LogHelper.warn("Spell Part not found!");
 		return -1;
 	}
 
-	public int getShiftedPartID(ISkillTreeEntry part){
-		if (part instanceof ISpellShape) return part.getID();
-		if (part instanceof ISpellComponent) return part.getID() + COMPONENT_OFFSET;
-		if (part instanceof ISpellModifier) return part.getID() + MODIFIER_OFFSET;
+	public int getShiftedPartID(ISkillTreeEntry part) {
+		if(part instanceof ISpellShape) {
+			return part.getID();
+		}
+		if(part instanceof ISpellComponent) {
+			return part.getID() + COMPONENT_OFFSET;
+		}
+		if(part instanceof ISpellModifier) {
+			return part.getID() + MODIFIER_OFFSET;
+		}
 		return part.getID() + TALENT_OFFSET;
 	}
 
-	public void init(){
+	public void init() {
 		//Shapes		
 		registerSkillTreeEntry(new AoE(), "AoE");
 		registerSkillTreeEntry(new Beam(), "Beam");
@@ -305,23 +341,23 @@ public class SkillManager implements ISpellPartManager{
 		registerSkillTreeEntry(new SpellMovement(), "SpellMotion");
 	}
 
-	public String getDisplayName(ISkillTreeEntry part){
+	public String getDisplayName(ISkillTreeEntry part) {
 		return StatCollector.translateToLocal(String.format("am2.spell.%s", getSkillName(part).toLowerCase()));
 	}
 
-	public String getDisplayName(String unlocalizedName){
+	public String getDisplayName(String unlocalizedName) {
 		return StatCollector.translateToLocal(String.format("am2.spell.%s", unlocalizedName.toLowerCase()));
 	}
 
-	public class CaseInsensitiveMap<K extends String, V> extends HashMap<K, V>{
+	public class CaseInsensitiveMap<K extends String, V> extends HashMap<K, V> {
 
 		@Override
-		public V put(K key, V value){
+		public V put(K key, V value) {
 			return super.put((K)key.toLowerCase(), value);
 		}
 
 		// not @Override because that would require the key parameter to be of type Object
-		public V get(String key){
+		public V get(String key) {
 			return super.get(key.toLowerCase());
 		}
 	}

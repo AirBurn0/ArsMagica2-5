@@ -11,6 +11,8 @@ import am2.api.spell.enums.SpellModifiers;
 import am2.blocks.BlocksCommonProxy;
 import am2.buffs.BuffEffectAstralDistortion;
 import am2.buffs.BuffList;
+import am2.items.ItemEssence;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.particles.AMParticle;
 import am2.particles.ParticleFloatUpward;
@@ -26,15 +28,15 @@ import net.minecraft.world.World;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class AstralDistortion implements ISpellComponent, IRitualInteraction{
+public class AstralDistortion implements ISpellComponent, IRitualInteraction {
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 
-		if (world.getBlock(blockx, blocky, blockz) == Blocks.mob_spawner){
+		if(world.getBlock(blockx, blocky, blockz) == Blocks.mob_spawner) {
 			ItemStack[] reagents = RitualShapeHelper.instance.checkForRitual(this, world, blockx, blocky, blockz);
-			if (reagents != null){
-				if (!world.isRemote){
+			if(reagents != null) {
+				if(!world.isRemote) {
 					world.setBlockToAir(blockx, blocky, blockz);
 					RitualShapeHelper.instance.consumeRitualReagents(this, world, blockx, blocky, blockz);
 					RitualShapeHelper.instance.consumeRitualShape(this, world, blockx, blocky, blockz);
@@ -42,7 +44,8 @@ public class AstralDistortion implements ISpellComponent, IRitualInteraction{
 					item.setPosition(blockx + 0.5, blocky + 0.5, blockz + 0.5);
 					item.setEntityItemStack(new ItemStack(BlocksCommonProxy.inertSpawner));
 					world.spawnEntityInWorld(item);
-				}else{
+				}
+				else {
 
 				}
 
@@ -54,8 +57,8 @@ public class AstralDistortion implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
-		if (target instanceof EntityLivingBase){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
+		if(target instanceof EntityLivingBase) {
 			int duration = SpellUtils.instance.getModifiedInt_Mul(BuffList.default_buff_duration, stack, caster, target, world, 0, SpellModifiers.DURATION);
 			duration = SpellUtils.instance.modifyDurationBasedOnArmor(caster, duration);
 
@@ -63,38 +66,39 @@ public class AstralDistortion implements ISpellComponent, IRitualInteraction{
 			int y = (int)Math.floor(target.posY);
 			int z = (int)Math.floor(target.posZ);
 
-			if (!world.isRemote)
+			if(!world.isRemote) {
 				((EntityLivingBase)target).addPotionEffect(new BuffEffectAstralDistortion(duration, SpellUtils.instance.countModifiers(SpellModifiers.BUFF_POWER, stack, 0)));
+			}
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 80;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
-		return ArsMagicaApi.instance.getBurnoutFromMana(manaCost(caster));
+	public float burnout(EntityLivingBase caster) {
+		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
-		for (int i = 0; i < 10; ++i){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
+		for(int i = 0; i < 10; ++i) {
 			AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "pulse", x, y, z);
-			if (particle != null){
+			if(particle != null) {
 				particle.addRandomOffset(5, 4, 5);
 				particle.AddParticleController(new ParticleFloatUpward(particle, 0.2f, 0, 1, false));
 				particle.setMaxAge(25 + rand.nextInt(10));
 				particle.setRGBColorF(0.7f, 0.2f, 0.9f);
-				if (colorModifier > -1){
+				if(colorModifier > -1) {
 					particle.setRGBColorF(((colorModifier >> 16) & 0xFF) / 255.0f, ((colorModifier >> 8) & 0xFF) / 255.0f, (colorModifier & 0xFF) / 255.0f);
 				}
 			}
@@ -102,43 +106,43 @@ public class AstralDistortion implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.ENDER);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 1;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_PURPLE),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_PURPLE),
 				Items.ender_eye
 		};
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0.05f;
 	}
 
 	@Override
-	public MultiblockStructureDefinition getRitualShape(){
+	public MultiblockStructureDefinition getRitualShape() {
 		return RitualShapeHelper.instance.corruption;
 	}
 
 	@Override
-	public ItemStack[] getReagents(){
+	public ItemStack[] getReagents() {
 		return new ItemStack[]{
 				new ItemStack(ItemsCommonProxy.mobFocus),
-				new ItemStack(ItemsCommonProxy.essence, 1, ItemsCommonProxy.essence.META_ENDER)
+				new ItemStack(ItemsCommonProxy.essence, 1, ItemEssence.META_ENDER)
 		};
 	}
 
 	@Override
-	public int getReagentSearchRadius(){
+	public int getReagentSearchRadius() {
 		return 3;
 	}
 }

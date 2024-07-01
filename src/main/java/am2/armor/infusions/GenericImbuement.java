@@ -11,12 +11,12 @@ import net.minecraft.world.World;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public class GenericImbuement implements IArmorImbuement{
+public class GenericImbuement implements IArmorImbuement {
 
 	private String id = "";
 	private int iconIndex = 0;
-	private ImbuementTiers tier;
-	private int[] validSlots;
+	private final ImbuementTiers tier;
+	private final int[] validSlots;
 
 	public static final UUID imbuedHasteID = UUID.fromString("3b51a94c-8866-470b-8b69-e1d5cb50a72f");
 	public static final AttributeModifier imbuedHaste = new AttributeModifier(imbuedHasteID, "Imbued Haste", 0.2, 2);
@@ -32,14 +32,14 @@ public class GenericImbuement implements IArmorImbuement{
 	public static final String runSpeed = "run_spd";
 	public static final String soulbound = "soulbnd";
 
-	public GenericImbuement(String id, int IIconIndex, ImbuementTiers tier, int[] validSlots){
+	public GenericImbuement(String id, int IIconIndex, ImbuementTiers tier, int[] validSlots) {
 		this.id = id;
 		this.iconIndex = IIconIndex;
 		this.tier = tier;
 		this.validSlots = validSlots;
 	}
 
-	public static void registerAll(){
+	public static void registerAll() {
 		//all armors
 		ImbuementRegistry.instance.registerImbuement(new GenericImbuement(manaRegen, 0, ImbuementTiers.FIRST, new int[]{ImbuementRegistry.SLOT_BOOTS, ImbuementRegistry.SLOT_LEGS, ImbuementRegistry.SLOT_CHEST, ImbuementRegistry.SLOT_HELM}));
 		ImbuementRegistry.instance.registerImbuement(new GenericImbuement(burnoutReduction, 1, ImbuementTiers.FIRST, new int[]{ImbuementRegistry.SLOT_BOOTS, ImbuementRegistry.SLOT_LEGS, ImbuementRegistry.SLOT_CHEST, ImbuementRegistry.SLOT_HELM}));
@@ -62,47 +62,47 @@ public class GenericImbuement implements IArmorImbuement{
 	}
 
 	@Override
-	public String getID(){
+	public String getID() {
 		return id;
 	}
 
 	@Override
-	public int getIconIndex(){
+	public int getIconIndex() {
 		return iconIndex;
 	}
 
 	@Override
-	public ImbuementTiers getTier(){
+	public ImbuementTiers getTier() {
 		return tier;
 	}
 
 	@Override
-	public EnumSet<ImbuementApplicationTypes> getApplicationTypes(){
+	public EnumSet<ImbuementApplicationTypes> getApplicationTypes() {
 		return EnumSet.of(ImbuementApplicationTypes.NONE);
 	}
 
 	@Override
-	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params){
+	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params) {
 		return false;
 	}
 
 	@Override
-	public int[] getValidSlots(){
+	public int[] getValidSlots() {
 		return validSlots;
 	}
 
 	@Override
-	public boolean canApplyOnCooldown(){
+	public boolean canApplyOnCooldown() {
 		return true;
 	}
 
 	@Override
-	public int getCooldown(){
+	public int getCooldown() {
 		return 0;
 	}
 
 	@Override
-	public int getArmorDamage(){
+	public int getArmorDamage() {
 		return 0;
 	}
 }

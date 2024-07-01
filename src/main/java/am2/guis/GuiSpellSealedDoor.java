@@ -9,14 +9,14 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class GuiSpellSealedDoor extends GuiContainer{
+public class GuiSpellSealedDoor extends GuiContainer {
 
 	GuiButton radiusButton;
 
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("astralBarrierGui.png"));
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		mc.renderEngine.bindTexture(background);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int l = (width - xSize) / 2;
@@ -24,7 +24,7 @@ public class GuiSpellSealedDoor extends GuiContainer{
 		drawTexturedModalRect(l, i1, 0, 0, xSize, ySize);
 	}
 
-	public GuiSpellSealedDoor(InventoryPlayer inventoryplayer, TileEntitySpellSealedDoor door){
+	public GuiSpellSealedDoor(InventoryPlayer inventoryplayer, TileEntitySpellSealedDoor door) {
 		super(new ContainerSpellSealedDoor(inventoryplayer, door));
 		this.door = door;
 		xSize = 176;
@@ -32,8 +32,8 @@ public class GuiSpellSealedDoor extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2){
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 	}
 
-	private TileEntitySpellSealedDoor door;
+	private final TileEntitySpellSealedDoor door;
 }

@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 
 public interface IWandTriggerManager {
 
-	public boolean performTrigger(World world, ItemStack wand, EntityPlayer player, 
-			int x, int y, int z, int side, int event);
-	
+	boolean performTrigger(World world, ItemStack wand, EntityPlayer player,
+								  int x, int y, int z, int side, int event);
+
 }

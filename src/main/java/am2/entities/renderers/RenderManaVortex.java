@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-public class RenderManaVortex extends Render{
+public class RenderManaVortex extends Render {
 
 	private final float textureImageSize = 512;
 	private final int textureFrameSize = 64;
@@ -24,12 +24,12 @@ public class RenderManaVortex extends Render{
 	private static final ResourceLocation wisp = new ResourceLocation("arsmagica2", ResourceManager.getMobTexturePath("mob_wisp.png"));
 
 	@Override
-	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9){
+	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
 		doRenderManaVortex((EntityManaVortex)var1, var2, var4, var6, var8, var9);
 	}
 
-	private void doRenderManaVortex(EntityManaVortex vortex, double d, double d1, double d2, float f, float f1){
-		if (vortex == null || !vortex.worldObj.isRemote){
+	private void doRenderManaVortex(EntityManaVortex vortex, double d, double d1, double d2, float f, float f1) {
+		if(vortex == null || !vortex.worldObj.isRemote) {
 			return;
 		}
 		GL11.glPushMatrix();
@@ -39,7 +39,7 @@ public class RenderManaVortex extends Render{
 		GL11.glEnable(3042);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		if (this.renderManager.renderEngine == null){
+		if(this.renderManager.renderEngine == null) {
 			return;
 		}
 		Tessellator tessellator = Tessellator.instance;
@@ -53,7 +53,7 @@ public class RenderManaVortex extends Render{
 		GL11.glPopMatrix();
 	}
 
-	private void renderArsMagicaEffect(Tessellator tessellator, int ticks, int life, float rotation, float scale, float percent){
+	private void renderArsMagicaEffect(Tessellator tessellator, int ticks, int life, float rotation, float scale, float percent) {
 		GL11.glPushMatrix();
 		GL11.glRotatef(180F - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
@@ -89,7 +89,7 @@ public class RenderManaVortex extends Render{
 		float var4 = ((float)ticks) / life;
 		float var5 = 0.0F;
 
-		if (var4 > 0.8F){
+		if(var4 > 0.8F) {
 			var5 = (var4 - 0.8F) / 0.2F;
 		}
 
@@ -106,7 +106,7 @@ public class RenderManaVortex extends Render{
 
 		int color = ((int)(percent * 255) << 16) & ((255 - (int)(percent * 255)) << 8) & (int)(255 - percent * 255);
 
-		for (int var7 = 0; var7 < (var4 + var4 * var4) / 2.0F * 60.0F; ++var7){
+		for(int var7 = 0; var7 < (var4 + var4 * var4) / 2.0F * 60.0F; ++var7) {
 			GL11.glRotatef(var6.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(var6.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(var6.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
@@ -123,7 +123,7 @@ public class RenderManaVortex extends Render{
 			tessellator.setColorRGBA((int)(percent * 255), (int)(255 - (percent * 255)), (int)(255 - (percent * 255)), 0);
 			tessellator.addVertex(-0.866D * var9, var8, -0.5F * var9);
 			tessellator.addVertex(0.866D * var9, var8, -0.5F * var9);
-			tessellator.addVertex(0.0D, var8, 1.0F * var9);
+			tessellator.addVertex(0.0D, var8, var9);
 			tessellator.addVertex(-0.866D * var9, var8, -0.5F * var9);
 			tessellator.draw();
 		}
@@ -139,7 +139,7 @@ public class RenderManaVortex extends Render{
 		RenderHelper.enableStandardItemLighting();
 	}
 
-	private void renderSprite(Tessellator tessellator){
+	private void renderSprite(Tessellator tessellator) {
 
 		float TLX = 0;
 		float BRX = 1;
@@ -160,7 +160,7 @@ public class RenderManaVortex extends Render{
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(Entity entity){
+	protected ResourceLocation getEntityTexture(Entity entity) {
 		return vortex;
 	}
 }

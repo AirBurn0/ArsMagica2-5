@@ -1,6 +1,6 @@
 package am2.api.spell.enums;
 
-public enum SkillPointTypes{
+public enum SkillPointTypes {
 	BLUE,
 	GREEN,
 	RED,

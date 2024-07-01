@@ -6,24 +6,24 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.ItemStack;
 import org.w3c.dom.Node;
 
-public class CompendiumEntryGuide extends CompendiumEntry{
+public class CompendiumEntryGuide extends CompendiumEntry {
 
-	public CompendiumEntryGuide(){
+	public CompendiumEntryGuide() {
 		super(CompendiumEntryTypes.instance.GUIDE);
 	}
 
 	@Override
-	protected void parseEx(Node node){
+	protected void parseEx(Node node) {
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta){
+	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta) {
 		return new GuiArcaneCompendium(searchID);
 	}
 
 	@Override
-	public ItemStack getRepresentItemStack(String searchID, int meta){
+	public ItemStack getRepresentItemStack(String searchID, int meta) {
 		return null;
 	}
 

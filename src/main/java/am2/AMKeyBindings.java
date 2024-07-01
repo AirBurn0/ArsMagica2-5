@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
-public class AMKeyBindings{
+public class AMKeyBindings {
 
 	public static KeyBinding ShapeGroupKey = new KeyBinding("key.ShapeGroups", Keyboard.KEY_C, "key.am2.category");
 	public static KeyBinding SpellBookNextSpellKey = new KeyBinding("key.SpellBookNext", Keyboard.KEY_X, "key.am2.category");
@@ -26,7 +26,7 @@ public class AMKeyBindings{
 	public static KeyBinding ManaToggleKey = new KeyBinding("key.ToggleManaDisplay", Keyboard.KEY_O, "key.am2.category");
 	public static KeyBinding AffinityActivationKey = new KeyBinding("key.ActivateAffinityAbility", Keyboard.KEY_X, "key.am2.category");
 
-	public AMKeyBindings(){
+	public AMKeyBindings() {
 		ClientRegistry.registerKeyBinding(ShapeGroupKey);
 		ClientRegistry.registerKeyBinding(SpellBookNextSpellKey);
 		ClientRegistry.registerKeyBinding(SpellBookPrevSpellKey);
@@ -36,12 +36,12 @@ public class AMKeyBindings{
 	}
 
 	@SubscribeEvent
-	public void onKeyInput(KeyInputEvent event){
+	public void onKeyInput(KeyInputEvent event) {
 		EntityPlayer clientPlayer = FMLClientHandler.instance().getClient().thePlayer;
 
-		if (Minecraft.getMinecraft().currentScreen != null){
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiInventory){
-				if (ManaToggleKey.isPressed()){
+		if(Minecraft.getMinecraft().currentScreen != null) {
+			if(Minecraft.getMinecraft().currentScreen instanceof GuiInventory) {
+				if(ManaToggleKey.isPressed()) {
 					boolean curDisplayFlag = AMCore.config.displayManaInInventory();
 					AMCore.config.setDisplayManaInInventory(!curDisplayFlag);
 				}
@@ -49,18 +49,19 @@ public class AMKeyBindings{
 			return;
 		}
 
-		if (ShapeGroupKey.isPressed()){
+		if(ShapeGroupKey.isPressed()) {
 			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 			ItemStack curItem = player.inventory.getStackInSlot(player.inventory.currentItem);
-			if (curItem == null || (curItem.getItem() != ItemsCommonProxy.spell && curItem.getItem() != ItemsCommonProxy.spellBook && curItem.getItem() != ItemsCommonProxy.arcaneSpellbook)){
+			if(curItem == null || (curItem.getItem() != ItemsCommonProxy.spell && curItem.getItem() != ItemsCommonProxy.spellBook && curItem.getItem() != ItemsCommonProxy.arcaneSpellbook)) {
 				return;
 			}
 			int shapeGroup;
-			if (curItem.getItem() == ItemsCommonProxy.spell){
+			if(curItem.getItem() == ItemsCommonProxy.spell) {
 				shapeGroup = SpellUtils.instance.cycleShapeGroup(curItem);
-			}else{
+			}
+			else {
 				ItemStack spellStack = ((ItemSpellBook)curItem.getItem()).GetActiveItemStack(curItem);
-				if (spellStack == null){
+				if(spellStack == null) {
 					return;
 				}
 				shapeGroup = SpellUtils.instance.cycleShapeGroup(spellStack);
@@ -69,32 +70,36 @@ public class AMKeyBindings{
 
 			AMNetHandler.INSTANCE.sendShapeGroupChangePacket(shapeGroup, clientPlayer.getEntityId());
 
-		}else if (this.SpellBookNextSpellKey.isPressed()){
+		}
+		else if(SpellBookNextSpellKey.isPressed()) {
 			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 			ItemStack curItem = player.inventory.getStackInSlot(player.inventory.currentItem);
-			if (curItem == null){
+			if(curItem == null) {
 				return;
 			}
-			if (curItem.getItem() == ItemsCommonProxy.spellBook || curItem.getItem() == ItemsCommonProxy.arcaneSpellbook){
+			if(curItem.getItem() == ItemsCommonProxy.spellBook || curItem.getItem() == ItemsCommonProxy.arcaneSpellbook) {
 				//send packet to server
 				AMNetHandler.INSTANCE.sendSpellbookSlotChange(player, player.inventory.currentItem, ItemSpellBook.ID_NEXT_SPELL);
 			}
-		}else if (this.SpellBookPrevSpellKey.isPressed()){
+		}
+		else if(SpellBookPrevSpellKey.isPressed()) {
 			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 			ItemStack curItem = player.inventory.getStackInSlot(player.inventory.currentItem);
-			if (curItem == null){
+			if(curItem == null) {
 				return;
 			}
-			if (curItem.getItem() == ItemsCommonProxy.spellBook || curItem.getItem() == ItemsCommonProxy.arcaneSpellbook){
+			if(curItem.getItem() == ItemsCommonProxy.spellBook || curItem.getItem() == ItemsCommonProxy.arcaneSpellbook) {
 				//send packet to server
 				AMNetHandler.INSTANCE.sendSpellbookSlotChange(player, player.inventory.currentItem, ItemSpellBook.ID_PREV_SPELL);
 			}
-		}else if (AuraCustomizationKey.isPressed()){
-			if (AMCore.proxy.playerTracker.hasAA(clientPlayer)){
+		}
+		else if(AuraCustomizationKey.isPressed()) {
+			if(AMCore.proxy.playerTracker.hasAA(clientPlayer)) {
 				Minecraft.getMinecraft().displayGuiScreen(new AuraCustomizationMenu());
 			}
-		}else if (AffinityActivationKey.isPressed()){
-			if (AffinityData.For(clientPlayer).isAbilityReady()){
+		}
+		else if(AffinityActivationKey.isPressed()) {
+			if(AffinityData.For(clientPlayer).isAbilityReady()) {
 				//send packet to the server to process the ability
 				AMNetHandler.INSTANCE.sendAffinityActivate();
 				//activate the ability on the client

@@ -19,8 +19,8 @@ public abstract class CompendiumEntry implements Comparable<CompendiumEntry>{
 	protected boolean isLocked;
 	protected boolean isNew;
 
-	protected ArrayList<CompendiumEntry> subItems;
-	protected ArrayList<String> relatedItems;
+	public ArrayList<CompendiumEntry> subItems;
+	public ArrayList<String> relatedItems;
 
 	public CompendiumEntry(CompendiumEntryType type){
 		this.type = type;
@@ -108,10 +108,10 @@ public abstract class CompendiumEntry implements Comparable<CompendiumEntry>{
 		this.order = orderNode != null ? Integer.parseInt(orderNode.getNodeValue()) : -1;
 
 		Node lockableNode = node.getAttributes().getNamedItem("unlocked");
-		this.isLocked = lockableNode != null ? !Boolean.parseBoolean(lockableNode.getNodeValue()) : true;
+		this.isLocked = lockableNode == null || !Boolean.parseBoolean(lockableNode.getNodeValue());
 
 		Node newNode = node.getAttributes().getNamedItem("new");
-		this.isNew = newNode != null ? Boolean.parseBoolean(newNode.getNodeValue()) : true;
+		this.isNew = newNode == null || Boolean.parseBoolean(newNode.getNodeValue());
 
 		NodeList childNodes = node.getChildNodes();
 
@@ -179,14 +179,12 @@ public abstract class CompendiumEntry implements Comparable<CompendiumEntry>{
 	}
 
 	@SideOnly(Side.CLIENT)
-	protected
-	abstract GuiArcaneCompendium getCompendiumGui(String searchID, int meta);
+	protected abstract GuiArcaneCompendium getCompendiumGui(String searchID, int meta);
 
 	public abstract ItemStack getRepresentItemStack(String searchID, int meta);
 
 	@Override
 	public int compareTo(CompendiumEntry arg0){
-
 		if (arg0 == null) return 1;
 
 		if (this.order > -1 && arg0.order > -1){

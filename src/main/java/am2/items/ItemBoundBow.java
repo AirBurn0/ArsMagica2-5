@@ -14,13 +14,13 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class ItemBoundBow extends ItemBow implements IBoundItem{
+public class ItemBoundBow extends ItemBow implements IBoundItem {
 
-	public ItemBoundBow(){
+	public ItemBoundBow() {
 		this.setMaxDamage(0);
 	}
 
-	public ItemBoundBow setUnlocalizedAndTextureName(String name){
+	public ItemBoundBow setUnlocalizedAndTextureName(String name) {
 		this.setUnlocalizedName(name);
 		setTextureName(name);
 		return this;
@@ -28,84 +28,88 @@ public class ItemBoundBow extends ItemBow implements IBoundItem{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = ResourceManager.RegisterTexture("bound_bow", par1IconRegister);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public EnumRarity getRarity(ItemStack par1ItemStack){
+	public EnumRarity getRarity(ItemStack par1ItemStack) {
 		return EnumRarity.rare;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean hasEffect(ItemStack par1ItemStack){
+	public boolean hasEffect(ItemStack par1ItemStack) {
 		return true;
 	}
 
 	@Override
-	public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack){
+	public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack) {
 		return false;
 	}
 
 	@Override
-	public int getItemEnchantability(){
+	public int getItemEnchantability() {
 		return 0;
 	}
 
 	@Override
-	public boolean isItemTool(ItemStack par1ItemStack){
+	public boolean isItemTool(ItemStack par1ItemStack) {
 		return true;
 	}
 
 	@Override
-	public boolean isRepairable(){
+	public boolean isRepairable() {
 		return false;
 	}
 
 	@Override
-	public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player){
+	public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
 		UnbindItem(item, player, player.inventory.currentItem);
 		return false;
 	}
 
 	@Override
-	public float maintainCost(){
+	public float maintainCost() {
 		return IBoundItem.normalMaintain;
 	}
 
 	@Override
-	public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int slotIndex, boolean par5){
-		if (par3Entity instanceof EntityPlayer){
+	public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int slotIndex, boolean par5) {
+		if(par3Entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)par3Entity;
-			if (player.capabilities.isCreativeMode) return;
+			if(player.capabilities.isCreativeMode) {
+				return;
+			}
 			ExtendedProperties props = ExtendedProperties.For(player);
-			if (props.getCurrentMana() + props.getBonusCurrentMana() < this.maintainCost()){
+			if(props.getCurrentMana() + props.getBonusCurrentMana() < this.maintainCost()) {
 				UnbindItem(par1ItemStack, (EntityPlayer)par3Entity, slotIndex);
 				return;
-			}else{
+			}
+			else {
 				props.deductMana(this.maintainCost());
 			}
-			if (par1ItemStack.getItemDamage() > 0)
+			if(par1ItemStack.getItemDamage() > 0) {
 				par1ItemStack.damageItem(-1, (EntityLivingBase)par3Entity);
+			}
 		}
 	}
 
 	@Override
-	public void UnbindItem(ItemStack itemstack, EntityPlayer player, int inventorySlot){
+	public void UnbindItem(ItemStack itemstack, EntityPlayer player, int inventorySlot) {
 		itemstack = InventoryUtilities.replaceItem(itemstack, ItemsCommonProxy.spell);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean shouldRotateAroundWhenRendering(){
+	public boolean shouldRotateAroundWhenRendering() {
 		return true;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean isFull3D(){
+	public boolean isFull3D() {
 		return true;
 	}
 }

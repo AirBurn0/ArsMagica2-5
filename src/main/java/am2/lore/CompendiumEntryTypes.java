@@ -1,10 +1,11 @@
 package am2.lore;
 
 import am2.guis.AMGuiIcons;
+import am2.items.ItemEssence;
 import am2.items.ItemsCommonProxy;
 import am2.texture.SpellIconManager;
 
-public class CompendiumEntryTypes{
+public class CompendiumEntryTypes {
 
 	public final CompendiumEntryType GUIDE = new CompendiumEntryType("guides", "guide", "Guides", 0, CompendiumEntryGuide.class);
 	public final CompendiumEntryType MECHANIC = new CompendiumEntryType("mechanics", "mechanic", "Mechanics", 1, CompendiumEntryMechanic.class);
@@ -22,11 +23,11 @@ public class CompendiumEntryTypes{
 	public static final CompendiumEntryTypes instance = new CompendiumEntryTypes();
 	private boolean initialized = false;
 
-	public boolean hasInitialized(){
+	public boolean hasInitialized() {
 		return initialized;
 	}
 
-	public static CompendiumEntryType[] categoryList(){
+	public static CompendiumEntryType[] categoryList() {
 		return new CompendiumEntryType[]{
 				instance.GUIDE,
 				instance.MECHANIC,
@@ -42,7 +43,7 @@ public class CompendiumEntryTypes{
 		};
 	}
 
-	private static CompendiumEntryType[] allValues(){
+	private static CompendiumEntryType[] allValues() {
 		return new CompendiumEntryType[]{
 				instance.GUIDE,
 				instance.MECHANIC,
@@ -59,10 +60,10 @@ public class CompendiumEntryTypes{
 		};
 	}
 
-	public void initTextures(){
+	public void initTextures() {
 		GUIDE.setRepresentIcon(ItemsCommonProxy.arcaneCompendium.getIconFromDamage(0));
 		MECHANIC.setRepresentIcon(ItemsCommonProxy.magitechGoggles.getIconFromDamage(0));
-		ITEM.setRepresentIcon(ItemsCommonProxy.essence.getIconFromDamage(ItemsCommonProxy.essence.META_ICE));
+		ITEM.setRepresentIcon(ItemsCommonProxy.essence.getIconFromDamage(ItemEssence.META_ICE));
 		BLOCK.setRepresentIcon(ItemsCommonProxy.crystalWrench.getIconFromDamage(0));
 		SPELL_SHAPE.setRepresentIcon(SpellIconManager.instance.getIcon("Binding"));
 		SPELL_COMPONENT.setRepresentIcon(SpellIconManager.instance.getIcon("LifeTap"));
@@ -76,9 +77,9 @@ public class CompendiumEntryTypes{
 		initialized = true;
 	}
 
-	public static CompendiumEntryType getForSection(String category, String node){
-		for (CompendiumEntryType type : instance.allValues()){
-			if (type.getCategoryName().equals(category) && type.getNodeName().equals(node)){
+	public static CompendiumEntryType getForSection(String category, String node) {
+		for(CompendiumEntryType type: allValues()) {
+			if(type.getCategoryName().equals(category) && type.getNodeName().equals(node)) {
 				return type;
 			}
 		}

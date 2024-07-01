@@ -5,19 +5,19 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.init.Items;
 
-public class ItemMobFocus extends ItemFilterFocus{
+public class ItemMobFocus extends ItemFilterFocus {
 
-	protected ItemMobFocus(){
+	protected ItemMobFocus() {
 		super();
 	}
 
 	@Override
-	public Class getFilterClass(){
+	public Class getFilterClass() {
 		return IMob.class;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
 				"S",
 				"F",
@@ -28,12 +28,12 @@ public class ItemMobFocus extends ItemFilterFocus{
 	}
 
 	@Override
-	public String getInGameName(){
+	public String getInGameName() {
 		return "Monster Focus";
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = ResourceManager.RegisterTexture("focus_seer_monster", par1IconRegister);
 	}
 

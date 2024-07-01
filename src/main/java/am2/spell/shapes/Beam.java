@@ -9,6 +9,7 @@ import am2.api.spell.enums.Affinity;
 import am2.api.spell.enums.SpellCastResult;
 import am2.api.spell.enums.SpellModifiers;
 import am2.blocks.BlocksCommonProxy;
+import am2.items.ItemOre;
 import am2.items.ItemsCommonProxy;
 import am2.particles.AMBeam;
 import am2.particles.AMParticle;
@@ -29,21 +30,21 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 
-public class Beam implements ISpellShape{
+public class Beam implements ISpellShape {
 
 	private final HashMap beams;
 
-	public Beam(){
+	public Beam() {
 		beams = new HashMap();
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 1;
 	}
 
 	@Override
-	public SpellCastResult beginStackStage(ItemSpellBase item, ItemStack stack, EntityLivingBase caster, EntityLivingBase target, World world, double x, double y, double z, int side, boolean giveXP, int useCount){
+	public SpellCastResult beginStackStage(ItemSpellBase item, ItemStack stack, EntityLivingBase caster, EntityLivingBase target, World world, double x, double y, double z, int side, boolean giveXP, int useCount) {
 
 		boolean shouldApplyEffect = useCount % 10 == 0;
 
@@ -55,26 +56,29 @@ public class Beam implements ISpellShape{
 		Vec3 beamHitVec = null;
 		Vec3 spellVec = null;
 
-		if (mop == null){
+		if(mop == null) {
 			beamHitVec = MathUtilities.extrapolateEntityLook(world, caster, range);
 			spellVec = beamHitVec;
-		}else if (mop.typeOfHit == MovingObjectType.ENTITY){
-			if (shouldApplyEffect){
+		}
+		else if(mop.typeOfHit == MovingObjectType.ENTITY) {
+			if(shouldApplyEffect) {
 				Entity e = mop.entityHit;
-				if (e instanceof EntityDragonPart && ((EntityDragonPart)e).entityDragonObj instanceof EntityLivingBase)
+				if(e instanceof EntityDragonPart && ((EntityDragonPart)e).entityDragonObj instanceof EntityLivingBase) {
 					e = (EntityLivingBase)((EntityDragonPart)e).entityDragonObj;
+				}
 				result = SpellHelper.instance.applyStageToEntity(stack, caster, world, e, 0, giveXP);
-				if (result != SpellCastResult.SUCCESS){
+				if(result != SpellCastResult.SUCCESS) {
 					return result;
 				}
 			}
 			float rng = (float)mop.hitVec.distanceTo(Vec3.createVectorHelper(caster.posX, caster.posY, caster.posZ));
 			beamHitVec = MathUtilities.extrapolateEntityLook(world, caster, rng);
 			spellVec = beamHitVec;
-		}else{
-			if (shouldApplyEffect){
+		}
+		else {
+			if(shouldApplyEffect) {
 				result = SpellHelper.instance.applyStageToGround(stack, caster, world, mop.blockX, mop.blockY, mop.blockZ, mop.sideHit, mop.hitVec.xCoord, mop.hitVec.yCoord, mop.hitVec.zCoord, 0, giveXP);
-				if (result != SpellCastResult.SUCCESS){
+				if(result != SpellCastResult.SUCCESS) {
 					return result;
 				}
 			}
@@ -82,7 +86,7 @@ public class Beam implements ISpellShape{
 			spellVec = Vec3.createVectorHelper(mop.blockX, mop.blockY, mop.blockZ);
 		}
 
-		if (world.isRemote && beamHitVec != null){
+		if(world.isRemote && beamHitVec != null) {
 			AMBeam beam = (AMBeam)beams.get(caster.getEntityId());
 			double startX = caster.posX;
 			double startY = caster.posY + caster.getEyeHeight() - 0.2f;
@@ -90,114 +94,120 @@ public class Beam implements ISpellShape{
 			Affinity affinity = SpellUtils.instance.mainAffinityFor(stack);
 
 			int color = -1;
-			if (SpellUtils.instance.modifierIsPresent(SpellModifiers.COLOR, stack, 0)){
+			if(SpellUtils.instance.modifierIsPresent(SpellModifiers.COLOR, stack, 0)) {
 				ISpellModifier[] mods = SpellUtils.instance.getModifiersForStage(stack, 0);
 				int ordinalCount = 0;
-				for (ISpellModifier mod : mods){
-					if (mod instanceof Colour){
+				for(ISpellModifier mod: mods) {
+					if(mod instanceof Colour) {
 						byte[] meta = SpellUtils.instance.getModifierMetadataFromStack(stack, mod, 0, ordinalCount++);
 						color = (int)mod.getModifier(SpellModifiers.COLOR, null, null, null, meta);
 					}
 				}
 			}
 
-			if (beam != null){
-				if (beam.isDead || beam.getDistanceSqToEntity(caster) > 4){
+			if(beam != null) {
+				if(beam.isDead || beam.getDistanceSqToEntity(caster) > 4) {
 					beams.remove(caster.getEntityId());
-				}else{
+				}
+				else {
 					beam.setBeamLocationAndTarget(startX, startY, startZ, beamHitVec.xCoord, beamHitVec.yCoord, beamHitVec.zCoord);
 				}
-			}else{
-				if (affinity == Affinity.LIGHTNING){
-					AMCore.instance.proxy.particleManager.BoltFromEntityToPoint(world, caster, beamHitVec.xCoord, beamHitVec.yCoord, beamHitVec.zCoord, 1, color == -1 ? affinity.color : color);
-				}else{
-					beam = (AMBeam)AMCore.instance.proxy.particleManager.BeamFromEntityToPoint(world, caster, beamHitVec.xCoord, beamHitVec.yCoord, beamHitVec.zCoord, color == -1 ? affinity.color : color);
-					if (beam != null){
-						if (AMCore.instance.proxy.getProxyUtils().isLocalPlayerInFirstPerson())
+			}
+			else {
+				if(affinity == Affinity.LIGHTNING) {
+					AMCore.proxy.particleManager.BoltFromEntityToPoint(world, caster, beamHitVec.xCoord, beamHitVec.yCoord, beamHitVec.zCoord, 1, color == -1 ? affinity.color : color);
+				}
+				else {
+					beam = (AMBeam)AMCore.proxy.particleManager.BeamFromEntityToPoint(world, caster, beamHitVec.xCoord, beamHitVec.yCoord, beamHitVec.zCoord, color == -1 ? affinity.color : color);
+					if(beam != null) {
+						if(AMCore.proxy.getProxyUtils().isLocalPlayerInFirstPerson()) {
 							beam.setFirstPersonPlayerCast();
+						}
 						beams.put(caster.getEntityId(), beam);
 					}
 				}
 			}
-			for (int i = 0; i < AMCore.config.getGFXLevel() + 1; ++i){
+			for(int i = 0; i < AMCore.config.getGFXLevel() + 1; ++i) {
 				AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, AMParticleIcons.instance.getParticleForAffinity(affinity), beamHitVec.xCoord, beamHitVec.yCoord, beamHitVec.zCoord);
-				if (particle != null){
+				if(particle != null) {
 					particle.setMaxAge(2);
 					particle.setParticleScale(0.1f);
 					particle.setIgnoreMaxAge(false);
-					if (color != -1)
+					if(color != -1) {
 						particle.setRGBColorI(color);
+					}
 					particle.AddParticleController(new ParticleMoveOnHeading(particle, world.rand.nextDouble() * 360, world.rand.nextDouble() * 360, world.rand.nextDouble() * 0.2 + 0.02f, 1, false));
 				}
 			}
 		}
 
-		if (result != null && spellVec != null && shouldApplyEffect){
+		if(result != null && spellVec != null && shouldApplyEffect) {
 			ItemStack newItemStack = SpellUtils.instance.popStackStage(stack);
 			return SpellHelper.instance.applyStackStage(newItemStack, caster, target, spellVec.xCoord, spellVec.yCoord, spellVec.zCoord, mop != null ? mop.sideHit : 0, world, true, giveXP, 0);
-		}else{
+		}
+		else {
 			return SpellCastResult.SUCCESS_REDUCE_MANA;
 		}
 	}
 
 	@Override
-	public boolean isChanneled(){
+	public boolean isChanneled() {
 		return true;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
 				ItemsCommonProxy.standardFocus,
-				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_BLUETOPAZ),
-				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_BLUETOPAZ),
-				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_PURIFIEDVINTEUM),
+				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_BLUETOPAZ),
+				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_BLUETOPAZ),
+				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_PURIFIEDVINTEUM),
 				BlocksCommonProxy.aum,
 				String.format("E:%d", PowerTypes.NEUTRAL.ID()), 500
 		};
 	}
 
 	@Override
-	public float manaCostMultiplier(ItemStack spellStack){
+	public float manaCostMultiplier(ItemStack spellStack) {
 		return 0.1f;
 	}
 
 	@Override
-	public boolean isTerminusShape(){
+	public boolean isTerminusShape() {
 		return false;
 	}
 
 	@Override
-	public boolean isPrincipumShape(){
+	public boolean isPrincipumShape() {
 		return false;
 	}
 
 	@Override
-	public String getSoundForAffinity(Affinity affinity, ItemStack stack, World world){
-		switch (affinity){
-		case AIR:
-			return "arsmagica2:spell.loop.air";
-		case ARCANE:
-			return "arsmagica2:spell.loop.arcane";
-		case EARTH:
-			return "arsmagica2:spell.loop.earth";
-		case ENDER:
-			return "arsmagica2:spell.loop.ender";
-		case FIRE:
-			return "arsmagica2:spell.loop.fire";
-		case ICE:
-			return "arsmagica2:spell.loop.ice";
-		case LIFE:
-			return "arsmagica2:spell.loop.life";
-		case LIGHTNING:
-			return "arsmagica2:spell.loop.lightning";
-		case NATURE:
-			return "arsmagica2:spell.loop.nature";
-		case WATER:
-			return "arsmagica2:spell.loop.water";
-		case NONE:
-		default:
-			return "arsmagica2:spell.loop.none";
+	public String getSoundForAffinity(Affinity affinity, ItemStack stack, World world) {
+		switch(affinity) {
+			case AIR:
+				return "arsmagica2:spell.loop.air";
+			case ARCANE:
+				return "arsmagica2:spell.loop.arcane";
+			case EARTH:
+				return "arsmagica2:spell.loop.earth";
+			case ENDER:
+				return "arsmagica2:spell.loop.ender";
+			case FIRE:
+				return "arsmagica2:spell.loop.fire";
+			case ICE:
+				return "arsmagica2:spell.loop.ice";
+			case LIFE:
+				return "arsmagica2:spell.loop.life";
+			case LIGHTNING:
+				return "arsmagica2:spell.loop.lightning";
+			case NATURE:
+				return "arsmagica2:spell.loop.nature";
+			case WATER:
+				return "arsmagica2:spell.loop.water";
+			case NONE:
+			default:
+				return "arsmagica2:spell.loop.none";
 		}
 	}
 }

@@ -19,7 +19,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class EntityShadowHelper extends EntityLiving{
+public class EntityShadowHelper extends EntityLiving {
 
 	private static final int DW_MIMIC_USER = 21; //who are we going to mimic (MC skin)?	
 	private static final int DW_SEARCH_ITEM = 22; //what are we currently looking for?
@@ -37,30 +37,30 @@ public class EntityShadowHelper extends EntityLiving{
 	@SideOnly(Side.CLIENT)
 	private ShadowSkinHelper skinHelper;
 
-	public EntityShadowHelper(World par1World){
+	public EntityShadowHelper(World par1World) {
 		super(par1World);
 		initAI();
 	}
 
 	@Override
-	protected boolean isAIEnabled(){
+	protected boolean isAIEnabled() {
 		return true;
 	}
 
 	@Override
-	public void onDeath(DamageSource par1DamageSource){
+	public void onDeath(DamageSource par1DamageSource) {
 		super.onDeath(par1DamageSource);
-		if (worldObj.isRemote){
+		if(worldObj.isRemote) {
 			spawnParticles();
 			worldObj.playSound(posX, posY, posZ, "arsmagica2:misc.craftingaltar.create_spell", 1.0f, 1.0f, true);
 		}
 	}
 
-	private void spawnParticles(){
-		if (worldObj.isRemote){
-			for (int i = 0; i < 25 * AMCore.config.getGFXLevel() + 1; ++i){
+	private void spawnParticles() {
+		if(worldObj.isRemote) {
+			for(int i = 0; i < 25 * AMCore.config.getGFXLevel() + 1; ++i) {
 				AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(worldObj, "arcane", posX, posY, posZ);
-				if (particle != null){
+				if(particle != null) {
 					particle.addRandomOffset(1, 1, 1);
 					particle.AddParticleController(new ParticleFloatUpward(particle, 0, 0.02f + getRNG().nextFloat() * 0.2f, 1, false));
 					particle.setIgnoreMaxAge(false);
@@ -70,29 +70,30 @@ public class EntityShadowHelper extends EntityLiving{
 		}
 	}
 
-	public void onJoinWorld(World world){
+	public void onJoinWorld(World world) {
 		spawnParticles();
-		if (world.isRemote)
+		if(world.isRemote) {
 			this.skinHelper = new ShadowSkinHelper();
+		}
 	}
 
 	@Override
-	protected String getDeathSound(){
+	protected String getDeathSound() {
 		return null;
 	}
 
 	@Override
-	protected boolean canDespawn(){
+	protected boolean canDespawn() {
 		return false;
 	}
 
 	@Override
-	protected void onDeathUpdate(){
+	protected void onDeathUpdate() {
 		this.setDead();
 	}
 
 	@Override
-	protected void entityInit(){
+	protected void entityInit() {
 		super.entityInit();
 		this.dataWatcher.addObject(DW_MIMIC_USER, "");
 		this.dataWatcher.addObject(DW_SEARCH_ITEM, new ItemStack(Items.apple));
@@ -105,95 +106,97 @@ public class EntityShadowHelper extends EntityLiving{
 		this.dataWatcher.addObject(DW_DROP_LOC_Z, 0);
 	}
 
-	public void setSearchLocationAndItem(AMVector3 location, ItemStack item){
-		if (this.worldObj.isRemote) return;
+	public void setSearchLocationAndItem(AMVector3 location, ItemStack item) {
+		if(this.worldObj.isRemote) {
+			return;
+		}
 		this.dataWatcher.updateObject(DW_SEARCH_ITEM, item);
 		this.dataWatcher.updateObject(DW_TRANS_LOC_X, (int)location.x);
 		this.dataWatcher.updateObject(DW_TRANS_LOC_Y, (int)location.y);
 		this.dataWatcher.updateObject(DW_TRANS_LOC_Z, (int)location.z);
 	}
 
-	public void setDropoffLocation(AMVector3 location){
+	public void setDropoffLocation(AMVector3 location) {
 		this.dataWatcher.updateObject(DW_DROP_LOC_X, (int)location.x);
 		this.dataWatcher.updateObject(DW_DROP_LOC_Y, (int)location.y);
 		this.dataWatcher.updateObject(DW_DROP_LOC_Z, (int)location.z);
 	}
 
-	public AMVector3 getSearchLocation(){
+	public AMVector3 getSearchLocation() {
 		return new AMVector3(this.dataWatcher.getWatchableObjectInt(DW_TRANS_LOC_X), this.dataWatcher.getWatchableObjectInt(DW_TRANS_LOC_Y), this.dataWatcher.getWatchableObjectInt(DW_TRANS_LOC_Z));
 	}
 
-	public AMVector3 getDropLocation(){
+	public AMVector3 getDropLocation() {
 		return new AMVector3(this.dataWatcher.getWatchableObjectInt(DW_DROP_LOC_X), this.dataWatcher.getWatchableObjectInt(DW_DROP_LOC_Y), this.dataWatcher.getWatchableObjectInt(DW_DROP_LOC_Z));
 	}
 
-	public ItemStack getSearchItem(){
+	public ItemStack getSearchItem() {
 		return this.dataWatcher.getWatchableObjectItemStack(DW_SEARCH_ITEM);
 	}
 
-	public void setHeldItem(ItemStack item){
+	public void setHeldItem(ItemStack item) {
 		this.dataWatcher.updateObject(DW_HELD_ITEM, item);
 	}
 
-	public void setMimicUser(String userName){
+	public void setMimicUser(String userName) {
 		this.dataWatcher.updateObject(DW_MIMIC_USER, userName);
 	}
 
-	public String getMimicUser(){
+	public String getMimicUser() {
 		return this.dataWatcher.getWatchableObjectString(DW_MIMIC_USER);
 	}
 
-	public boolean hasSearchLocation(){
+	public boolean hasSearchLocation() {
 		return !this.getSearchLocation().equals(AMVector3.zero());
 	}
 
-	public TileEntityCraftingAltar getAltarTarget(){
+	public TileEntityCraftingAltar getAltarTarget() {
 		return this.altarTarget;
 	}
 
-	public void setAltarTarget(TileEntityCraftingAltar target){
+	public void setAltarTarget(TileEntityCraftingAltar target) {
 		this.altarTarget = target;
 	}
 
-	private void initAI(){
+	private void initAI() {
 		this.tasks.addTask(0, new EntityAISwimming(this));
 		this.tasks.addTask(1, new EntityAIOpenDoor(this, true));
 		this.tasks.addTask(2, new EntityAISpellmaking(this));
 	}
 
 	@Override
-	public ItemStack getHeldItem(){
+	public ItemStack getHeldItem() {
 		return this.dataWatcher.getWatchableObjectItemStack(DW_HELD_ITEM);
 	}
 
 	@Override
-	public void onUpdate(){
+	public void onUpdate() {
 		super.onUpdate();
-		if (this.worldObj.isRemote){
-			if (this.getMimicUser() != lastDWString){
+		if(this.worldObj.isRemote) {
+			if(this.getMimicUser() != lastDWString) {
 				lastDWString = getMimicUser();
 				this.skinHelper.setupCustomSkin(lastDWString);
 			}
 		}
-		if (!worldObj.isRemote && (altarTarget == null || !altarTarget.isCrafting())){
+		if(!worldObj.isRemote && (altarTarget == null || !altarTarget.isCrafting())) {
 			this.unSummon();
 		}
 	}
 
 	@Override
-	protected String getHurtSound(){
+	protected String getHurtSound() {
 		return null;
 	}
 
-	public void unSummon(){
+	public void unSummon() {
 		this.attackEntityFrom(DamageSource.generic, 5000);
 	}
 
-	public ResourceLocation getLocationSkin(){
+	public ResourceLocation getLocationSkin() {
 		return this.skinHelper.getLocationSkin();
 	}
 
-	public ThreadDownloadImageData getTextureSkin(){
+	public ThreadDownloadImageData getTextureSkin() {
 		return this.skinHelper.getTextureSkin();
 	}
 }

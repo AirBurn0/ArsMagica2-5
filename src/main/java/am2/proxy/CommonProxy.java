@@ -1,6 +1,13 @@
 package am2.proxy;
 
-import am2.*;
+import am2.AMCore;
+import am2.AMEventHandler;
+import am2.AMWorldEventHandler;
+import am2.EntityItemWatcher;
+import am2.ItemFrameWatcher;
+import am2.ObeliskFuelHelper;
+import am2.PlayerTracker;
+import am2.ShrinkHandler;
 import am2.affinity.AffinityHelper;
 import am2.api.math.AMVector3;
 import am2.api.power.IPowerNode;
@@ -12,6 +19,7 @@ import am2.blocks.tileentities.TileEntityParticleEmitter;
 import am2.buffs.BuffList;
 import am2.enchantments.AMEnchantments;
 import am2.entities.EntityManager;
+import am2.items.ItemOre;
 import am2.items.ItemsCommonProxy;
 import am2.network.AMNetHandler;
 import am2.network.AMPacketProcessorServer;
@@ -51,8 +59,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class CommonProxy{
-	private ArrayList<AMVector3> pendingFlickerLinks;
+public class CommonProxy {
+	private final ArrayList<AMVector3> pendingFlickerLinks;
 
 	public BlocksCommonProxy blocks;
 	public ItemsCommonProxy items;
@@ -70,12 +78,12 @@ public class CommonProxy{
 
 	private ServerTickHandler serverTickHandler;
 
-	private HashMap<EntityLivingBase, ArrayList<PotionEffect>> deferredPotionEffects = new HashMap<EntityLivingBase, ArrayList<PotionEffect>>();
-	private HashMap<EntityLivingBase, Integer> deferredDimensionTransfers = new HashMap<EntityLivingBase, Integer>();
+	private final HashMap<EntityLivingBase, ArrayList<PotionEffect>> deferredPotionEffects = new HashMap<EntityLivingBase, ArrayList<PotionEffect>>();
+	private final HashMap<EntityLivingBase, Integer> deferredDimensionTransfers = new HashMap<EntityLivingBase, Integer>();
 
 	private int totalFlickerCount = 0;
 
-	public CommonProxy(){
+	public CommonProxy() {
 		teamHostility = new HashMap<String, String>();
 		playerTracker = new PlayerTracker();
 		particleManager = new ParticleManagerServer();
@@ -84,11 +92,11 @@ public class CommonProxy{
 		cwCopyLoc = null;
 	}
 
-	public void postinit(){
+	public void postinit() {
 		blocks.setupSpellConstraints();
 		items.postInit();
 		playerTracker.postInit();
-		
+
 		BuffList.postInit();
 
 		MinecraftForge.EVENT_BUS.register(new AMEventHandler());
@@ -98,8 +106,9 @@ public class CommonProxy{
 		MinecraftForge.EVENT_BUS.register(new ArmorEventHandler());
 		MinecraftForge.EVENT_BUS.register(EntityManager.instance);
 		MinecraftForge.EVENT_BUS.register(new AMWorldEventHandler());
-		if (!SkillTreeManager.instance.isSkillDisabled(SkillManager.instance.getSkill("Shrink")))
+		if(!SkillTreeManager.instance.isSkillDisabled(SkillManager.instance.getSkill("Shrink"))) {
 			MinecraftForge.EVENT_BUS.register(new ShrinkHandler());
+		}
 
 		MinecraftForge.EVENT_BUS.register(particleManager);
 		FMLCommonHandler.instance().bus().register(particleManager);
@@ -107,7 +116,7 @@ public class CommonProxy{
 		FMLCommonHandler.instance().bus().register(playerTracker);
 	}
 
-	public void preinit(){
+	public void preinit() {
 		AMCore.config.init();
 		AMCore.skillConfig.init();
 		utils = new ProxyUtilitiesCommon();
@@ -122,13 +131,13 @@ public class CommonProxy{
 		blocks.InstantiateBlocks();
 		items.InstantiateItems();
 
-		ObeliskFuelHelper.instance.registerFuelType(new ItemStack(ItemsCommonProxy.itemOre, 0, ItemsCommonProxy.itemOre.META_VINTEUMDUST), 200);
+		ObeliskFuelHelper.instance.registerFuelType(new ItemStack(ItemsCommonProxy.itemOre, 0, ItemOre.META_VINTEUMDUST), 200);
 		ObeliskFuelHelper.instance.registerFuelType(new ItemStack(ItemsCommonProxy.itemAMBucket, 0, Short.MAX_VALUE), 2000);
 
 		registerInfusions();
 	}
 
-	public void init(){
+	public void init() {
 		blocks.RegisterBlocks();
 		blocks.RegisterTileEntities();
 
@@ -150,11 +159,11 @@ public class CommonProxy{
 		enchantments.Init();
 	}
 
-	public AM2WorldDecorator getWorldGen(){
+	public AM2WorldDecorator getWorldGen() {
 		return worldGen;
 	}
 
-	public void InitializeAndRegisterHandlers(){
+	public void InitializeAndRegisterHandlers() {
 		guiManager = new ServerGuiManager();
 		NetworkRegistry.INSTANCE.registerGuiHandler(AMCore.instance, guiManager);
 
@@ -165,31 +174,32 @@ public class CommonProxy{
 		AMNetHandler.INSTANCE.registerChannels(new AMPacketProcessorServer());
 	}
 
-	public void addQueuedRetrogen(int dimensionID, ChunkCoordIntPair pair){
+	public void addQueuedRetrogen(int dimensionID, ChunkCoordIntPair pair) {
 		ArrayList<ChunkCoordIntPair> chunks;
-		if (RetroactiveWorldgenerator.deferredChunkGeneration.containsKey(dimensionID)){
+		if(RetroactiveWorldgenerator.deferredChunkGeneration.containsKey(dimensionID)) {
 			chunks = RetroactiveWorldgenerator.deferredChunkGeneration.get(dimensionID);
-		}else{
+		}
+		else {
 			chunks = new ArrayList<ChunkCoordIntPair>();
 		}
 
 		chunks.add(pair);
-		RetroactiveWorldgenerator.instance.deferredChunkGeneration.put(dimensionID, chunks);
+		RetroactiveWorldgenerator.deferredChunkGeneration.put(dimensionID, chunks);
 	}
 
-	public void flashManaBar(){
+	public void flashManaBar() {
 	}
 
-	public void blackoutArmorPiece(EntityPlayerMP player, int slot, int cooldown){
+	public void blackoutArmorPiece(EntityPlayerMP player, int slot, int cooldown) {
 		serverTickHandler.blackoutArmorPiece(player, slot, cooldown);
 	}
 
-	public Entity getEntityByID(World world, int ID){
+	public Entity getEntityByID(World world, int ID) {
 		Entity ent = null;
-		for (Object o : world.loadedEntityList){
-			if (o instanceof EntityLivingBase){
+		for(Object o: world.loadedEntityList) {
+			if(o instanceof EntityLivingBase) {
 				ent = (EntityLivingBase)o;
-				if (ent.getEntityId() == ID){
+				if(ent.getEntityId() == ID) {
 					return ent;
 				}
 			}
@@ -197,120 +207,126 @@ public class CommonProxy{
 		return null;
 	}
 
-	public WorldServer[] getWorldServers(){
+	public WorldServer[] getWorldServers() {
 		return FMLServerHandler.instance().getServer().worldServers;
 	}
 
-	public EntityLivingBase getEntityByID(int entityID){
+	public EntityLivingBase getEntityByID(int entityID) {
 		Entity ent = null;
-		for (WorldServer ws : getWorldServers()){
+		for(WorldServer ws: getWorldServers()) {
 			ent = ws.getEntityByID(entityID);
-			if (ent != null){
-				if (!(ent instanceof EntityLivingBase)) return null;
-				else break;
+			if(ent != null) {
+				if(!(ent instanceof EntityLivingBase)) {
+					return null;
+				}
+				else {
+					break;
+				}
 			}
 		}
 		return (EntityLivingBase)ent;
 	}
 
-	public EntityPlayer getLocalPlayer(){
+	public EntityPlayer getLocalPlayer() {
 		return null;
 	}
 
-	public ProxyUtilitiesCommon getProxyUtils(){
+	public ProxyUtilitiesCommon getProxyUtils() {
 		return utils;
 	}
 
-	public int getArmorRenderIndex(String prefix){
+	public int getArmorRenderIndex(String prefix) {
 		return 0;
 	}
 
-	public void openSkillTreeUI(World world, EntityPlayer player){
+	public void openSkillTreeUI(World world, EntityPlayer player) {
 	}
 
-	public void openParticleBlockGUI(World world, EntityPlayer player, TileEntityParticleEmitter te){
+	public void openParticleBlockGUI(World world, EntityPlayer player, TileEntityParticleEmitter te) {
 	}
 
-	public boolean setMouseDWheel(int dwheel){
+	public boolean setMouseDWheel(int dwheel) {
 		return false;
 	}
 
-	public void renderGameOverlay(){
+	public void renderGameOverlay() {
 	}
 
 	/* LOCALIZATION */
-	public void addName(Object obj, String s){
+	public void addName(Object obj, String s) {
 	}
 
-	public void addLocalization(String s1, String string){
+	public void addLocalization(String s1, String string) {
 	}
 
-	public String getItemStackDisplayName(ItemStack newStack){
+	public String getItemStackDisplayName(ItemStack newStack) {
 		return "";
 	}
 
-	public String getCurrentLanguage(){
+	public String getCurrentLanguage() {
 		return null;
 	}
 
-	public void sendLocalMovementData(EntityLivingBase ent){
+	public void sendLocalMovementData(EntityLivingBase ent) {
 
 	}
 
-	public void setCompendiumSaveBase(String compendiumBase){
+	public void setCompendiumSaveBase(String compendiumBase) {
 
 	}
 
-	public void addDeferredPotionEffect(EntityLivingBase ent, PotionEffect pe){
-		if (!deferredPotionEffects.containsKey(ent))
+	public void addDeferredPotionEffect(EntityLivingBase ent, PotionEffect pe) {
+		if(!deferredPotionEffects.containsKey(ent)) {
 			deferredPotionEffects.put(ent, new ArrayList<PotionEffect>());
+		}
 
 		ArrayList<PotionEffect> effects = deferredPotionEffects.get(ent);
 		effects.add(pe);
 	}
 
-	public void addDeferredDimensionTransfer(EntityLivingBase ent, int dimension){
+	public void addDeferredDimensionTransfer(EntityLivingBase ent, int dimension) {
 		deferredDimensionTransfers.put(ent, dimension);
 	}
 
-	public HashMap<EntityLivingBase, ArrayList<PotionEffect>> getDeferredPotionEffects(){
+	public HashMap<EntityLivingBase, ArrayList<PotionEffect>> getDeferredPotionEffects() {
 		return (HashMap<EntityLivingBase, ArrayList<PotionEffect>>)deferredPotionEffects.clone();
 	}
 
-	public void clearDeferredDimensionTransfers(){
+	public void clearDeferredDimensionTransfers() {
 		deferredDimensionTransfers.clear();
 	}
 
-	public HashMap<EntityLivingBase, Integer> getDeferredDimensionTransfers(){
+	public HashMap<EntityLivingBase, Integer> getDeferredDimensionTransfers() {
 		return (HashMap<EntityLivingBase, Integer>)deferredDimensionTransfers.clone();
 	}
 
-	public void clearDeferredPotionEffects(){
+	public void clearDeferredPotionEffects() {
 		deferredPotionEffects.clear();
 	}
 
-	public void requestPowerPathVisuals(IPowerNode node, EntityPlayerMP player){
+	public void requestPowerPathVisuals(IPowerNode node, EntityPlayerMP player) {
 
 	}
 
-	public void receivePowerPathVisuals(HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> paths){
+	public void receivePowerPathVisuals(HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> paths) {
 
 	}
 
-	public HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> getPowerPathVisuals(){
+	public HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> getPowerPathVisuals() {
 		return null;
 	}
 
-	public boolean isClientPlayer(EntityLivingBase ent){
+	public boolean isClientPlayer(EntityLivingBase ent) {
 		return false;
 	}
 
-	public void setViewSettings(){
-		if (ExtendedProperties.For(getLocalPlayer()).getFlipRotation() > 0)
+	public void setViewSettings() {
+		if(ExtendedProperties.For(getLocalPlayer()).getFlipRotation() > 0) {
 			Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
+		}
 	}
 
-	public void registerInfusions(){
+	public void registerInfusions() {
 		DamageReductionImbuement.registerAll();
 		GenericImbuement.registerAll();
 		ImbuementRegistry.instance.registerImbuement(new Dispelling());
@@ -329,56 +345,57 @@ public class CommonProxy{
 		ImbuementRegistry.instance.registerImbuement(new WaterWalking());
 	}
 
-	public void setTrackedPowerCompound(NBTTagCompound compound){
+	public void setTrackedPowerCompound(NBTTagCompound compound) {
 	}
 
-	public void setTrackedLocation(AMVector3 location){
+	public void setTrackedLocation(AMVector3 location) {
 	}
 
-	public boolean hasTrackedLocationSynced(){
+	public boolean hasTrackedLocationSynced() {
 		return false;
 	}
 
-	public PowerNodeEntry getTrackedData(){
+	public PowerNodeEntry getTrackedData() {
 		return null;
 	}
 
-	public void addDeferredTargetSet(EntityLiving ent, EntityLivingBase target){
+	public void addDeferredTargetSet(EntityLiving ent, EntityLivingBase target) {
 		serverTickHandler.addDeferredTarget(ent, target);
 	}
 
 	/**
-	 * Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
+	 Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
 	 */
-	public void unlockCompendiumEntry(String id){
+	public void unlockCompendiumEntry(String id) {
 
 	}
 
 	/**
-	 * Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
+	 Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
 	 */
-	public void unlockCompendiumCategory(String id){
+	public void unlockCompendiumCategory(String id) {
 
 	}
 
-	public void drawPowerOnBlockHighlight(EntityPlayer player, MovingObjectPosition target, float partialTicks){
+	public void drawPowerOnBlockHighlight(EntityPlayer player, MovingObjectPosition target, float partialTicks) {
 
 	}
 
-	public void incrementFlickerCount(){
+	public void incrementFlickerCount() {
 		this.totalFlickerCount++;
 	}
 
-	public void decrementFlickerCount(){
+	public void decrementFlickerCount() {
 		this.totalFlickerCount--;
-		if (this.totalFlickerCount < 0)
+		if(this.totalFlickerCount < 0) {
 			this.totalFlickerCount = 0;
+		}
 	}
 
-	public int getTotalFlickerCount(){
+	public int getTotalFlickerCount() {
 		return this.totalFlickerCount;
 	}
 
-	public void addDigParticle(World worldObj, int xCoord, int yCoord, int zCoord, Block block, int meta){
+	public void addDigParticle(World worldObj, int xCoord, int yCoord, int zCoord, Block block, int meta) {
 	}
 }

@@ -19,16 +19,15 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEntityMultiPart{
+public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEntityMultiPart {
 
 	protected BossActions currentAction = BossActions.IDLE;
 	protected int ticksInCurrentAction;
 	protected EntityDragonPart[] parts;
 
 	public boolean playerCanSee = false;
-	;
 
-	public AM2Boss(World par1World){
+	public AM2Boss(World par1World) {
 		super(par1World);
 		this.stepHeight = 1.02f;
 		ExtendedProperties.For(this).setMagicLevelWithMana(50);
@@ -38,40 +37,41 @@ public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEnti
 	//Bosses should be able to follow players through doors and hallways, so setSize is overridden to instead add a
 	//damageable entity based bounding box of the specified size, unless a boss already uses parts.
 	@Override
-	public void setSize(float width, float height){
-		if (parts == null){
-			parts = new EntityDragonPart[]{new EntityDragonPart(this, "defaultBody", width, height){
+	public void setSize(float width, float height) {
+		if(parts == null) {
+			parts = new EntityDragonPart[]{new EntityDragonPart(this, "defaultBody", width, height) {
 				@Override
-				public void onUpdate(){
+				public void onUpdate() {
 					super.onUpdate();
 					this.isDead = ((Entity)entityDragonObj).isDead;
 				}
 
 				@Override
-				public boolean shouldRenderInPass(int pass){
+				public boolean shouldRenderInPass(int pass) {
 					return false;
 				}
 			}};
-		}else{
+		}
+		else {
 			super.setSize(width, height);
 		}
 	}
 
 	@Override
-	protected boolean isAIEnabled(){
+	protected boolean isAIEnabled() {
 		return true;
 	}
 
 	@Override
-	protected void applyEntityAttributes(){
+	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(48);
 	}
 
 	/**
-	 * This contains the default AI tasks.  To add new ones, override {@link #initSpecificAI()}
+	 This contains the default AI tasks.  To add new ones, override {@link #initSpecificAI()}
 	 */
-	protected void initAI(){
+	protected void initAI() {
 		this.getNavigator().setBreakDoors(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
@@ -82,28 +82,28 @@ public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEnti
 	}
 
 	/**
-	 * Initializer for class-specific AI
+	 Initializer for class-specific AI
 	 */
 	protected abstract void initSpecificAI();
 
 	@Override
-	public BossActions getCurrentAction(){
+	public BossActions getCurrentAction() {
 		return currentAction;
 	}
 
 	@Override
-	public void setCurrentAction(BossActions action){
+	public void setCurrentAction(BossActions action) {
 		currentAction = action;
 		ticksInCurrentAction = 0;
 	}
 
 	@Override
-	public int getTicksInCurrentAction(){
+	public int getTicksInCurrentAction() {
 		return ticksInCurrentAction;
 	}
 
 	@Override
-	public boolean isActionValid(BossActions action){
+	public boolean isActionValid(BossActions action) {
 		return true;
 	}
 
@@ -111,7 +111,7 @@ public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEnti
 	public abstract String getAttackSound();
 
 	@Override
-	protected boolean canDespawn(){
+	protected boolean canDespawn() {
 		return false;
 	}
 
@@ -121,18 +121,18 @@ public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEnti
 	}
 
 	@Override
-	public boolean canBeCollidedWith(){
+	public boolean canBeCollidedWith() {
 		return false;
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2){
+	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2) {
 
-		if (par1DamageSource == DamageSource.inWall){
-			if (!worldObj.isRemote){// dead code? (calling canSnowAt() without using the result) could it be a buggy upgrade to 1.7.10?
-				for (int i = -1; i <= 1; ++i){
-					for (int j = 0; j < 3; ++j){
-						for (int k = -1; k <= 1; ++k){
+		if(par1DamageSource == DamageSource.inWall) {
+			if(!worldObj.isRemote) {// dead code? (calling canSnowAt() without using the result) could it be a buggy upgrade to 1.7.10?
+				for(int i = -1; i <= 1; ++i) {
+					for(int j = 0; j < 3; ++j) {
+						for(int k = -1; k <= 1; ++k) {
 							worldObj.func_147478_e(i, j, k, true);
 						}
 					}
@@ -141,39 +141,45 @@ public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEnti
 			return false;
 		}
 
-		if (par1DamageSource.getSourceOfDamage() != null){
+		if(par1DamageSource.getSourceOfDamage() != null) {
 
-			if (par1DamageSource.getSourceOfDamage() instanceof EntityPlayer){
+			if(par1DamageSource.getSourceOfDamage() instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer)par1DamageSource.getSourceOfDamage();
-				if (player.capabilities.isCreativeMode && player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == ItemsCommonProxy.woodenLeg){
-					if (!worldObj.isRemote)
+				if(player.capabilities.isCreativeMode && player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem()
+																										  .getItem() == ItemsCommonProxy.woodenLeg) {
+					if(!worldObj.isRemote) {
 						this.setDead();
+					}
 					return false;
 				}
-			}else if (par1DamageSource.getSourceOfDamage() instanceof EntityArrow){
+			}
+			else if(par1DamageSource.getSourceOfDamage() instanceof EntityArrow) {
 				Entity shooter = ((EntityArrow)par1DamageSource.getSourceOfDamage()).shootingEntity;
-				if (shooter != null && this.getDistanceSqToEntity(shooter) > 900){
+				if(shooter != null && this.getDistanceSqToEntity(shooter) > 900) {
 					this.setPositionAndUpdate(shooter.posX, shooter.posY, shooter.posZ);
 				}
 				return false;
-			}else if (this.getDistanceSqToEntity(par1DamageSource.getSourceOfDamage()) > 900){
+			}
+			else if(this.getDistanceSqToEntity(par1DamageSource.getSourceOfDamage()) > 900) {
 				Entity shooter = (par1DamageSource.getSourceOfDamage());
-				if (shooter != null){
+				if(shooter != null) {
 					this.setPositionAndUpdate(shooter.posX, shooter.posY, shooter.posZ);
 				}
 			}
 		}
 
-		if (par2 > 7) par2 = 7;
+		if(par2 > 7) {
+			par2 = 7;
+		}
 
 		par2 = modifyDamageAmount(par1DamageSource, par2);
 
-		if (par2 <= 0){
+		if(par2 <= 0) {
 			heal(-par2);
 			return false;
 		}
 
-		if (super.attackEntityFrom(par1DamageSource, par2)){
+		if(super.attackEntityFrom(par1DamageSource, par2)) {
 			this.hurtResistantTime = 40;
 			return true;
 		}
@@ -182,50 +188,51 @@ public abstract class AM2Boss extends EntityMob implements IArsMagicaBoss, IEnti
 
 	protected abstract float modifyDamageAmount(DamageSource source, float damageAmt);
 
-	public boolean attackEntityFromPart(EntityDragonPart part, DamageSource source, float damage){
+	public boolean attackEntityFromPart(EntityDragonPart part, DamageSource source, float damage) {
 		return this.attackEntityFrom(source, damage);
 	}
 
 	@Override
-	public void onUpdate(){
+	public void onUpdate() {
 
-		if (parts != null && parts[0] != null && parts[0].field_146032_b == "defaultBody"){
+		if(parts != null && parts[0] != null && parts[0].field_146032_b == "defaultBody") {
 			parts[0].setPosition(this.posX, this.posY, this.posZ);
-			if (worldObj.isRemote){
-			      parts[0].setVelocity(this.motionX, this.motionY, this.motionZ);
+			if(worldObj.isRemote) {
+				parts[0].setVelocity(this.motionX, this.motionY, this.motionZ);
 			}
-			if (!parts[0].addedToChunk){
+			if(!parts[0].addedToChunk) {
 				this.worldObj.spawnEntityInWorld(parts[0]);
 			}
 		}
 
 		this.ticksInCurrentAction++;
 
-		if (ticksInCurrentAction > 200){
+		if(ticksInCurrentAction > 200) {
 			setCurrentAction(BossActions.IDLE);
 		}
 
-		if (worldObj.isRemote){
+		if(worldObj.isRemote) {
 			playerCanSee = AMCore.proxy.getLocalPlayer().canEntityBeSeen(this);
-			this.ignoreFrustumCheck =  AMCore.proxy.getLocalPlayer().getDistanceToEntity(this) < 32;
+			this.ignoreFrustumCheck = AMCore.proxy.getLocalPlayer().getDistanceToEntity(this) < 32;
 		}
 
 		super.onUpdate();
 	}
 
 	@Override
-	public boolean allowLeashing(){
+	public boolean allowLeashing() {
 		return false;
 	}
 
 	@Override
-	public void addPotionEffect(PotionEffect effect){
-		if (effect.getPotionID() == BuffList.silence.id)
+	public void addPotionEffect(PotionEffect effect) {
+		if(effect.getPotionID() == BuffList.silence.id) {
 			return;
+		}
 		super.addPotionEffect(effect);
 	}
 
-	public World func_82194_d(){
+	public World func_82194_d() {
 		return this.worldObj;
 	}
 }

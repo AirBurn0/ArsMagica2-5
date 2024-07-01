@@ -22,55 +22,67 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Random;
 
-public class BlockSeerStone extends AMSpecialRenderPoweredBlock{
+public class BlockSeerStone extends AMSpecialRenderPoweredBlock {
 
-	public BlockSeerStone(){
+	public BlockSeerStone() {
 		super(Material.glass);
 		setHardness(2.0f);
 		setResistance(2.0f);
 	}
 
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess par1iBlockAccess, int par2, int par3, int par4){
+	public void setBlockBoundsBasedOnState(IBlockAccess par1iBlockAccess, int par2, int par3, int par4) {
 		int meta = par1iBlockAccess.getBlockMetadata(par2, par3, par4);
-		switch (meta){
-		case 1:
-			this.setBlockBounds(0.0f, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f);
-			break;
-		case 2:
-			this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.4f, 1.0f);
-			break;
-		case 3:
-			this.setBlockBounds(0.0f, 0.0f, 0.6f, 1.0f, 1.0f, 1.0f);
-			break;
-		case 4:
-			this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.4f);
-			break;
-		case 5:
-			this.setBlockBounds(0.6f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-			break;
-		case 6:
-			this.setBlockBounds(0.0f, 0.0f, 0.0f, 0.4f, 1.0f, 1.0f);
-			break;
+		switch(meta) {
+			case 1:
+				this.setBlockBounds(0.0f, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f);
+				break;
+			case 2:
+				this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.4f, 1.0f);
+				break;
+			case 3:
+				this.setBlockBounds(0.0f, 0.0f, 0.6f, 1.0f, 1.0f, 1.0f);
+				break;
+			case 4:
+				this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.4f);
+				break;
+			case 5:
+				this.setBlockBounds(0.6f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+				break;
+			case 6:
+				this.setBlockBounds(0.0f, 0.0f, 0.0f, 0.4f, 1.0f, 1.0f);
+				break;
 		}
 	}
 
 	@Override
-	public boolean canPlaceBlockOnSide(World world, int x, int y, int z, int meta){
+	public boolean canPlaceBlockOnSide(World world, int x, int y, int z, int meta) {
 		ForgeDirection dir = ForgeDirection.getOrientation(meta);
-		return (dir == ForgeDirection.DOWN && world.getBlock(x, y + 1, z).isSideSolid(world, x, y + 1, z, ForgeDirection.DOWN)) ||
-				(dir == ForgeDirection.UP && world.getBlock(x, y - 1, z).isSideSolid(world, x, y - 1, z, ForgeDirection.UP)) ||
-				(dir == ForgeDirection.NORTH && world.getBlock(x, y, z + 1).isSideSolid(world, x, y, z + 1, ForgeDirection.NORTH)) ||
-				(dir == ForgeDirection.SOUTH && world.getBlock(x, y, z - 1).isSideSolid(world, x, y, z - 1, ForgeDirection.SOUTH)) ||
-				(dir == ForgeDirection.WEST && world.getBlock(x + 1, y, z).isSideSolid(world, x + 1, y, z, ForgeDirection.WEST)) ||
-				(dir == ForgeDirection.EAST && world.getBlock(x - 1, y, z).isSideSolid(world, x - 1, y, z, ForgeDirection.EAST));
+		return (dir == ForgeDirection.DOWN && world.getBlock(x, y + 1, z)
+												   .isSideSolid(world, x, y + 1, z, ForgeDirection.DOWN)
+		) ||
+				(dir == ForgeDirection.UP && world.getBlock(x, y - 1, z)
+												  .isSideSolid(world, x, y - 1, z, ForgeDirection.UP)
+				) ||
+				(dir == ForgeDirection.NORTH && world.getBlock(x, y, z + 1)
+													 .isSideSolid(world, x, y, z + 1, ForgeDirection.NORTH)
+				) ||
+				(dir == ForgeDirection.SOUTH && world.getBlock(x, y, z - 1)
+													 .isSideSolid(world, x, y, z - 1, ForgeDirection.SOUTH)
+				) ||
+				(dir == ForgeDirection.WEST && world.getBlock(x + 1, y, z)
+													.isSideSolid(world, x + 1, y, z, ForgeDirection.WEST)
+				) ||
+				(dir == ForgeDirection.EAST && world.getBlock(x - 1, y, z)
+													.isSideSolid(world, x - 1, y, z, ForgeDirection.EAST)
+				);
 	}
 
 	/**
-	 * Checks to see if its valid to put this block at the specified coordinates. Args: world, x, y, z
+	 Checks to see if its valid to put this block at the specified coordinates. Args: world, x, y, z
 	 */
 	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z){
+	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 		return world.getBlock(x - 1, y, z).isSideSolid(world, x - 1, y, z, ForgeDirection.EAST) ||
 				world.getBlock(x + 1, y, z).isSideSolid(world, x + 1, y, z, ForgeDirection.WEST) ||
 				world.getBlock(x, y, z - 1).isSideSolid(world, x, y, z - 1, ForgeDirection.SOUTH) ||
@@ -80,34 +92,34 @@ public class BlockSeerStone extends AMSpecialRenderPoweredBlock{
 	}
 
 	@Override
-	public int onBlockPlaced(World world, int x, int y, int z, int side, float impX, float impY, float impZ, int meta){
+	public int onBlockPlaced(World world, int x, int y, int z, int side, float impX, float impY, float impZ, int meta) {
 		int var10 = meta;
 		var10 = -1;
 
-		if (side == 0 && world.getBlock(x, y + 1, z).isSideSolid(world, x, y + 1, z, ForgeDirection.DOWN)){
+		if(side == 0 && world.getBlock(x, y + 1, z).isSideSolid(world, x, y + 1, z, ForgeDirection.DOWN)) {
 			var10 = 1;
 		}
 
-		if (side == 1 && world.getBlock(x, y - 1, z).isSideSolid(world, x, y - 1, z, ForgeDirection.UP)){
+		if(side == 1 && world.getBlock(x, y - 1, z).isSideSolid(world, x, y - 1, z, ForgeDirection.UP)) {
 			var10 = 2;
 		}
 
-		if (side == 2 && world.getBlock(x, y, z + 1).isSideSolid(world, x, y, z + 1, ForgeDirection.NORTH)) //-z
+		if(side == 2 && world.getBlock(x, y, z + 1).isSideSolid(world, x, y, z + 1, ForgeDirection.NORTH)) //-z
 		{
 			var10 = 3;
 		}
 
-		if (side == 3 && world.getBlock(x, y, z - 1).isSideSolid(world, x, y, z - 1, ForgeDirection.SOUTH)) //+z
+		if(side == 3 && world.getBlock(x, y, z - 1).isSideSolid(world, x, y, z - 1, ForgeDirection.SOUTH)) //+z
 		{
 			var10 = 4;
 		}
 
-		if (side == 4 && world.getBlock(x + 1, y, z).isSideSolid(world, x + 1, y, z, ForgeDirection.WEST)) //-x
+		if(side == 4 && world.getBlock(x + 1, y, z).isSideSolid(world, x + 1, y, z, ForgeDirection.WEST)) //-x
 		{
 			var10 = 5;
 		}
 
-		if (side == 5 && world.getBlock(x - 1, y, z).isSideSolid(world, x - 1, y, z, ForgeDirection.EAST)) //+x
+		if(side == 5 && world.getBlock(x - 1, y, z).isSideSolid(world, x - 1, y, z, ForgeDirection.EAST)) //+x
 		{
 			var10 = 6;
 		}
@@ -116,102 +128,110 @@ public class BlockSeerStone extends AMSpecialRenderPoweredBlock{
 	}
 
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9){
+	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
 		super.onBlockActivated(par1World, par2, par3, par4, par5EntityPlayer, par6, par7, par8, par9);
 
 		TileEntity te = par1World.getTileEntity(par2, par3, par4);
 		TileEntitySeerStone sste = null;
-		if (te != null && te instanceof TileEntitySeerStone){
+		if(te != null && te instanceof TileEntitySeerStone) {
 			sste = (TileEntitySeerStone)te;
-		}else{
+		}
+		else {
 			return true;
 		}
 
-		if (KeystoneUtilities.HandleKeystoneRecovery(par5EntityPlayer, sste)){
+		if(KeystoneUtilities.HandleKeystoneRecovery(par5EntityPlayer, sste)) {
 			return true;
 		}
 
-		if (!KeystoneUtilities.instance.canPlayerAccess(sste, par5EntityPlayer, KeystoneAccessType.USE)){
+		if(!KeystoneUtilities.instance.canPlayerAccess(sste, par5EntityPlayer, KeystoneAccessType.USE)) {
 			return true;
 		}
 
-		if (par5EntityPlayer.isSneaking()){
+		if(par5EntityPlayer.isSneaking()) {
 			sste.invertDetection();
-			if (par1World.isRemote){
+			if(par1World.isRemote) {
 				par5EntityPlayer.addChatMessage(new ChatComponentText("Inverting detection mode: " + ((TileEntitySeerStone)te).isInvertingDetection()));
 			}
 			return true;
 		}
 
-		if (HandleSpecialItems(par1World, par5EntityPlayer, par2, par3, par4)){
+		if(HandleSpecialItems(par1World, par5EntityPlayer, par2, par3, par4)) {
 			return true;
 		}
-		if (!par1World.isRemote)
+		if(!par1World.isRemote) {
 			FMLNetworkHandler.openGui(par5EntityPlayer, AMCore.instance, ArsMagicaGuiIdList.GUI_SEER_STONE, par1World, par2, par3, par4);
+		}
 		return true;
 	}
 
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z){
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
 		IKeystoneLockable lockable = (IKeystoneLockable)world.getTileEntity(x, y, z);
-		if (!KeystoneUtilities.instance.canPlayerAccess(lockable, player, KeystoneAccessType.BREAK)) return false;
+		if(!KeystoneUtilities.instance.canPlayerAccess(lockable, player, KeystoneAccessType.BREAK)) {
+			return false;
+		}
 
 		return super.removedByPlayer(world, player, x, y, z);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i){
+	public TileEntity createNewTileEntity(World var1, int i) {
 		return new TileEntitySeerStone();
 	}
 
 	@Override
-	public boolean canProvidePower(){
+	public boolean canProvidePower() {
 		return true;
 	}
 
 	@Override
-	public int isProvidingStrongPower(IBlockAccess par1iBlockAccess, int x, int y, int z, int l){
+	public int isProvidingStrongPower(IBlockAccess par1iBlockAccess, int x, int y, int z, int l) {
 		TileEntity myTE = par1iBlockAccess.getTileEntity(x, y, z);
-		if (myTE == null || !(myTE instanceof TileEntitySeerStone))
+		if(myTE == null || !(myTE instanceof TileEntitySeerStone)) {
 			return 0;
+		}
 		return ((TileEntitySeerStone)myTE).HasSight() ? 15 : 0;
 	}
 
 	@Override
-	public int isProvidingWeakPower(IBlockAccess par1iBlockAccess, int x, int y, int z, int l){
+	public int isProvidingWeakPower(IBlockAccess par1iBlockAccess, int x, int y, int z, int l) {
 		TileEntity myTE = par1iBlockAccess.getTileEntity(x, y, z);
-		if (myTE == null || !(myTE instanceof TileEntitySeerStone))
+		if(myTE == null || !(myTE instanceof TileEntitySeerStone)) {
 			return 0;
+		}
 		return ((TileEntitySeerStone)myTE).HasSight() ? 15 : 0;
 	}
 
 	@Override
-	public int quantityDropped(Random random){
+	public int quantityDropped(Random random) {
 		return 1;
 	}
 
 	@Override
-	public void breakBlock(World world, int i, int j, int k, Block par5, int metadata){
-		if (world.isRemote){
+	public void breakBlock(World world, int i, int j, int k, Block par5, int metadata) {
+		if(world.isRemote) {
 			super.breakBlock(world, i, j, k, par5, metadata);
 			return;
 		}
 		TileEntitySeerStone myTE = (TileEntitySeerStone)world.getTileEntity(i, j, k);
-		if (myTE == null) return;
-		for (int l = 0; l < myTE.getSizeInventory() - 3; l++){
+		if(myTE == null) {
+			return;
+		}
+		for(int l = 0; l < myTE.getSizeInventory() - 3; l++) {
 			ItemStack itemstack = myTE.getStackInSlot(l);
-			if (itemstack == null){
+			if(itemstack == null) {
 				continue;
 			}
 			float f = world.rand.nextFloat() * 0.8F + 0.1F;
 			float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
 			float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
-			do{
-				if (itemstack.stackSize <= 0){
+			do {
+				if(itemstack.stackSize <= 0) {
 					break;
 				}
 				int i1 = world.rand.nextInt(21) + 10;
-				if (i1 > itemstack.stackSize){
+				if(i1 > itemstack.stackSize) {
 					i1 = itemstack.stackSize;
 				}
 				itemstack.stackSize -= i1;
@@ -223,13 +243,14 @@ public class BlockSeerStone extends AMSpecialRenderPoweredBlock{
 				entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
 				entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
 				world.spawnEntityInWorld(entityitem);
-			}while (true);
+			}
+			while(true);
 		}
 		super.breakBlock(world, i, j, k, par5, metadata);
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		this.blockIcon = ResourceManager.RegisterTexture("CasterRuneSide", par1IconRegister);
 	}
 }

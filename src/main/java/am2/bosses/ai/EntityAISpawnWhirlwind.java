@@ -6,32 +6,34 @@ import am2.entities.EntityWhirlwind;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 
-public class EntityAISpawnWhirlwind extends EntityAIBase{
+public class EntityAISpawnWhirlwind extends EntityAIBase {
 	private final EntityLiving host;
 	private int cooldownTicks = 0;
 	private boolean hasCasted = false;
 	private int windTicks = 0;
 
-	public EntityAISpawnWhirlwind(IArsMagicaBoss host){
+	public EntityAISpawnWhirlwind(IArsMagicaBoss host) {
 		this.host = (EntityLiving)host;
 		this.setMutexBits(1);
 	}
 
 	@Override
-	public boolean shouldExecute(){
+	public boolean shouldExecute() {
 		cooldownTicks--;
 		boolean execute = ((IArsMagicaBoss)host).getCurrentAction() == BossActions.IDLE && host.getAttackTarget() != null && cooldownTicks <= 0;
-		if (execute) hasCasted = false;
+		if(execute) {
+			hasCasted = false;
+		}
 		return execute;
 	}
 
 	@Override
-	public boolean continueExecuting(){
+	public boolean continueExecuting() {
 		return !hasCasted && host.getAttackTarget() != null && !host.getAttackTarget().isDead;
 	}
 
 	@Override
-	public void resetTask(){
+	public void resetTask() {
 		((IArsMagicaBoss)host).setCurrentAction(BossActions.IDLE);
 		cooldownTicks = 10;
 		hasCasted = true;
@@ -39,9 +41,9 @@ public class EntityAISpawnWhirlwind extends EntityAIBase{
 	}
 
 	@Override
-	public void updateTask(){
+	public void updateTask() {
 		host.getLookHelper().setLookPositionWithEntity(host.getAttackTarget(), 30, 30);
-		if (host.getDistanceSqToEntity(host.getAttackTarget()) > 64){
+		if(host.getDistanceSqToEntity(host.getAttackTarget()) > 64) {
 
 			double deltaZ = host.getAttackTarget().posZ - host.posZ;
 			double deltaX = host.getAttackTarget().posX - host.posX;
@@ -52,22 +54,26 @@ public class EntityAISpawnWhirlwind extends EntityAIBase{
 			double newZ = host.getAttackTarget().posZ + (Math.sin(angle) * 6);
 
 			host.getNavigator().tryMoveToXYZ(newX, host.getAttackTarget().posY, newZ, 0.5f);
-		}else if (!host.canEntityBeSeen(host.getAttackTarget())){
+		}
+		else if(!host.canEntityBeSeen(host.getAttackTarget())) {
 			host.getNavigator().tryMoveToEntityLiving(host.getAttackTarget(), 0.5f);
-		}else{
-			if (((IArsMagicaBoss)host).getCurrentAction() != BossActions.CASTING)
+		}
+		else {
+			if(((IArsMagicaBoss)host).getCurrentAction() != BossActions.CASTING) {
 				((IArsMagicaBoss)host).setCurrentAction(BossActions.CASTING);
+			}
 
 			windTicks++;
-			if (windTicks == 12 && !host.worldObj.isRemote){
-				if (!host.worldObj.isRemote)
+			if(windTicks == 12 && !host.worldObj.isRemote) {
+				if(!host.worldObj.isRemote) {
 					host.worldObj.playSoundAtEntity(host, ((IArsMagicaBoss)host).getAttackSound(), 1.0f, 1.0f);
+				}
 				EntityWhirlwind whirlwind = new EntityWhirlwind(host.worldObj);
 				whirlwind.setPosition(host.posX, host.posY + host.getEyeHeight(), host.posZ);
 				host.worldObj.spawnEntityInWorld(whirlwind);
 			}
 		}
-		if (windTicks >= 23){
+		if(windTicks >= 23) {
 			resetTask();
 		}
 	}

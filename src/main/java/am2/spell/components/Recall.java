@@ -9,6 +9,8 @@ import am2.api.spell.component.interfaces.IRitualInteraction;
 import am2.api.spell.component.interfaces.ISpellComponent;
 import am2.api.spell.enums.Affinity;
 import am2.buffs.BuffList;
+import am2.items.ItemOre;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.particles.AMParticle;
 import am2.particles.ParticleExpandingCollapsingRingAtPoint;
@@ -29,27 +31,28 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class Recall implements ISpellComponent, IRitualInteraction{
+public class Recall implements ISpellComponent, IRitualInteraction {
 
 	@Override
 	public boolean applyEffectBlock(ItemStack stack, World world, int blockx,
 									int blocky, int blockz, int blockFace, double impactX,
-									double impactY, double impactZ, EntityLivingBase caster){
+									double impactY, double impactZ, EntityLivingBase caster) {
 		return false;
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
 
-		if (!(target instanceof EntityLivingBase)){
+		if(!(target instanceof EntityLivingBase)) {
 			return false;
 		}
 
-		if (caster.isPotionActive(BuffList.astralDistortion.id) || ((EntityLivingBase)target)
-				.isPotionActive(BuffList.astralDistortion.id)){
-			if (caster instanceof EntityPlayer)
+		if(caster.isPotionActive(BuffList.astralDistortion.id) || ((EntityLivingBase)target)
+				.isPotionActive(BuffList.astralDistortion.id)) {
+			if(caster instanceof EntityPlayer) {
 				((EntityPlayer)caster)
 						.addChatMessage(new ChatComponentText(StatCollector.translateToLocal("am2.tooltip.cantTeleport")));
+			}
 			return false;
 		}
 
@@ -58,70 +61,80 @@ public class Recall implements ISpellComponent, IRitualInteraction{
 		int z = (int)Math.floor(target.posZ);
 
 		ItemStack[] ritualRunes = RitualShapeHelper.instance.checkForRitual(this, world, x, y, z, false);
-		if (ritualRunes != null){
+		if(ritualRunes != null) {
 			return handleRitualReagents(ritualRunes, world, x, y, z, caster, target);
 		}
 
 		ExtendedProperties casterProperties = ExtendedProperties.For(caster);
-		if (!casterProperties.getMarkSet()){
-			if (caster instanceof EntityPlayer && !world.isRemote)
+		if(!casterProperties.getMarkSet()) {
+			if(caster instanceof EntityPlayer && !world.isRemote) {
 				((EntityPlayer)caster).addChatMessage(new ChatComponentText(StatCollector.translateToLocal("am2.tooltip.noMark")));
-			return false;
-		}else if (casterProperties.getMarkDimension() != caster.dimension){
-			if (caster instanceof EntityPlayer && !world.isRemote)
-				((EntityPlayer)caster).addChatMessage(new ChatComponentText(StatCollector.translateToLocal("am2.tooltip.diffDimMark")));
+			}
 			return false;
 		}
-		if (!world.isRemote){
+		else if(casterProperties.getMarkDimension() != caster.dimension) {
+			if(caster instanceof EntityPlayer && !world.isRemote) {
+				((EntityPlayer)caster).addChatMessage(new ChatComponentText(StatCollector.translateToLocal("am2.tooltip.diffDimMark")));
+			}
+			return false;
+		}
+		if(!world.isRemote) {
 			((EntityLivingBase)target).setPositionAndUpdate(casterProperties.getMarkX(), casterProperties.getMarkY(), casterProperties.getMarkZ());
 		}
 		return true;
 	}
 
-	private boolean handleRitualReagents(ItemStack[] ritualRunes, World world, int x, int y, int z, EntityLivingBase caster, Entity target){
+	private boolean handleRitualReagents(ItemStack[] ritualRunes, World world, int x, int y, int z, EntityLivingBase caster, Entity target) {
 
 		boolean hasVinteumDust = false;
-		for (ItemStack stack : ritualRunes){
-			if (stack.getItem() == ItemsCommonProxy.itemOre && stack.getItemDamage() == ItemsCommonProxy.itemOre.META_VINTEUMDUST){
+		for(ItemStack stack: ritualRunes) {
+			if(stack.getItem() == ItemsCommonProxy.itemOre && stack.getItemDamage() == ItemOre.META_VINTEUMDUST) {
 				hasVinteumDust = true;
 				break;
 			}
 		}
 
-		if (!hasVinteumDust && ritualRunes.length == 3){
+		if(!hasVinteumDust && ritualRunes.length == 3) {
 			long key = KeystoneUtilities.instance.getKeyFromRunes(ritualRunes);
 			AMVector3 vector = AMCore.proxy.blocks.getNextKeystonePortalLocation(world, x, y, z, false, key);
-			if (vector == null || vector.equals(new AMVector3(x, y, z))){
-				if (caster instanceof EntityPlayer && !world.isRemote)
+			if(vector == null || vector.equals(new AMVector3(x, y, z))) {
+				if(caster instanceof EntityPlayer && !world.isRemote) {
 					((EntityPlayer)caster).addChatMessage(new ChatComponentText(StatCollector.translateToLocal("am2.tooltip.noMatchingGate")));
+				}
 				return false;
-			}else{
+			}
+			else {
 				RitualShapeHelper.instance.consumeRitualReagents(this, world, x, y, z);
 				RitualShapeHelper.instance.consumeRitualShape(this, world, x, y, z);
 				((EntityLivingBase)target).setPositionAndUpdate(vector.x, vector.y - target.height, vector.z);
 				return true;
 			}
-		}else if (hasVinteumDust){
+		}
+		else if(hasVinteumDust) {
 			ArrayList<ItemStack> copy = new ArrayList<ItemStack>();
-			for (ItemStack stack : ritualRunes){
-				if (stack.getItem() == ItemsCommonProxy.rune && stack.getItemDamage() <= 16){
+			for(ItemStack stack: ritualRunes) {
+				if(stack.getItem() == ItemsCommonProxy.rune && stack.getItemDamage() <= 16) {
 					copy.add(stack);
 				}
 			}
 			ItemStack[] newRunes = copy.toArray(new ItemStack[copy.size()]);
 			long key = KeystoneUtilities.instance.getKeyFromRunes(newRunes);
 			EntityPlayer player = EntityUtilities.getPlayerForCombo(world, (int)key);
-			if (player == null){
-				if (caster instanceof EntityPlayer && !world.isRemote)
+			if(player == null) {
+				if(caster instanceof EntityPlayer && !world.isRemote) {
 					((EntityPlayer)caster).addChatMessage(new ChatComponentText("am2.tooltip.noMatchingPlayer"));
+				}
 				return false;
-			}else if (player == caster){
-				if (caster instanceof EntityPlayer && !world.isRemote)
+			}
+			else if(player == caster) {
+				if(caster instanceof EntityPlayer && !world.isRemote) {
 					((EntityPlayer)caster).addChatMessage(new ChatComponentText("am2.tooltip.cantSummonSelf"));
+				}
 				return false;
-			}else{
+			}
+			else {
 				RitualShapeHelper.instance.consumeRitualReagents(this, world, x, y, z);
-				if (target.worldObj.provider.dimensionId != caster.worldObj.provider.dimensionId){
+				if(target.worldObj.provider.dimensionId != caster.worldObj.provider.dimensionId) {
 					DimensionUtilities.doDimensionTransfer(player, caster.worldObj.provider.dimensionId);
 				}
 				((EntityLivingBase)target).setPositionAndUpdate(x, y, z);
@@ -132,30 +145,30 @@ public class Recall implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 500;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
+	public float burnout(EntityLivingBase caster) {
 		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
-		for (int i = 0; i < 25; ++i){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
+		for(int i = 0; i < 25; ++i) {
 			AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "arcane", x, y - 1, z);
-			if (particle != null){
+			if(particle != null) {
 				particle.addRandomOffset(1, 0, 1);
 				particle.AddParticleController(new ParticleExpandingCollapsingRingAtPoint(particle, x, y - 1, z, 0.1, 3, 0.3, 1, false).setCollapseOnce());
 				particle.setMaxAge(20);
 				particle.setParticleScale(0.2f);
-				if (colorModifier > -1){
+				if(colorModifier > -1) {
 					particle.setRGBColorF(((colorModifier >> 16) & 0xFF) / 255.0f, ((colorModifier >> 8) & 0xFF) / 255.0f, (colorModifier & 0xFF) / 255.0f);
 				}
 			}
@@ -163,19 +176,19 @@ public class Recall implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.ARCANE);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 44;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_ORANGE),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_ORANGE),
 				Items.compass,
 				new ItemStack(Items.map, 1, Short.MAX_VALUE),
 				Items.ender_pearl
@@ -183,17 +196,17 @@ public class Recall implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0.1f;
 	}
 
 	@Override
-	public MultiblockStructureDefinition getRitualShape(){
+	public MultiblockStructureDefinition getRitualShape() {
 		return RitualShapeHelper.instance.ringedCross;
 	}
 
 	@Override
-	public ItemStack[] getReagents(){
+	public ItemStack[] getReagents() {
 		return new ItemStack[]{
 				new ItemStack(ItemsCommonProxy.rune, 1, AMCore.ANY_META),
 				new ItemStack(ItemsCommonProxy.rune, 1, AMCore.ANY_META),
@@ -202,7 +215,7 @@ public class Recall implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public int getReagentSearchRadius(){
+	public int getReagentSearchRadius() {
 		return RitualShapeHelper.instance.ringedCross.getWidth();
 	}
 }

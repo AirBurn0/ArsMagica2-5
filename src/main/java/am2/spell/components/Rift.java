@@ -9,6 +9,8 @@ import am2.api.spell.enums.Affinity;
 import am2.api.spell.enums.SpellModifiers;
 import am2.blocks.BlocksCommonProxy;
 import am2.entities.EntityRiftStorage;
+import am2.items.ItemEssence;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.spell.SpellUtils;
 import net.minecraft.entity.Entity;
@@ -22,15 +24,15 @@ import net.minecraft.world.World;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class Rift implements ISpellComponent, IRitualInteraction{
+public class Rift implements ISpellComponent, IRitualInteraction {
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 
-		if (world.getBlock(blockx, blocky, blockz) == Blocks.mob_spawner){
+		if(world.getBlock(blockx, blocky, blockz) == Blocks.mob_spawner) {
 			ItemStack[] reagents = RitualShapeHelper.instance.checkForRitual(this, world, blockx, blocky, blockz);
-			if (reagents != null){
-				if (!world.isRemote){
+			if(reagents != null) {
+				if(!world.isRemote) {
 					world.setBlockToAir(blockx, blocky, blockz);
 					RitualShapeHelper.instance.consumeRitualReagents(this, world, blockx, blocky, blockz);
 					RitualShapeHelper.instance.consumeRitualShape(this, world, blockx, blocky, blockz);
@@ -38,7 +40,8 @@ public class Rift implements ISpellComponent, IRitualInteraction{
 					item.setPosition(blockx + 0.5, blocky + 0.5, blockz + 0.5);
 					item.setEntityItemStack(new ItemStack(BlocksCommonProxy.inertSpawner));
 					world.spawnEntityInWorld(item);
-				}else{
+				}
+				else {
 
 				}
 
@@ -46,23 +49,28 @@ public class Rift implements ISpellComponent, IRitualInteraction{
 			}
 		}
 
-		if (world.isRemote){
+		if(world.isRemote) {
 			return true;
 		}
 		EntityRiftStorage storage = new EntityRiftStorage(world);
 		int storageLevel = Math.min(1 + SpellUtils.instance.countModifiers(SpellModifiers.BUFF_POWER, stack, 0), 3);
 		storage.setStorageLevel(storageLevel);
-		if (blockFace == 1){
+		if(blockFace == 1) {
 			storage.setPosition(blockx + 0.5, blocky + 1.5, blockz + 0.5);
-		}else if (blockFace == 2){
+		}
+		else if(blockFace == 2) {
 			storage.setPosition(blockx + 0.5, blocky + 0.5, blockz - 1.5);
-		}else if (blockFace == 3){
+		}
+		else if(blockFace == 3) {
 			storage.setPosition(blockx + 0.5, blocky + 0.5, blockz + 1.5);
-		}else if (blockFace == 4){
+		}
+		else if(blockFace == 4) {
 			storage.setPosition(blockx - 1.5, blocky + 0.5, blockz + 0.5);
-		}else if (blockFace == 5){
+		}
+		else if(blockFace == 5) {
 			storage.setPosition(blockx + 1.5, blocky + 0.5, blockz + 0.5);
-		}else{
+		}
+		else {
 			storage.setPosition(blockx + 0.5, blocky - 1.5, blockz + 0.5);
 		}
 		world.spawnEntityInWorld(storage);
@@ -70,69 +78,69 @@ public class Rift implements ISpellComponent, IRitualInteraction{
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
 		return false;
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 90;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
+	public float burnout(EntityLivingBase caster) {
 		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.NONE);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 48;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_WHITE),
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_PURPLE),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_WHITE),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_PURPLE),
 				Blocks.chest,
 				Items.ender_eye
 		};
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0;
 	}
 
 	@Override
-	public MultiblockStructureDefinition getRitualShape(){
+	public MultiblockStructureDefinition getRitualShape() {
 		return RitualShapeHelper.instance.corruption;
 	}
 
 	@Override
-	public ItemStack[] getReagents(){
+	public ItemStack[] getReagents() {
 		return new ItemStack[]{
 				new ItemStack(ItemsCommonProxy.mobFocus),
-				new ItemStack(ItemsCommonProxy.essence, 1, ItemsCommonProxy.essence.META_ENDER)
+				new ItemStack(ItemsCommonProxy.essence, 1, ItemEssence.META_ENDER)
 		};
 	}
 
 	@Override
-	public int getReagentSearchRadius(){
+	public int getReagentSearchRadius() {
 		return 3;
 	}
 }

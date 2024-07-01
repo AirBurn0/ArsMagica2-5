@@ -11,28 +11,28 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class OBJModel{
+public class OBJModel {
 	private OBJTexCoord[] textureCoords;
 	private OBJNormal[] normals;
 	private OBJVertex[] vertices;
 	private OBJFace[] faces;
 
-	private boolean loaded;
-	private boolean flatShading;
+	private final boolean loaded;
+	private final boolean flatShading;
 	private int cullMode;
 
 	private int glCallList;
 
-	public OBJModel(ResourceLocation objFile, boolean flatShading){
+	public OBJModel(ResourceLocation objFile, boolean flatShading) {
 		loaded = LoadOBJModel(objFile);
-		if (!loaded){
+		if(!loaded) {
 
 		}
 		this.flatShading = flatShading;
 		this.cullMode = GL11.GL_FRONT;
 	}
 
-	private void createMissingModel(){
+	private void createMissingModel() {
 		this.vertices = new OBJVertex[8];
 
 		this.vertices[0] = new OBJVertex(0, 0, 0);
@@ -55,93 +55,102 @@ public class OBJModel{
 		this.calculateNormals();
 	}
 
-	public OBJModel(ResourceLocation objFile){
+	public OBJModel(ResourceLocation objFile) {
 		this(objFile, false);
 	}
 
-	public OBJModel SetBackCulling(){
+	public OBJModel SetBackCulling() {
 		this.cullMode = GL11.GL_BACK;
 		return this;
 	}
 
-	public boolean IsLoaded(){
+	public boolean IsLoaded() {
 		return loaded;
 	}
 
-	private InputStream getResourceAsStream(String resourceName){
+	private InputStream getResourceAsStream(String resourceName) {
 		return AMCore.class.getResourceAsStream(resourceName);
 	}
 
-	private boolean LoadOBJModel(ResourceLocation path){
+	private boolean LoadOBJModel(ResourceLocation path) {
 
 		InputStream stream = getResourceAsStream(path.getResourcePath());
 
-		if (stream == null) return false;
+		if(stream == null) {
+			return false;
+		}
 
 		ArrayList<String> lines = new ArrayList<String>();
 
-		try{
+		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 			String line;
-			while ((line = br.readLine()) != null){
+			while((line = br.readLine()) != null) {
 				lines.add(line);
 			}
 			br.close();
 			stream.close();
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 			LogHelper.error("Error reading OBJ File Data!");
 			return false;
 		}
 
-		if (parseOBJFileLines(lines)){
-			/*AMCore.log.info("Loaded Model " + path);
+		/*AMCore.log.info("Loaded Model " + path);
 			LogHelper.info("Vertices: " + vertices.length);
 			LogHelper.info("Texture Coords: " + textureCoords.length);
 			LogHelper.info("Normals: " + normals.length);
 			LogHelper.info("Faces: " + faces.length);*/
-
-			return true;
-		}else{
-			return false;
-		}
+		return parseOBJFileLines(lines);
 
 	}
 
-	private boolean parseOBJFileLines(ArrayList<String> lines){
+	private boolean parseOBJFileLines(ArrayList<String> lines) {
 
 		ArrayList<OBJTexCoord> textureCoords = new ArrayList<OBJTexCoord>();
 		ArrayList<OBJNormal> normals = new ArrayList<OBJNormal>();
 		ArrayList<OBJVertex> vertices = new ArrayList<OBJVertex>();
 		ArrayList<OBJFace> faces = new ArrayList<OBJFace>();
 
-		for (String line : lines){
+		for(String line: lines) {
 			String[] sections = line.split(" ");
-			if (line.startsWith("vn ")){ //normals				
+			if(line.startsWith("vn ")) { //normals				
 				normals.add(new OBJNormal(Float.parseFloat(sections[1]), Float.parseFloat(sections[2]), Float.parseFloat(sections[3])));
-			}else if (line.startsWith("vt ")){ //uv							
+			}
+			else if(line.startsWith("vt ")) { //uv							
 				textureCoords.add(new OBJTexCoord(Float.parseFloat(sections[1]), Float.parseFloat(sections[2])));
-			}else if (line.startsWith("v ")){ //vertex				
+			}
+			else if(line.startsWith("v ")) { //vertex				
 				vertices.add(new OBJVertex(Float.parseFloat(sections[1]), Float.parseFloat(sections[2]), Float.parseFloat(sections[3])));
-			}else if (line.startsWith("f ")){
+			}
+			else if(line.startsWith("f ")) {
 				//face
 				ArrayList<Integer> v = new ArrayList<Integer>();
 				ArrayList<Integer> t = new ArrayList<Integer>();
 				ArrayList<Integer> n = new ArrayList<Integer>();
 
-				for (String s : sections){
-					if (s.equals("f")) continue;
+				for(String s: sections) {
+					if(s.equals("f")) {
+						continue;
+					}
 					String[] vtn = s.split("/");
 					v.add(Integer.parseInt(vtn[0]));
-					if (vtn.length > 1){
-						if (vtn[1].equals("")) t.add(0);
-						else t.add(Integer.parseInt(vtn[1]));
-					}else{
+					if(vtn.length > 1) {
+						if(vtn[1].equals("")) {
+							t.add(0);
+						}
+						else {
+							t.add(Integer.parseInt(vtn[1]));
+						}
+					}
+					else {
 						t.add(0);
 						n.add(0);
 					}
-					if (vtn.length > 2){
+					if(vtn.length > 2) {
 						n.add(Integer.parseInt(vtn[2]));
-					}else{
+					}
+					else {
 						n.add(0);
 					}
 				}
@@ -170,27 +179,29 @@ public class OBJModel{
 		return true;
 	}
 
-	private void calculateNormals(){
+	private void calculateNormals() {
 
 		//calculate face normals
-		for (OBJFace face : this.faces){
-			if (face.faceNormal != null) continue;
+		for(OBJFace face: this.faces) {
+			if(face.faceNormal != null) {
+				continue;
+			}
 			OBJNormal faceNormal = calculateFaceNormal(face);
 			face.setNormal(faceNormal);
 		}
 
-		if (!flatShading){
+		if(!flatShading) {
 			//calculate vertex normals as the average of adjacent face normals
-			for (int i = 0; i < this.vertices.length; ++i){
+			for(int i = 0; i < this.vertices.length; ++i) {
 				calculateVertexNormal(i);
 			}
 		}
 	}
 
-	private OBJNormal calculateFaceNormal(OBJFace face){
+	private OBJNormal calculateFaceNormal(OBJFace face) {
 		OBJNormal normal = new OBJNormal(0, 0, 0);
 
-		for (int i = 0; i < face.v.length; ++i){
+		for(int i = 0; i < face.v.length; ++i) {
 			OBJVertex v = this.vertices[face.v[i] - 1];
 			OBJVertex vn = this.vertices[face.v[(i + 1) % face.v.length] - 1];
 
@@ -205,14 +216,14 @@ public class OBJModel{
 		return normal;
 	}
 
-	private OBJNormal calculateVertexNormal(int index){
+	private OBJNormal calculateVertexNormal(int index) {
 		int[] adjoiningFaces = new int[this.faces.length];
 
 		int numAdjoiningFaces = 0;
-		for (int i = 0; i < this.faces.length; ++i){
+		for(int i = 0; i < this.faces.length; ++i) {
 			OBJFace face = this.faces[i];
-			for (int j = 0; j < face.v.length; ++j){
-				if (face.v[j] == index){
+			for(int j = 0; j < face.v.length; ++j) {
+				if(face.v[j] == index) {
 					adjoiningFaces[numAdjoiningFaces++] = i;
 					break;
 				}
@@ -221,13 +232,14 @@ public class OBJModel{
 
 		OBJNormal normal = new OBJNormal(0, 0, 0);
 
-		for (int i = 0; i < numAdjoiningFaces; ++i){
+		for(int i = 0; i < numAdjoiningFaces; ++i) {
 			OBJFace face = this.faces[i];
-			if (face.faceNormal != null){
+			if(face.faceNormal != null) {
 				normal.i += face.faceNormal.i;
 				normal.j += face.faceNormal.j;
 				normal.k += face.faceNormal.k;
-			}else{
+			}
+			else {
 				//TODO: point normals where face normal doesn't exist (really shouldn't need this though for now)
 			}
 		}
@@ -241,15 +253,15 @@ public class OBJModel{
 		return normal;
 	}
 
-	private int[] toArray(ArrayList<Integer> iArr){
+	private int[] toArray(ArrayList<Integer> iArr) {
 		int[] arr = new int[iArr.size()];
-		for (int i = 0; i < iArr.size(); ++i){
+		for(int i = 0; i < iArr.size(); ++i) {
 			arr[i] = iArr.get(i);
 		}
 		return arr;
 	}
 
-	public void PrepareGLCallList(){
+	public void PrepareGLCallList() {
 		glCallList = GL11.glGenLists(1);
 		GL11.glNewList(glCallList, GL11.GL_COMPILE);
 
@@ -259,7 +271,7 @@ public class OBJModel{
 		GL11.glMatrixMode(GL11.GL_TEXTURE);
 		GL11.glCullFace(GL11.GL_FRONT);
 
-		for (int i = 0; i < faces.length; ++i){
+		for(int i = 0; i < faces.length; ++i) {
 			OBJFace face = faces[i];
 			RenderFace(face);
 		}
@@ -272,11 +284,11 @@ public class OBJModel{
 		GL11.glEndList();
 	}
 
-	public void RenderOBJModel(Tessellator t){
+	public void RenderOBJModel(Tessellator t) {
 		GL11.glCallList(glCallList);
 	}
 
-	private void RenderFace(OBJFace face){
+	private void RenderFace(OBJFace face) {
 		int[] v = face.v;
 		int[] tc = face.t;
 		int[] n = face.n;
@@ -285,31 +297,33 @@ public class OBJModel{
 
 		GL11.glBegin(GL11.GL_TRIANGLES);
 
-		if (this.flatShading){
-			if (face.faceNormal != null){
+		if(this.flatShading) {
+			if(face.faceNormal != null) {
 				OBJNormal normal = face.faceNormal;
-				if (Float.isNaN(normal.i) || Float.isNaN(normal.j) || Float.isNaN(normal.k)){
+				if(Float.isNaN(normal.i) || Float.isNaN(normal.j) || Float.isNaN(normal.k)) {
 					vertexNormals = true;
-				}else{
+				}
+				else {
 					GL11.glNormal3f(normal.i, normal.j, normal.k);
 					vertexNormals = false;
 				}
 			}
-		}else{
+		}
+		else {
 			vertexNormals = true;
 		}
 
-		for (int i = 0; i < v.length; ++i){
+		for(int i = 0; i < v.length; ++i) {
 			OBJVertex vertex = this.vertices[v[i] - 1];
 			OBJNormal normal = null;
 			OBJTexCoord texCoord = null;
 
-			if (tc[i] != 0){
+			if(tc[i] != 0) {
 				texCoord = this.textureCoords[tc[i] - 1];
 				GL11.glTexCoord2f(texCoord.u, texCoord.v);
 			}
-			if (vertexNormals){
-				if (n[i] != 0){
+			if(vertexNormals) {
+				if(n[i] != 0) {
 					normal = this.normals[n[i] - 1];
 					GL11.glNormal3f(normal.i, normal.j, normal.k);
 				}

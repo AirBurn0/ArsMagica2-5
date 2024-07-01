@@ -14,34 +14,40 @@ import net.minecraft.util.IIcon;
 
 import java.util.ArrayList;
 
-public class ItemSpellPart extends ArsMagicaItem{
+public class ItemSpellPart extends ArsMagicaItem {
 
-	public ItemSpellPart(){
+	public ItemSpellPart() {
 		super();
 		this.setMaxDamage(0);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister IIconRegister){
+	public void registerIcons(IIconRegister IIconRegister) {
 		ArrayList<Integer> parts = SkillManager.instance.getAllShapes();
 		parts.addAll(SkillManager.instance.getAllComponents());
 		parts.addAll(SkillManager.instance.getAllModifiers());
 		parts.addAll(SkillManager.instance.getAllTalents());
 		int count = 0;
 
-		for (Integer i : parts){
-			if (i == null) continue;
+		for(Integer i: parts) {
+			if(i == null) {
+				continue;
+			}
 			ISkillTreeEntry entry = SkillManager.instance.getSkill(i);
 			String subfolder = "";
-			if (entry instanceof ISpellShape)
+			if(entry instanceof ISpellShape) {
 				subfolder = "shapes";
-			else if (entry instanceof ISpellComponent)
+			}
+			else if(entry instanceof ISpellComponent) {
 				subfolder = "components";
-			else if (entry instanceof ISpellModifier)
+			}
+			else if(entry instanceof ISpellModifier) {
 				subfolder = "modifiers";
-			else
+			}
+			else {
 				subfolder = "skills";
+			}
 
 			String skillName = SkillManager.instance.getSkillName(entry);
 			IIcon IIcon = ResourceManager.RegisterTexture(String.format("spells/%s/%s.png", subfolder, skillName), IIconRegister);
@@ -51,7 +57,7 @@ public class ItemSpellPart extends ArsMagicaItem{
 	}
 
 	@Override
-	public IIcon getIconFromDamage(int par1){
+	public IIcon getIconFromDamage(int par1) {
 		return SpellIconManager.instance.getIcon(SkillManager.instance.getSkillName(SkillManager.instance.getSkill(par1)));
 	}
 }

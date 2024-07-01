@@ -7,13 +7,13 @@ import net.minecraft.scoreboard.Team;
 
 import java.util.List;
 
-public class EntityAITargetByTeam extends EntityAITarget{
+public class EntityAITargetByTeam extends EntityAITarget {
 
-	private EntityCreature host;
-	private Team teamToTarget;
-	private int radius;
+	private final EntityCreature host;
+	private final Team teamToTarget;
+	private final int radius;
 
-	public EntityAITargetByTeam(EntityCreature host, Team teamToTarget, int radius){
+	public EntityAITargetByTeam(EntityCreature host, Team teamToTarget, int radius) {
 		super(host, false);
 		this.host = host;
 		this.teamToTarget = teamToTarget;
@@ -21,21 +21,21 @@ public class EntityAITargetByTeam extends EntityAITarget{
 	}
 
 	@Override
-	public boolean shouldExecute(){
+	public boolean shouldExecute() {
 		return host.getAttackTarget() == null;
 	}
 
 	@Override
-	public void startExecuting(){
+	public void startExecuting() {
 		tryGetTargetByTeam();
 	}
 
-	private boolean tryGetTargetByTeam(){
+	private boolean tryGetTargetByTeam() {
 		List<EntityPlayer> players = host.worldObj.getEntitiesWithinAABB(EntityPlayer.class, host.boundingBox.expand(radius, radius, radius));
 
-		for (EntityPlayer player : players){
-			if (player.isOnTeam(teamToTarget)){
-				if (host.getNavigator().tryMoveToEntityLiving(player, host.getAIMoveSpeed())){
+		for(EntityPlayer player: players) {
+			if(player.isOnTeam(teamToTarget)) {
+				if(host.getNavigator().tryMoveToEntityLiving(player, host.getAIMoveSpeed())) {
 					host.setAttackTarget(player);
 					return true;
 				}

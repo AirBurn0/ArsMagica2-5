@@ -11,17 +11,19 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
-public class RenderUtilities{
-	public static void DrawIconInWorldAtOffset(IIcon icon, double x, double y, double z, double width, double height){
+public class RenderUtilities {
+	public static void DrawIconInWorldAtOffset(IIcon icon, double x, double y, double z, double width, double height) {
 		Tessellator t = Tessellator.instance;
 
 		GL11.glPushMatrix();
 		GL11.glRotatef(180F - RenderManager.instance.playerViewY, 0.0F, 1.0F, 0.0F);
 		int view = Minecraft.getMinecraft().gameSettings.thirdPersonView;
-		if (view < 2)
+		if(view < 2) {
 			GL11.glRotatef(-RenderManager.instance.playerViewX, 1.0F, 0.0F, 0.0F);
-		else
+		}
+		else {
 			GL11.glRotatef(RenderManager.instance.playerViewX, 1.0F, 0.0F, 0.0F);
+		}
 
 		GL11.glTranslated(x, y, z);
 		GL11.glScaled(width, height, 1);
@@ -31,7 +33,7 @@ public class RenderUtilities{
 
 	}
 
-	public static void drawTextInWorldAtOffset(String text, double x, double y, double z, int color){
+	public static void drawTextInWorldAtOffset(String text, double x, double y, double z, int color) {
 		Tessellator t = Tessellator.instance;
 
 		FontRenderer fontrenderer = Minecraft.getMinecraft().fontRenderer;
@@ -73,7 +75,7 @@ public class RenderUtilities{
 
 	}
 
-	private static void renderIcon(IIcon IIcon, int renderColor){
+	private static void renderIcon(IIcon IIcon, int renderColor) {
 		Tessellator tessellator = Tessellator.instance;
 		float f = 1.0F;
 		float f1 = 0.5F;
@@ -94,12 +96,13 @@ public class RenderUtilities{
 		RenderHelper.enableStandardItemLighting();
 	}
 
-	public static void setupShrinkRender(EntityLivingBase entity){
-		if (entity == null)
+	public static void setupShrinkRender(EntityLivingBase entity) {
+		if(entity == null) {
 			return;
+		}
 
 		ExtendedProperties exProps = ExtendedProperties.For(entity);
-		if (exProps.getShrinkPct() > 0f){
+		if(exProps.getShrinkPct() > 0f) {
 
 			float amt = 0.5f * exProps.getShrinkPct();
 			GL11.glScalef(1 - amt, 1 - amt, 1 - amt);

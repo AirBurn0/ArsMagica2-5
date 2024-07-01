@@ -3,7 +3,13 @@ package am2.entities;
 import am2.entities.ai.EntityAIManaDrainBolt;
 import am2.items.ItemsCommonProxy;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.*;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -11,11 +17,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityHellCow extends EntityMob{
+public class EntityHellCow extends EntityMob {
 
 	private final float hostileSpeed;
 
-	public EntityHellCow(World par1World){
+	public EntityHellCow(World par1World) {
 		super(par1World);
 		this.setSize(1.0f, 2.5f);
 		this.hostileSpeed = 0.4F;
@@ -23,12 +29,12 @@ public class EntityHellCow extends EntityMob{
 	}
 
 	@Override
-	protected boolean isAIEnabled(){
+	protected boolean isAIEnabled() {
 		return true;
 	}
 
 	@Override
-	protected void applyEntityAttributes(){
+	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(50);
 		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.5D);
@@ -37,42 +43,44 @@ public class EntityHellCow extends EntityMob{
 	}
 
 	@Override
-	public int getTotalArmorValue(){
+	public int getTotalArmorValue() {
 		return 15;
 	}
 
 	@Override
-	protected void dropFewItems(boolean par1, int par2){
+	protected void dropFewItems(boolean par1, int par2) {
 		int i = rand.nextInt(100);
-		if (i == 1 && par1){
+		if(i == 1 && par1) {
 			this.entityDropItem(ItemsCommonProxy.cowHorn.createItemStack(), 0.0f);
 		}
 	}
 
 	@Override
-	protected void dropRareDrop(int par1){
-		if (this.rand.nextBoolean())
+	protected void dropRareDrop(int par1) {
+		if(this.rand.nextBoolean()) {
 			this.entityDropItem(new ItemStack(Items.diamond), 0.0f);
-		else
+		}
+		else {
 			this.entityDropItem(new ItemStack(Items.emerald), 0.0f);
+		}
 	}
 
 	@Override
-	protected String getHurtSound(){
+	protected String getHurtSound() {
 		return "arsmagica2:mob.moo.hit";
 	}
 
 	@Override
-	protected String getDeathSound(){
+	protected String getDeathSound() {
 		return "arsmagica2:mob.moo.death";
 	}
 
 	@Override
-	protected String getLivingSound(){
+	protected String getLivingSound() {
 		return "arsmagica2:mob.moo.idle";
 	}
 
-	private void initAI(){
+	private void initAI() {
 		this.getNavigator().setAvoidsWater(true);
 		this.tasks.addTask(1, new EntityAIAttackOnCollide(this, 0.6F, false));
 		this.tasks.addTask(4, new EntityAIManaDrainBolt(this, 0.5f, 35, 2, 0));
@@ -85,24 +93,26 @@ public class EntityHellCow extends EntityMob{
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2){
-		if (par2 > 10) par2 = 10;
+	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2) {
+		if(par2 > 10) {
+			par2 = 10;
+		}
 		return super.attackEntityFrom(par1DamageSource, par2);
 	}
 
 	@Override
-	public boolean getCanSpawnHere(){
+	public boolean getCanSpawnHere() {
 		return true;
 	}
 
 
 	@Override
-	public int getTalkInterval(){
+	public int getTalkInterval() {
 		return 160;
 	}
 
 	@Override
-	protected float getSoundVolume(){
+	protected float getSoundVolume() {
 		return 0.4f;
 	}
 }

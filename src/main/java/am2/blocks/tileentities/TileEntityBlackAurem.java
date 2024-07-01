@@ -5,11 +5,17 @@ import am2.api.blocks.MultiblockStructureDefinition;
 import am2.api.blocks.MultiblockStructureDefinition.StructureGroup;
 import am2.api.math.AMVector3;
 import am2.api.power.PowerTypes;
+import am2.blocks.BlockAMOre;
 import am2.blocks.BlocksCommonProxy;
 import am2.buffs.BuffEffectManaRegen;
 import am2.buffs.BuffList;
 import am2.damage.DamageSources;
-import am2.entities.*;
+import am2.entities.EntityAirSled;
+import am2.entities.EntityDarkling;
+import am2.entities.EntityFlicker;
+import am2.entities.EntityShadowHelper;
+import am2.entities.EntityThrownSickle;
+import am2.entities.EntityWinterGuardianArm;
 import am2.multiblock.IMultiblockStructureController;
 import am2.particles.AMLineArc;
 import am2.power.PowerNodeRegistry;
@@ -28,7 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblockStructureController{
+public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblockStructureController {
 
 	private final HashMap arcs;
 
@@ -38,9 +44,9 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 	private final ArrayList<EntityLivingBase> cachedEntities;
 	private int ticksSinceLastEntityScan = 0;
 	private float rotation = 0.0f;
-	private float rotationIncrement = 0.15f;
+	private final float rotationIncrement = 0.15f;
 
-	public TileEntityBlackAurem(){
+	public TileEntityBlackAurem() {
 		super(10000);
 
 		arcs = new HashMap();
@@ -63,47 +69,49 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 
 		structure.addAllowedBlock(pillars, -2, 0, -2, Blocks.nether_brick);
 		structure.addAllowedBlock(pillars, -2, 1, -2, Blocks.nether_brick);
-		structure.addAllowedBlock(chimerite, -2, 2, -2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_CHIMERITE_BLOCK);
+		structure.addAllowedBlock(chimerite, -2, 2, -2, BlocksCommonProxy.AMOres, BlockAMOre.META_CHIMERITE_BLOCK);
 		structure.addAllowedBlock(obsidian, -2, 2, -2, Blocks.obsidian);
-		structure.addAllowedBlock(sunstone, -2, 2, -2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_SUNSTONE_BLOCK);
+		structure.addAllowedBlock(sunstone, -2, 2, -2, BlocksCommonProxy.AMOres, BlockAMOre.META_SUNSTONE_BLOCK);
 
 		structure.addAllowedBlock(pillars, 2, 0, -2, Blocks.nether_brick);
 		structure.addAllowedBlock(pillars, 2, 1, -2, Blocks.nether_brick);
-		structure.addAllowedBlock(chimerite, 2, 2, -2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_CHIMERITE_BLOCK);
+		structure.addAllowedBlock(chimerite, 2, 2, -2, BlocksCommonProxy.AMOres, BlockAMOre.META_CHIMERITE_BLOCK);
 		structure.addAllowedBlock(obsidian, 2, 2, -2, Blocks.obsidian);
-		structure.addAllowedBlock(sunstone, 2, 2, -2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_SUNSTONE_BLOCK);
+		structure.addAllowedBlock(sunstone, 2, 2, -2, BlocksCommonProxy.AMOres, BlockAMOre.META_SUNSTONE_BLOCK);
 
 		structure.addAllowedBlock(pillars, -2, 0, 2, Blocks.nether_brick);
 		structure.addAllowedBlock(pillars, -2, 1, 2, Blocks.nether_brick);
-		structure.addAllowedBlock(chimerite, -2, 2, 2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_CHIMERITE_BLOCK);
+		structure.addAllowedBlock(chimerite, -2, 2, 2, BlocksCommonProxy.AMOres, BlockAMOre.META_CHIMERITE_BLOCK);
 		structure.addAllowedBlock(obsidian, -2, 2, 2, Blocks.obsidian);
-		structure.addAllowedBlock(sunstone, -2, 2, 2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_SUNSTONE_BLOCK);
+		structure.addAllowedBlock(sunstone, -2, 2, 2, BlocksCommonProxy.AMOres, BlockAMOre.META_SUNSTONE_BLOCK);
 
 		structure.addAllowedBlock(pillars, 2, 0, 2, Blocks.nether_brick);
 		structure.addAllowedBlock(pillars, 2, 1, 2, Blocks.nether_brick);
-		structure.addAllowedBlock(chimerite, 2, 2, 2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_CHIMERITE_BLOCK);
+		structure.addAllowedBlock(chimerite, 2, 2, 2, BlocksCommonProxy.AMOres, BlockAMOre.META_CHIMERITE_BLOCK);
 		structure.addAllowedBlock(obsidian, 2, 2, 2, Blocks.obsidian);
-		structure.addAllowedBlock(sunstone, 2, 2, 2, BlocksCommonProxy.AMOres, BlocksCommonProxy.AMOres.META_SUNSTONE_BLOCK);
+		structure.addAllowedBlock(sunstone, 2, 2, 2, BlocksCommonProxy.AMOres, BlockAMOre.META_SUNSTONE_BLOCK);
 
 		wizardChalkCircle = addWizChalkGroupToStructure(structure, 1);
 	}
 
 	@Override
-	protected void checkNearbyBlockState(){
+	protected void checkNearbyBlockState() {
 		ArrayList<StructureGroup> groups = structure.getMatchedGroups(7, worldObj, xCoord, yCoord, zCoord);
 
 		float capsLevel = 1;
 		boolean pillarsFound = false;
 		boolean wizChalkFound = false;
 
-		for (StructureGroup group : groups){
-			if (group == pillars)
+		for(StructureGroup group: groups) {
+			if(group == pillars) {
 				pillarsFound = true;
-			else if (group == wizardChalkCircle)
+			}
+			else if(group == wizardChalkCircle) {
 				wizChalkFound = true;
+			}
 
-			for (StructureGroup cap : caps.keySet()){
-				if (group == cap){
+			for(StructureGroup cap: caps.keySet()) {
+				if(group == cap) {
 					capsLevel = caps.get(cap);
 					break;
 				}
@@ -112,39 +120,42 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 
 		powerMultiplier = 1;
 
-		if (wizChalkFound)
+		if(wizChalkFound) {
 			powerMultiplier = 1.25f;
+		}
 
-		if (pillarsFound)
+		if(pillarsFound) {
 			powerMultiplier *= capsLevel;
+		}
 	}
 
 	@Override
-	public void updateEntity(){
-		if (worldObj.isRemote){
+	public void updateEntity() {
+		if(worldObj.isRemote) {
 			this.rotation += this.rotationIncrement;
-		}else{
+		}
+		else {
 			surroundingCheckTicks++;
 		}
 
-		if (worldObj.isRemote || ticksSinceLastEntityScan++ > 25){
+		if(worldObj.isRemote || ticksSinceLastEntityScan++ > 25) {
 			updateNearbyEntities();
 			ticksSinceLastEntityScan = 0;
 		}
 
 		Iterator<EntityLivingBase> it = cachedEntities.iterator();
-		while (it.hasNext()){
+		while(it.hasNext()) {
 
 			EntityLivingBase ent = it.next();
 
-			if (ent.isDead){
+			if(ent.isDead) {
 				it.remove();
 				continue;
 			}
 
 			MovingObjectPosition mop = this.worldObj.rayTraceBlocks(Vec3.createVectorHelper(xCoord + 0.5, yCoord + 1.5, zCoord + 0.5), Vec3.createVectorHelper(ent.posX, ent.posY + ent.getEyeHeight(), ent.posZ), false);
 
-			if (EntityUtilities.isSummon(ent) || mop != null){
+			if(EntityUtilities.isSummon(ent) || mop != null) {
 				continue;
 			}
 
@@ -164,17 +175,17 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 			double distanceVertical = this.yCoord - ent.posY;
 			boolean spawnedParticles = false;
 
-			if (distanceHorizontal < 1.3){
-				if (distanceVertical < -1.5){
-					if (worldObj.isRemote && worldObj.rand.nextInt(10) < 3){
+			if(distanceHorizontal < 1.3) {
+				if(distanceVertical < -1.5) {
+					if(worldObj.isRemote && worldObj.rand.nextInt(10) < 3) {
 						AMCore.proxy.particleManager.BoltFromPointToPoint(worldObj, xCoord + 0.5, yCoord + 1.3, zCoord + 0.5, ent.posX, ent.posY, ent.posZ, 4, 0x000000);
 					}
 				}
-				if (distanceVertical < -2){
+				if(distanceVertical < -2) {
 					offsetY = 0;
-					if (!worldObj.isRemote){
-						if (ent.attackEntityFrom(DamageSources.darkNexus, 4)){
-							if (ent.getHealth() <= 0){
+					if(!worldObj.isRemote) {
+						if(ent.attackEntityFrom(DamageSources.darkNexus, 4)) {
+							if(ent.getHealth() <= 0) {
 								ent.setDead();
 								float power = ((int)Math.ceil((ent.getMaxHealth() * (ent.ticksExisted / 20)) % 5000)) * this.powerMultiplier;
 								PowerNodeRegistry.For(this.worldObj).insertPower(this, PowerTypes.DARK, power);
@@ -184,10 +195,10 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 				}
 			}
 
-			if (worldObj.isRemote){
-				if (!arcs.containsKey(ent)){
+			if(worldObj.isRemote) {
+				if(!arcs.containsKey(ent)) {
 					AMLineArc arc = (AMLineArc)AMCore.proxy.particleManager.spawn(worldObj, "textures/blocks/oreblocksunstone.png", xCoord + 0.5, yCoord + 1.3, zCoord + 0.5, ent);
-					if (arc != null){
+					if(arc != null) {
 						arc.setExtendToTarget();
 						arc.setRBGColorF(1, 1, 1);
 					}
@@ -195,27 +206,31 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 				}
 				Iterator arcIterator = arcs.keySet().iterator();
 				ArrayList<Entity> toRemove = new ArrayList<Entity>();
-				while (arcIterator.hasNext()){
+				while(arcIterator.hasNext()) {
 					Entity arcEnt = (Entity)arcIterator.next();
 					AMLineArc arc = (AMLineArc)arcs.get(arcEnt);
-					if (arcEnt == null || arcEnt.isDead || arc == null || arc.isDead || new AMVector3(ent).distanceSqTo(new AMVector3(xCoord, yCoord, zCoord)) > 100)
+					if(arcEnt == null || arcEnt.isDead || arc == null || arc.isDead || new AMVector3(ent).distanceSqTo(new AMVector3(xCoord, yCoord, zCoord)) > 100) {
 						toRemove.add(arcEnt);
+					}
 				}
 
-				for (Entity e : toRemove){
+				for(Entity e: toRemove) {
 					arcs.remove(e);
 				}
 			}
-			if (!worldObj.isRemote)
+			if(!worldObj.isRemote) {
 				ent.moveEntity(offsetX, offsetY, offsetZ);
+			}
 		}
-		if (surroundingCheckTicks % 100 == 0){
+		if(surroundingCheckTicks % 100 == 0) {
 			checkNearbyBlockState();
 			surroundingCheckTicks = 1;
-			if (!worldObj.isRemote && PowerNodeRegistry.For(this.worldObj).checkPower(this, this.capacity * 0.1f)){
+			if(!worldObj.isRemote && PowerNodeRegistry.For(this.worldObj).checkPower(this, this.capacity * 0.1f)) {
 				List<EntityPlayer> nearbyPlayers = worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(this.xCoord - 2, this.yCoord, this.zCoord - 2, this.xCoord + 2, this.yCoord + 3, this.zCoord + 2));
-				for (EntityPlayer p : nearbyPlayers){
-					if (p.isPotionActive(BuffList.manaRegen.id)) continue;
+				for(EntityPlayer p: nearbyPlayers) {
+					if(p.isPotionActive(BuffList.manaRegen.id)) {
+						continue;
+					}
 					p.addPotionEffect(new BuffEffectManaRegen(600, 3));
 				}
 			}
@@ -230,11 +245,11 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 		super.callSuperUpdate();
 	}
 
-	private void updateNearbyEntities(){
+	private void updateNearbyEntities() {
 		ArrayList<EntityLivingBase> toRemove = new ArrayList<EntityLivingBase>();
 		List<EntityLivingBase> nearbyEntities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(this.xCoord - 10, this.yCoord, this.zCoord - 10, this.xCoord + 10, this.yCoord + 4, this.zCoord + 10));
-		for (EntityLivingBase entity : nearbyEntities){
-			if (entity.isEntityInvulnerable() ||
+		for(EntityLivingBase entity: nearbyEntities) {
+			if(entity.isEntityInvulnerable() ||
 					entity instanceof IBossDisplayData ||
 					entity instanceof EntityDarkling ||
 					entity instanceof EntityPlayer ||
@@ -242,39 +257,41 @@ public class TileEntityBlackAurem extends TileEntityObelisk implements IMultiblo
 					entity instanceof EntityWinterGuardianArm ||
 					entity instanceof EntityThrownSickle ||
 					entity instanceof EntityFlicker ||
-					entity instanceof EntityShadowHelper)
+					entity instanceof EntityShadowHelper) {
 				continue;
-			if (!cachedEntities.contains(entity))
+			}
+			if(!cachedEntities.contains(entity)) {
 				cachedEntities.add(entity);
+			}
 		}
 
 		ticksSinceLastEntityScan = 0;
 	}
 
 	@Override
-	public MultiblockStructureDefinition getDefinition(){
+	public MultiblockStructureDefinition getDefinition() {
 		return structure;
 	}
 
 	@Override
-	public boolean canRequestPower(){
+	public boolean canRequestPower() {
 		return false;
 	}
 
 	@Override
-	public boolean canProvidePower(PowerTypes type){
+	public boolean canProvidePower(PowerTypes type) {
 		return type == PowerTypes.DARK;
 	}
 
 	@Override
-	public PowerTypes[] getValidPowerTypes(){
+	public PowerTypes[] getValidPowerTypes() {
 		return new PowerTypes[]{
 				PowerTypes.DARK
 		};
 	}
 
 	@Override
-	public int getSizeInventory(){
+	public int getSizeInventory() {
 		return 0;
 	}
 }

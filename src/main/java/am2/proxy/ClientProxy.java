@@ -13,6 +13,7 @@ import am2.api.spell.component.interfaces.ISpellComponent;
 import am2.armor.ArmorHelper;
 import am2.armor.infusions.GenericImbuement;
 import am2.blocks.BlocksClientProxy;
+import am2.blocks.BlocksCommonProxy;
 import am2.blocks.renderers.SimpleBlockRenderHandler;
 import am2.blocks.renderers.TechneBlockRenderHandler;
 import am2.blocks.tileentities.TileEntityParticleEmitter;
@@ -71,19 +72,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class ClientProxy extends CommonProxy{
+public class ClientProxy extends CommonProxy {
 	public static SimpleBlockRenderHandler simpleBlockRenderHandler;
 	public static TechneBlockRenderHandler techneBlockRenderHandler;
 	private ClientTickHandler clientTickHandler;
 
 	public static HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> powerPathVisuals;
 
-	public ClientProxy(){
+	public ClientProxy() {
 		particleManager = new ParticleManagerClient();
 	}
 
 	@Override
-	public void InitializeAndRegisterHandlers(){
+	public void InitializeAndRegisterHandlers() {
 		guiManager = new ClientGuiManager();
 		NetworkRegistry.INSTANCE.registerGuiHandler(AMCore.instance, guiManager);
 		clientTickHandler = new ClientTickHandler();
@@ -96,7 +97,7 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void postinit(){
+	public void postinit() {
 		super.postinit();
 		ArcaneCompendium.instance.init(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage());
 		MinecraftForge.EVENT_BUS.post(new RegisterCompendiumEntries(ArcaneCompendium.instance));
@@ -108,7 +109,7 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void preinit(){
+	public void preinit() {
 		super.preinit();
 		utils = new ProxyUtilitiesClient();
 		blocks = new BlocksClientProxy();
@@ -116,17 +117,17 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void init(){
+	public void init() {
 		super.init();
 
 		entities.registerRenderInformation();
 		blocks.registerRenderInformation();
 
 		simpleBlockRenderHandler = new SimpleBlockRenderHandler();
-		RenderingRegistry.registerBlockHandler(blocks.commonBlockRenderID, simpleBlockRenderHandler);
+		RenderingRegistry.registerBlockHandler(BlocksCommonProxy.commonBlockRenderID, simpleBlockRenderHandler);
 
 		techneBlockRenderHandler = new TechneBlockRenderHandler();
-		RenderingRegistry.registerBlockHandler(blocks.blockRenderID, techneBlockRenderHandler);
+		RenderingRegistry.registerBlockHandler(BlocksCommonProxy.blockRenderID, techneBlockRenderHandler);
 
 
 		MinecraftForgeClient.registerItemRenderer(ItemsCommonProxy.scythe, CustomItemRenderer.instance);
@@ -146,86 +147,94 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void flashManaBar(){
+	public void flashManaBar() {
 		AMGuiHelper.instance.flashManaBar();
 	}
 
 	@Override
-	public void blackoutArmorPiece(EntityPlayerMP entity, int index, int duration){
+	public void blackoutArmorPiece(EntityPlayerMP entity, int index, int duration) {
 		AMGuiHelper.instance.blackoutArmorPiece(index, duration);
 	}
 
 	@Override
-	public Entity getEntityByID(World world, int ID){
+	public Entity getEntityByID(World world, int ID) {
 		return world.getEntityByID(ID);
 	}
 
 	@Override
-	public EntityLivingBase getEntityByID(int entityID){
+	public EntityLivingBase getEntityByID(int entityID) {
 		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(entityID);
-		if (e instanceof EntityLivingBase) return (EntityLivingBase)e;
+		if(e instanceof EntityLivingBase) {
+			return (EntityLivingBase)e;
+		}
 		return null;
 	}
 
 	@Override
-	public EntityPlayer getLocalPlayer(){
+	public EntityPlayer getLocalPlayer() {
 		return Minecraft.getMinecraft().thePlayer;
 	}
 
 	@Override
-	public WorldServer[] getWorldServers(){
+	public WorldServer[] getWorldServers() {
 		return FMLClientHandler.instance().getServer().worldServers;
 	}
 
 	@Override
-	public int getArmorRenderIndex(String prefix){
+	public int getArmorRenderIndex(String prefix) {
 		return RenderingRegistry.addNewArmourRendererPrefix(prefix);
 	}
 
 	@Override
-	public void openSkillTreeUI(World world, EntityPlayer player){
-		if (world.isRemote){
+	public void openSkillTreeUI(World world, EntityPlayer player) {
+		if(world.isRemote) {
 			Minecraft.getMinecraft().displayGuiScreen(new GuiSkillTrees(player));
 		}
 	}
 
 	@Override
-	public void openParticleBlockGUI(World world, EntityPlayer player, TileEntityParticleEmitter te){
-		if (world.isRemote){
+	public void openParticleBlockGUI(World world, EntityPlayer player, TileEntityParticleEmitter te) {
+		if(world.isRemote) {
 			Minecraft.getMinecraft().displayGuiScreen(new GuiParticleEmitter(te));
 		}
 	}
 
 	@Override
-	public boolean setMouseDWheel(int dwheel){
-		if (dwheel == 0) return false;
+	public boolean setMouseDWheel(int dwheel) {
+		if(dwheel == 0) {
+			return false;
+		}
 
 		ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
-		if (stack == null) return false;
+		if(stack == null) {
+			return false;
+		}
 
 		boolean store = checkForTKMove(stack);
-		if (!store && stack.getItem() instanceof ItemSpellBook){
+		if(!store && stack.getItem() instanceof ItemSpellBook) {
 			store = Minecraft.getMinecraft().thePlayer.isSneaking();
 		}
 
-		if (store){
+		if(store) {
 			clientTickHandler.setDWheel(dwheel / 120, Minecraft.getMinecraft().thePlayer.inventory.currentItem, Minecraft.getMinecraft().thePlayer.isUsingItem());
 			return true;
-		}else{
+		}
+		else {
 			clientTickHandler.setDWheel(0, -1, false);
 		}
 		return false;
 	}
 
-	private boolean checkForTKMove(ItemStack stack){
-		if (stack.getItem() instanceof ItemSpellBook){
+	private boolean checkForTKMove(ItemStack stack) {
+		if(stack.getItem() instanceof ItemSpellBook) {
 			ItemStack activeStack = ((ItemSpellBook)stack.getItem()).GetActiveItemStack(stack);
-			if (activeStack != null)
+			if(activeStack != null) {
 				stack = activeStack;
+			}
 		}
-		if (stack.getItem() instanceof ItemSpellBase && stack.hasTagCompound() && Minecraft.getMinecraft().thePlayer.isUsingItem()){
-			for (ISpellComponent component : SpellUtils.instance.getComponentsForStage(stack, 0)){
-				if (component instanceof Telekinesis){
+		if(stack.getItem() instanceof ItemSpellBase && stack.hasTagCompound() && Minecraft.getMinecraft().thePlayer.isUsingItem()) {
+			for(ISpellComponent component: SpellUtils.instance.getComponentsForStage(stack, 0)) {
+				if(component instanceof Telekinesis) {
 					return true;
 				}
 			}
@@ -234,38 +243,39 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void renderGameOverlay(){
+	public void renderGameOverlay() {
 		clientTickHandler.renderOverlays();
 	}
 
 	/* LOCALIZATION */
 	@Override
-	public String getCurrentLanguage(){
+	public String getCurrentLanguage() {
 		return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
 	}
 
 	@Override
-	public void addName(Object obj, String s){
+	public void addName(Object obj, String s) {
 		LanguageRegistry.addName(obj, s);
 	}
 
 	@Override
-	public void addLocalization(String s1, String string){
+	public void addLocalization(String s1, String string) {
 		LanguageRegistry.instance().addStringLocalization(s1, string);
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack stack){
-		if (stack.getItem() == null)
+	public String getItemStackDisplayName(ItemStack stack) {
+		if(stack.getItem() == null) {
 			return "";
+		}
 
 		return stack.getItem().getItemStackDisplayName(stack);
 	}
 
 	@Override
-	public void sendLocalMovementData(EntityLivingBase ent){
-		if (ent == Minecraft.getMinecraft().thePlayer){
-			if (ent.worldObj.isRemote && ent.ridingEntity instanceof EntityAirSled){
+	public void sendLocalMovementData(EntityLivingBase ent) {
+		if(ent == Minecraft.getMinecraft().thePlayer) {
+			if(ent.worldObj.isRemote && ent.ridingEntity instanceof EntityAirSled) {
 				EntityClientPlayerMP player = (EntityClientPlayerMP)ent;
 				player.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(player.rotationYaw, player.rotationPitch, player.onGround));
 				player.sendQueue.addToSendQueue(new C0CPacketInput(player.moveStrafing, player.moveForward, player.movementInput.jump, player.movementInput.sneak));
@@ -274,90 +284,95 @@ public class ClientProxy extends CommonProxy{
 	}
 
 	@Override
-	public void setCompendiumSaveBase(String compendiumBase){
+	public void setCompendiumSaveBase(String compendiumBase) {
 		ArcaneCompendium.instance.setSaveLocation(compendiumBase);
 	}
 
 	@Override
-	public void requestPowerPathVisuals(IPowerNode node, EntityPlayerMP player){
+	public void requestPowerPathVisuals(IPowerNode node, EntityPlayerMP player) {
 		AMNetHandler.INSTANCE.syncPowerPaths(node, player);
 	}
 
 	@Override
-	public void receivePowerPathVisuals(HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> paths){
+	public void receivePowerPathVisuals(HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> paths) {
 		powerPathVisuals = paths;
 	}
 
 	@Override
-	public HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> getPowerPathVisuals(){
+	public HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> getPowerPathVisuals() {
 		return powerPathVisuals;
 	}
 
 	@Override
-	public boolean isClientPlayer(EntityLivingBase ent){
+	public boolean isClientPlayer(EntityLivingBase ent) {
 		return ent instanceof AbstractClientPlayer;
 	}
 
 	@Override
-	public void setTrackedLocation(AMVector3 location){
+	public void setTrackedLocation(AMVector3 location) {
 		clientTickHandler.setTrackLocation(location);
 	}
 
 	@Override
-	public void setTrackedPowerCompound(NBTTagCompound compound){
+	public void setTrackedPowerCompound(NBTTagCompound compound) {
 		clientTickHandler.setTrackData(compound);
 	}
 
 	@Override
-	public boolean hasTrackedLocationSynced(){
+	public boolean hasTrackedLocationSynced() {
 		return clientTickHandler.getHasSynced();
 	}
 
 	@Override
-	public PowerNodeEntry getTrackedData(){
+	public PowerNodeEntry getTrackedData() {
 		return clientTickHandler.getTrackData();
 	}
 
 	/**
-	 * Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
+	 Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
 	 */
 	@Override
-	public void unlockCompendiumEntry(String id){
-		if (ArcaneCompendium.instance.isCategory(id))
+	public void unlockCompendiumEntry(String id) {
+		if(ArcaneCompendium.instance.isCategory(id)) {
 			unlockCompendiumCategory(id);
-		else
+		}
+		else {
 			ArcaneCompendium.instance.unlockEntry(id);
+		}
 	}
 
 	/**
-	 * Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
+	 Proxied compendium unlocks.  Do not call directly - use the CompendiumUnlockHandler instead.
 	 */
 	@Override
-	public void unlockCompendiumCategory(String id){
+	public void unlockCompendiumCategory(String id) {
 		ArcaneCompendium.instance.unlockCategory(id);
 	}
 
 	@Override
-	public void drawPowerOnBlockHighlight(EntityPlayer player, MovingObjectPosition target, float partialTicks){
-		if (AMCore.proxy.getLocalPlayer().getCurrentArmor(3) != null &&
+	public void drawPowerOnBlockHighlight(EntityPlayer player, MovingObjectPosition target, float partialTicks) {
+		if(AMCore.proxy.getLocalPlayer().getCurrentArmor(3) != null &&
 				(AMCore.proxy.getLocalPlayer().getCurrentArmor(3).getItem() == ItemsCommonProxy.magitechGoggles ||
-						ArmorHelper.isInfusionPreset(AMCore.proxy.getLocalPlayer().getCurrentArmor(3), GenericImbuement.magitechGoggleIntegration))
-				){
+						ArmorHelper.isInfusionPreset(AMCore.proxy.getLocalPlayer()
+																 .getCurrentArmor(3), GenericImbuement.magitechGoggleIntegration)
+				)
+		) {
 
 			TileEntity te = player.worldObj.getTileEntity(target.blockX, target.blockY, target.blockZ);
-			if (te != null && te instanceof IPowerNode){
+			if(te != null && te instanceof IPowerNode) {
 				AMCore.proxy.setTrackedLocation(new AMVector3(target.blockX, target.blockY, target.blockZ));
-			}else{
+			}
+			else {
 				AMCore.proxy.setTrackedLocation(AMVector3.zero());
 			}
 
-			if (AMCore.proxy.hasTrackedLocationSynced()){
+			if(AMCore.proxy.hasTrackedLocationSynced()) {
 				PowerNodeEntry data = AMCore.proxy.getTrackedData();
 				Block block = player.worldObj.getBlock(target.blockX, target.blockY, target.blockZ);
 				float yOff = 0.5f;
-				if (data != null){
+				if(data != null) {
 					GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
-					for (PowerTypes type : ((IPowerNode)te).getValidPowerTypes()){
+					for(PowerTypes type: ((IPowerNode)te).getValidPowerTypes()) {
 						float pwr = data.getPower(type);
 						float pct = pwr / ((IPowerNode)te).getCapacity() * 100;
 						RenderUtilities.drawTextInWorldAtOffset(String.format("%s%.2f (%.2f%%)", type.chatColor(), pwr, pct),
@@ -373,23 +388,23 @@ public class ClientProxy extends CommonProxy{
 		}
 	}
 
-	public void addDeferredTargetSet(EntityLiving ent, EntityLivingBase target){
+	public void addDeferredTargetSet(EntityLiving ent, EntityLivingBase target) {
 		clientTickHandler.addDeferredTarget(ent, target);
 	}
 
-	public void addDigParticle(World worldObj, int xCoord, int yCoord, int zCoord, Block block, int meta){
+	public void addDigParticle(World worldObj, int xCoord, int yCoord, int zCoord, Block block, int meta) {
 		Minecraft.getMinecraft().
 				effectRenderer.addEffect(new EntityDiggingFX(worldObj,
-				xCoord + worldObj.rand.nextDouble(),
-				yCoord + worldObj.rand.nextDouble(),
-				zCoord + worldObj.rand.nextDouble(),
-				0,
-				0,
-				0,
-				block,
-				meta,
-				0
-		));
+						 xCoord + worldObj.rand.nextDouble(),
+						 yCoord + worldObj.rand.nextDouble(),
+						 zCoord + worldObj.rand.nextDouble(),
+						 0,
+						 0,
+						 0,
+						 block,
+						 meta,
+						 0
+				 ));
 	}
 }
 

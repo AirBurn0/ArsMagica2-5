@@ -13,36 +13,42 @@ import org.w3c.dom.Node;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class CompendiumEntryMob extends CompendiumEntry{
+public class CompendiumEntryMob extends CompendiumEntry {
 
-	public CompendiumEntryMob(){
+	public CompendiumEntryMob() {
 		super(CompendiumEntryTypes.instance.MOB);
 	}
 
 	@Override
-	protected void parseEx(Node node){
+	protected void parseEx(Node node) {
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta){
+	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta) {
 		String modEntityID = searchID.indexOf(".") == -1 ? "arsmagica2." + searchID : searchID;
 		Class entityClass = (Class)EntityList.stringToClassMapping.get(modEntityID);
-		if (entityClass != null){
-			try{
+		if(entityClass != null) {
+			try {
 				Constructor ctor = entityClass.getConstructor(World.class);
 				return new GuiArcaneCompendium((Entity)ctor.newInstance(Minecraft.getMinecraft().theWorld));
-			}catch (InstantiationException e){
+			}
+			catch(InstantiationException e) {
 				e.printStackTrace();
-			}catch (IllegalAccessException e){
+			}
+			catch(IllegalAccessException e) {
 				e.printStackTrace();
-			}catch (NoSuchMethodException e){
+			}
+			catch(NoSuchMethodException e) {
 				e.printStackTrace();
-			}catch (SecurityException e){
+			}
+			catch(SecurityException e) {
 				e.printStackTrace();
-			}catch (IllegalArgumentException e){
+			}
+			catch(IllegalArgumentException e) {
 				e.printStackTrace();
-			}catch (InvocationTargetException e){
+			}
+			catch(InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
@@ -50,7 +56,7 @@ public class CompendiumEntryMob extends CompendiumEntry{
 	}
 
 	@Override
-	public ItemStack getRepresentItemStack(String searchID, int meta){
+	public ItemStack getRepresentItemStack(String searchID, int meta) {
 		return null;
 	}
 

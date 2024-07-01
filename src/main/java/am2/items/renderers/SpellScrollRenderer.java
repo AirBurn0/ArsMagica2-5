@@ -28,9 +28,9 @@ import org.lwjgl.opengl.GL12;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpellScrollRenderer implements IItemRenderer{
+public class SpellScrollRenderer implements IItemRenderer {
 
-	private static RenderItem renderItem = new RenderItem();
+	private static final RenderItem renderItem = new RenderItem();
 	private final ModelBiped modelBipedMain;
 	private final Minecraft mc;
 	private final Map<Affinity, IIcon> icons;
@@ -39,52 +39,55 @@ public class SpellScrollRenderer implements IItemRenderer{
 
 	public static SpellScrollRenderer instance = new SpellScrollRenderer();
 
-	private SpellScrollRenderer(){
+	private SpellScrollRenderer() {
 		modelBipedMain = new ModelBiped(0.0F);
 		mc = Minecraft.getMinecraft();
 		icons = new HashMap<Affinity, IIcon>();
 	}
 
 	@Override
-	public boolean handleRenderType(ItemStack item, ItemRenderType type){
-		if (type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON){
-			if (Minecraft.getMinecraft().inGameHasFocus){
-				if (item.getItem() instanceof ItemSpellBase || (item.getItem() instanceof ItemSpellBook && ((ItemSpellBook)item.getItem()).GetActiveScroll(item) != null)){
-					return true;
-				}
+	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+		if(type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
+			if(Minecraft.getMinecraft().inGameHasFocus) {
+				return item.getItem() instanceof ItemSpellBase || (item.getItem() instanceof ItemSpellBook && ((ItemSpellBook)item.getItem()).GetActiveScroll(item) != null);
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper){
+	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
 		return true;
 	}
 
 	@Override
-	public void renderItem(ItemRenderType type, ItemStack item, Object... data){
+	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 
-		if (mc.thePlayer.isPotionActive(Potion.invisibility.id)) return;
+		if(mc.thePlayer.isPotionActive(Potion.invisibility.id)) {
+			return;
+		}
 
 		ItemStack scrollStack = null;
-		if (item.getItem() instanceof ItemSpellBase){
+		if(item.getItem() instanceof ItemSpellBase) {
 			scrollStack = item;
-		}else if (item.getItem() instanceof ItemSpellBook){
+		}
+		else if(item.getItem() instanceof ItemSpellBook) {
 			scrollStack = ((ItemSpellBook)item.getItem()).getActiveScrollInventory(item)[((ItemSpellBook)item.getItem()).GetActiveSlot(item)];
 		}
 
 
-		if (scrollStack == null) return;
+		if(scrollStack == null) {
+			return;
+		}
 
 		Affinity affinity = SpellUtils.instance.mainAffinityFor(scrollStack);
 
 		renderEffect(affinity, true, data);
 	}
 
-	public void renderEffect(Affinity affinity, boolean includeArm, Object... data){
+	public void renderEffect(Affinity affinity, boolean includeArm, Object... data) {
 
-		if (!setupIcons){
+		if(!setupIcons) {
 			setupAffinityIcons();
 			setupIcons = true;
 		}
@@ -99,15 +102,16 @@ public class SpellScrollRenderer implements IItemRenderer{
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 		float scale = 3f;
-		if (entity == mc.thePlayer && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0){
+		if(entity == mc.thePlayer && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
 
 			GL11.glPushMatrix();
 
-			if (((EntityPlayer)entity).getItemInUseCount() > 0){
+			if(((EntityPlayer)entity).getItemInUseCount() > 0) {
 				GL11.glRotatef(120, 1, 0, 1);
 				GL11.glRotatef(-10, 0, 1, 0);
 				GL11.glTranslatef(2f, 0f, 0.8f);
-			}else{
+			}
+			else {
 				GL11.glTranslatef(3f, -1.2f, -2.5f);
 				GL11.glScalef(scale, scale, scale);
 				GL11.glRotatef(-45, 0, 1, 0);
@@ -118,8 +122,8 @@ public class SpellScrollRenderer implements IItemRenderer{
 			RenderHelper.enableStandardItemLighting();
 			GL11.glPopMatrix();
 
-			if (includeArm){
-				if (entity instanceof EntityPlayer && ((EntityPlayer)entity).getItemInUseCount() > 0){
+			if(includeArm) {
+				if(entity instanceof EntityPlayer && ((EntityPlayer)entity).getItemInUseCount() > 0) {
 					GL11.glRotatef(-130, 0, 1, 0);
 					GL11.glTranslatef(-1f, 0.2f, -2.5f);
 				}
@@ -130,10 +134,12 @@ public class SpellScrollRenderer implements IItemRenderer{
 				Minecraft.getMinecraft().renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 				renderFirstPersonArm(mc.thePlayer);
 			}
-		}else{
-			if (entity instanceof EntityPlayer && ((EntityPlayer)entity).getItemInUseCount() > 0){
+		}
+		else {
+			if(entity instanceof EntityPlayer && ((EntityPlayer)entity).getItemInUseCount() > 0) {
 				GL11.glTranslatef(0.0f, 0.0f, 1.0f);
-			}else{
+			}
+			else {
 				GL11.glTranslatef(0.0f, 0.0f, 1.6f);
 			}
 			scale = 1.5f;
@@ -149,7 +155,7 @@ public class SpellScrollRenderer implements IItemRenderer{
 		GL11.glPopMatrix();
 	}
 
-	private void setupAffinityIcons(){
+	private void setupAffinityIcons() {
 		icons.put(Affinity.AIR, AMParticleIcons.instance.getIconByName("air_hand"));
 		icons.put(Affinity.ARCANE, AMParticleIcons.instance.getIconByName("arcane_hand"));
 		icons.put(Affinity.EARTH, AMParticleIcons.instance.getIconByName("earth_hand"));
@@ -163,12 +169,14 @@ public class SpellScrollRenderer implements IItemRenderer{
 		icons.put(Affinity.WATER, AMParticleIcons.instance.getIconByName("water_hand"));
 	}
 
-	public void RenderByAffinity(Affinity affinity){
+	public void RenderByAffinity(Affinity affinity) {
 
 		Minecraft.getMinecraft().renderEngine.bindTexture(rLoc);
 
 		IIcon icon = icons.get(affinity);
-		if (icon == null) return;
+		if(icon == null) {
+			return;
+		}
 
 		float TLX = icon.getMinU();
 		float BRX = icon.getMaxU();
@@ -179,7 +187,7 @@ public class SpellScrollRenderer implements IItemRenderer{
 	}
 
 
-	private void doRender(float TLX, float TLY, float BRX, float BRY){
+	private void doRender(float TLX, float TLY, float BRX, float BRY) {
 		//ItemRenderer.renderItemIn2D(Tessellator.instance, TLX, TLY, BRX, BRY, 1, 1, 0.0625F);
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
@@ -191,7 +199,7 @@ public class SpellScrollRenderer implements IItemRenderer{
 		t.draw();
 	}
 
-	private void renderFirstPersonArm(EntityClientPlayerMP player){
+	private void renderFirstPersonArm(EntityClientPlayerMP player) {
 
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		float par1 = 0.5f;
@@ -214,7 +222,7 @@ public class SpellScrollRenderer implements IItemRenderer{
 		int i = this.mc.theWorld.getLightBrightnessForSkyBlocks(MathHelper.floor_double(entityclientplayermp.posX), MathHelper.floor_double(entityclientplayermp.posY), MathHelper.floor_double(entityclientplayermp.posZ), 0);
 		int j = i % 65536;
 		int k = i / 65536;
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j / 1.0F, k / 1.0F);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f6;
 		float f7;

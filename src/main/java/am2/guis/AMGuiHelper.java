@@ -31,12 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class AMGuiHelper{
+public class AMGuiHelper {
 
 	private final static RenderBlocks renderBlocks = new RenderBlocks();
 	protected static RenderItem itemRenderer = new RenderItem();
 
-	private AMGuiHelper(){
+	private AMGuiHelper() {
 		Minecraft mc = Minecraft.getMinecraft();
 	}
 
@@ -47,9 +47,9 @@ public class AMGuiHelper{
 	private long millis;
 	private long lastmillis;
 	private long accumulatedMillis;
-	private static float zLevel = 300.0f;
+	private static final float zLevel = 300.0f;
 
-	private static int fractalLineDetail = 2;
+	private static final int fractalLineDetail = 2;
 
 	// Buff flashing variables (for the UI)
 	//=========================================
@@ -76,90 +76,97 @@ public class AMGuiHelper{
 	//=========================================
 
 	public EntityItem dummyItem;
-	
+
 	private static final Random rand = new Random();
 
-	public void blackoutArmorPiece(int index, int duration){
+	public void blackoutArmorPiece(int index, int duration) {
 		flashTimers[index] = flashDuration;
 		blackoutTimers[index] = duration;
 		blackoutTimersMax[index] = duration;
 	}
 
-	public void flashArmorPiece(int index){
+	public void flashArmorPiece(int index) {
 		flashTimers[index] = flashDuration;
 	}
 
-	public void flashManaBar(){
-		if (flashTimers[4] <= 1)
+	public void flashManaBar() {
+		if(flashTimers[4] <= 1) {
 			flashTimers[4] = flashDuration;
+		}
 	}
 
-	public short getFlashTimer(int index){
+	public short getFlashTimer(int index) {
 		return flashTimers[index];
 	}
 
-	public int getBlackoutTimer(int index){
+	public int getBlackoutTimer(int index) {
 		return blackoutTimers[index];
 	}
 
-	public int getBlackoutTimerMax(int index){
+	public int getBlackoutTimerMax(int index) {
 		return blackoutTimersMax[index];
 	}
 
-	public int getSlowTicker(){
+	public int getSlowTicker() {
 		return slowUITicker;
 	}
 
-	public int getFastTicker(){
+	public int getFastTicker() {
 		return fastUITicker;
 	}
 
-	public float getMagicXPBarAlpha(){
+	public float getMagicXPBarAlpha() {
 		return this.magicXPBarAlpha;
 	}
 
-	public void showMagicXPBar(){
+	public void showMagicXPBar() {
 		this.magicXPBarAlpha = 1.0f;
 		this.magicXPBarShowTimer = 100;
 	}
 
-	public void tick(){
+	public void tick() {
 
-		if (dummyItem == null){
+		if(dummyItem == null) {
 			dummyItem = new EntityItem(Minecraft.getMinecraft().theWorld);
-		}else{
+		}
+		else {
 			dummyItem.age++;
 			//dummyItem.rotationYaw += 0.1f;
 		}
 
-		for (int i = 0; i < this.flashTimers.length; ++i){
-			if (this.flashTimers[i] > 0)
+		for(int i = 0; i < this.flashTimers.length; ++i) {
+			if(this.flashTimers[i] > 0) {
 				this.flashTimers[i]--;
+			}
 		}
 
-		for (int i = 0; i < this.blackoutTimers.length; ++i){
-			if (this.blackoutTimers[i] > 0){
+		for(int i = 0; i < this.blackoutTimers.length; ++i) {
+			if(this.blackoutTimers[i] > 0) {
 				this.blackoutTimers[i]--;
-				if (this.blackoutTimers[i] == 0){
+				if(this.blackoutTimers[i] == 0) {
 					flashArmorPiece(i);
 				}
-			}else{
+			}
+			else {
 				this.blackoutTimersMax[i] = 0;
 			}
 		}
 
 		flashCounter++;
-		if (flashCounter > 20) flashCounter = 0;
-
-		if (magicXPBarShowTimer > 0){
-			magicXPBarShowTimer--;
-			if (magicXPBarShowTimer < 20)
-				magicXPBarAlpha -= 0.05f;
+		if(flashCounter > 20) {
+			flashCounter = 0;
 		}
 
-		if (runCompendiumTicker){
+		if(magicXPBarShowTimer > 0) {
+			magicXPBarShowTimer--;
+			if(magicXPBarShowTimer < 20) {
+				magicXPBarAlpha -= 0.05f;
+			}
+		}
+
+		if(runCompendiumTicker) {
 			fastUITicker++;
-			if (fastUITicker > 40){
+			if(fastUITicker > 40) {
 				fastUITicker = 0;
 				slowUITicker++;
 			}
@@ -172,55 +179,59 @@ public class AMGuiHelper{
 		millis = System.currentTimeMillis();
 	}
 
-	public void guiTick(){
+	public void guiTick() {
 		lastmillis = millis;
 		millis = System.currentTimeMillis();
 		accumulatedMillis += (millis - lastmillis);
-		if (accumulatedMillis >= 50){
+		if(accumulatedMillis >= 50) {
 			tick();
 			accumulatedMillis = 0;
 		}
 	}
 
-	public void pushCompendiumBreadcrumb(String identifier, int page, int type, Object... refData){
+	public void pushCompendiumBreadcrumb(String identifier, int page, int type, Object... refData) {
 		compendiumBreadcrumbs.add(new CompendiumBreadcrumb(identifier, refData, type, page));
 	}
 
-	public CompendiumBreadcrumb popCompendiumBreadcrumb(){
-		if (compendiumBreadcrumbs.size() > 0)
+	public CompendiumBreadcrumb popCompendiumBreadcrumb() {
+		if(compendiumBreadcrumbs.size() > 0) {
 			return compendiumBreadcrumbs.pollLast();
+		}
 		return null;
 	}
 
-	public void clearCompendiumBreadcrumbs(){
+	public void clearCompendiumBreadcrumbs() {
 		compendiumBreadcrumbs.clear();
 	}
 
-	public static void OpenBookGUI(ItemStack stack){
+	public static void OpenBookGUI(ItemStack stack) {
 		// TODO Auto-generated method stub
 	}
 
-	public static void OpenCompendiumGui(ItemStack stack){
+	public static void OpenCompendiumGui(ItemStack stack) {
 		CompendiumBreadcrumb breadcrumb = AMGuiHelper.instance.popCompendiumBreadcrumb();
-		if (breadcrumb != null){
-			if (breadcrumb.entryType == breadcrumb.TYPE_ENTRY){
+		if(breadcrumb != null) {
+			if(breadcrumb.entryType == CompendiumBreadcrumb.TYPE_ENTRY) {
 				Minecraft.getMinecraft().displayGuiScreen(new GuiArcaneCompendium(breadcrumb));
-			}else{
+			}
+			else {
 				Minecraft.getMinecraft().displayGuiScreen(new GuiCompendiumIndex(breadcrumb));
 			}
-		}else{
+		}
+		else {
 			Minecraft.getMinecraft().displayGuiScreen(new GuiCompendiumIndex());
 		}
 	}
 
-	public static void DrawIconAtXY(IIcon IIcon, float x, float y, float zLevel, int w, int h, boolean semitransparent){
+	public static void DrawIconAtXY(IIcon IIcon, float x, float y, float zLevel, int w, int h, boolean semitransparent) {
 
-		if (IIcon == null)
+		if(IIcon == null) {
 			return;
+		}
 
 		GL11.glMatrixMode(GL11.GL_TEXTURE);
 		GL11.glPushMatrix();
-		if (semitransparent){
+		if(semitransparent) {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		}
@@ -229,8 +240,9 @@ public class AMGuiHelper{
 		Tessellator tessellator = Tessellator.instance;
 
 		boolean drawing = ReflectionHelper.getPrivateValue(Tessellator.class, tessellator, "field_78415_z", "isDrawing");
-		if (drawing)
+		if(drawing) {
 			tessellator.draw();
+		}
 
 		tessellator.startDrawingQuads();
 
@@ -241,80 +253,85 @@ public class AMGuiHelper{
 
 		tessellator.draw();
 
-		if (semitransparent){
+		if(semitransparent) {
 			GL11.glDisable(GL11.GL_BLEND);
 		}
 		GL11.glPopMatrix();
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
-		if (drawing)
+		if(drawing) {
 			tessellator.startDrawingQuads();
+		}
 	}
 
-	public static void DrawItemAtXY(ItemStack stack, float x, float y, float zLevel){
+	public static void DrawItemAtXY(ItemStack stack, float x, float y, float zLevel) {
 		DrawItemAtXY(stack, x, y, zLevel, 1.0f);
 	}
 
-	public static void DrawItemAtXY(ItemStack stack, float x, float y, float zLevel, float scale){
-		if (stack == null)
+	public static void DrawItemAtXY(ItemStack stack, float x, float y, float zLevel, float scale) {
+		if(stack == null) {
 			return;
+		}
 		boolean success = false;
 
 		GL11.glPushAttrib(GL11.GL_TEXTURE_BIT | GL11.GL_LIGHTING_BIT);
 
 		RenderHelper.disableStandardItemLighting();
 
-		if (scale != 1.0f){
+		if(scale != 1.0f) {
 			GL11.glPushMatrix();
 			GL11.glScalef(scale, scale, 1);
 			float invScale = scale - 0.045f;
 			success = ForgeHooksClient.renderInventoryItem(renderBlocks, Minecraft.getMinecraft().renderEngine, stack, true, zLevel, x + (x * invScale), y + (y * invScale));
 
-			if (!success){
+			if(!success) {
 				itemRenderer.renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().renderEngine, stack, (int)(x + (x * invScale)), (int)(y + (y * invScale)));
 			}
 
 			GL11.glPopMatrix();
-		}else{
+		}
+		else {
 			success = ForgeHooksClient.renderInventoryItem(renderBlocks, Minecraft.getMinecraft().renderEngine, stack, true, zLevel, x, y);
 
-			if (!success){
+			if(!success) {
 				itemRenderer.renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().renderEngine, stack, (int)x, (int)y);
 			}
 		}
 		GL11.glPopAttrib();
 	}
 
-	public static void drawCompendiumText(String text, int x_start, int y_start, int max_width, int start_color, FontRenderer fontRenderer){
+	public static void drawCompendiumText(String text, int x_start, int y_start, int max_width, int start_color, FontRenderer fontRenderer) {
 		int cur_color = start_color;
 		String[] words = text.split(" ");
 		int lineLength = 0;
 		int posX = x_start;
 		int posY = y_start;
 
-		for (String word : words){
-			if (word.equals("")) continue;
+		for(String word: words) {
+			if(word.equals("")) {
+				continue;
+			}
 			int linesBefore = 0;
 			int linesAfter = 0;
 
 			int wordLength = fontRenderer.getStringWidth(word.replaceAll("#.", "") + " ");
-			if (lineLength + wordLength > max_width){
+			if(lineLength + wordLength > max_width) {
 				posY += fontRenderer.FONT_HEIGHT;
 				posX = x_start;
 				lineLength = 0;
 			}
 
-			while (word.startsWith("\n")){
+			while(word.startsWith("\n")) {
 				linesBefore++;
 				word = word.substring(1);
 			}
-			while (word.endsWith("\n")){
+			while(word.endsWith("\n")) {
 				linesAfter++;
 				word = word.substring(0, word.length() - 1);
 			}
 			word = word.replace("\n", "");
 
-			if (linesBefore > 0){
+			if(linesBefore > 0) {
 				posY += fontRenderer.FONT_HEIGHT * linesBefore;
 				posX = x_start;
 				lineLength = 0;
@@ -325,7 +342,7 @@ public class AMGuiHelper{
 			posX += wordLength;
 			lineLength += wordLength;
 
-			if (linesAfter > 0){
+			if(linesAfter > 0) {
 				posY += fontRenderer.FONT_HEIGHT * linesAfter;
 				posX = x_start;
 				lineLength = 0;
@@ -333,8 +350,8 @@ public class AMGuiHelper{
 		}
 	}
 
-	protected static void drawHoveringText(List par1List, int par2, int par3, FontRenderer font, int width, int height){
-		if (!par1List.isEmpty()){
+	protected static void drawHoveringText(List par1List, int par2, int par3, FontRenderer font, int width, int height) {
+		if(!par1List.isEmpty()) {
 			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 			RenderHelper.disableStandardItemLighting();
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -342,11 +359,11 @@ public class AMGuiHelper{
 			int k = 0;
 			Iterator iterator = par1List.iterator();
 
-			while (iterator.hasNext()){
+			while(iterator.hasNext()) {
 				String s = (String)iterator.next();
 				int l = font.getStringWidth(s);
 
-				if (l > k){
+				if(l > k) {
 					k = l;
 				}
 			}
@@ -355,15 +372,15 @@ public class AMGuiHelper{
 			int j1 = par3 - 12;
 			int k1 = 8;
 
-			if (par1List.size() > 1){
+			if(par1List.size() > 1) {
 				k1 += 2 + (par1List.size() - 1) * 10;
 			}
 
-			if (i1 + k > width){
+			if(i1 + k > width) {
 				i1 -= 28 + k;
 			}
 
-			if (j1 + k1 + 6 > height){
+			if(j1 + k1 + 6 > height) {
 				j1 = height - k1 - 6;
 			}
 
@@ -380,11 +397,11 @@ public class AMGuiHelper{
 			drawGradientRect(i1 - 3, j1 - 3, i1 + k + 3, j1 - 3 + 1, i2, i2);
 			drawGradientRect(i1 - 3, j1 + k1 + 2, i1 + k + 3, j1 + k1 + 3, j2, j2);
 
-			for (int k2 = 0; k2 < par1List.size(); ++k2){
+			for(int k2 = 0; k2 < par1List.size(); ++k2) {
 				String s1 = (String)par1List.get(k2);
 				font.drawStringWithShadow(s1, i1, j1, -1);
 
-				if (k2 == 0){
+				if(k2 == 0) {
 					j1 += 2;
 				}
 
@@ -397,7 +414,7 @@ public class AMGuiHelper{
 		}
 	}
 
-	protected static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6){
+	protected static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6) {
 		float f = (par5 >> 24 & 255) / 255.0F;
 		float f1 = (par5 >> 16 & 255) / 255.0F;
 		float f2 = (par5 >> 8 & 255) / 255.0F;
@@ -426,7 +443,7 @@ public class AMGuiHelper{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	public static void line2d(float src_x, float src_y, float dst_x, float dst_y, float zLevel, int color){
+	public static void line2d(float src_x, float src_y, float dst_x, float dst_y, float zLevel, int color) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glLineWidth(1f);
 		GL11.glColor3f(((color & 0xFF0000) >> 16) / 255.0f, ((color & 0x00FF00) >> 8) / 255.0f, (color & 0x0000FF) / 255.0f);
@@ -438,7 +455,7 @@ public class AMGuiHelper{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	public static void line2d(float src_x, float src_y, float dst_x, float dst_y, float zLevel, float weight, int color){
+	public static void line2d(float src_x, float src_y, float dst_x, float dst_y, float zLevel, float weight, int color) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glLineWidth(weight);
 		GL11.glColor3f(((color & 0xFF0000) >> 16) / 255.0f, ((color & 0x00FF00) >> 8) / 255.0f, (color & 0x0000FF) / 255.0f);
@@ -450,7 +467,7 @@ public class AMGuiHelper{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	public static void gradientline2d(float src_x, float src_y, float dst_x, float dst_y, float zLevel, int color1, int color2){
+	public static void gradientline2d(float src_x, float src_y, float dst_x, float dst_y, float zLevel, int color1, int color2) {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glLineWidth(1f);
@@ -465,14 +482,15 @@ public class AMGuiHelper{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	public static void fractalLine2d(int src_x, int src_y, int dst_x, int dst_y, float zLevel, int color, float displace){
+	public static void fractalLine2d(int src_x, int src_y, int dst_x, int dst_y, float zLevel, int color, float displace) {
 		fractalLine2d(src_x, src_y, dst_x, dst_y, zLevel, color, displace, fractalLineDetail);
 	}
 
-	public static void fractalLine2d(int src_x, int src_y, int dst_x, int dst_y, float zLevel, int color, float displace, float fractalDetail){
-		if (displace < fractalDetail){
+	public static void fractalLine2d(int src_x, int src_y, int dst_x, int dst_y, float zLevel, int color, float displace, float fractalDetail) {
+		if(displace < fractalDetail) {
 			line2d(src_x, src_y, dst_x, dst_y, zLevel, color);
-		}else{
+		}
+		else {
 			int mid_x = (dst_x + src_x) / 2;
 			int mid_y = (dst_y + src_y) / 2;
 			mid_x += (rand.nextFloat() - 0.5) * displace;
@@ -482,65 +500,65 @@ public class AMGuiHelper{
 		}
 	}
 
-	private static int parseColorAndDraw(String word, int posX, int posY, int cur_color, FontRenderer fontRenderer){
+	private static int parseColorAndDraw(String word, int posX, int posY, int cur_color, FontRenderer fontRenderer) {
 		int index = word.indexOf("#");
 		int color = cur_color;
-		while (index > -1 && index < word.length() - 1){
+		while(index > -1 && index < word.length() - 1) {
 
 			String toRender = word.substring(0, index);
 			fontRenderer.drawString(toRender, posX, posY, color);
 			posX += fontRenderer.getStringWidth(toRender);
 
 			char nextChar = word.charAt(index + 1);
-			switch (nextChar){
-			case '0':
-				color = 0x000000;
-				break;
-			case '1':
-				color = 0x0000BF;
-				break;
-			case '2':
-				color = 0x00BF00;
-				break;
-			case '3':
-				color = 0x00BFBF;
-				break;
-			case '4':
-				color = 0xBF0000;
-				break;
-			case '5':
-				color = 0xBF00BF;
-				break;
-			case '6':
-				color = 0xBFBF00;
-				break;
-			case '7':
-				color = 0xBFBFBF;
-				break;
-			case '8':
-				color = 0x404040;
-				break;
-			case '9':
-				color = 0x4040FF;
-				break;
-			case 'a':
-				color = 0x40FF40;
-				break;
-			case 'b':
-				color = 0x40FFFF;
-				break;
-			case 'c':
-				color = 0xFF4040;
-				break;
-			case 'd':
-				color = 0xFF40FF;
-				break;
-			case 'e':
-				color = 0xFFFF40;
-				break;
-			case 'f':
-				color = 0xFFFFFF;
-				break;
+			switch(nextChar) {
+				case '0':
+					color = 0x000000;
+					break;
+				case '1':
+					color = 0x0000BF;
+					break;
+				case '2':
+					color = 0x00BF00;
+					break;
+				case '3':
+					color = 0x00BFBF;
+					break;
+				case '4':
+					color = 0xBF0000;
+					break;
+				case '5':
+					color = 0xBF00BF;
+					break;
+				case '6':
+					color = 0xBFBF00;
+					break;
+				case '7':
+					color = 0xBFBFBF;
+					break;
+				case '8':
+					color = 0x404040;
+					break;
+				case '9':
+					color = 0x4040FF;
+					break;
+				case 'a':
+					color = 0x40FF40;
+					break;
+				case 'b':
+					color = 0x40FFFF;
+					break;
+				case 'c':
+					color = 0xFF4040;
+					break;
+				case 'd':
+					color = 0xFF40FF;
+					break;
+				case 'e':
+					color = 0xFFFF40;
+					break;
+				case 'f':
+					color = 0xFFFFFF;
+					break;
 			}
 
 			word = word.substring(index + 2);
@@ -552,7 +570,7 @@ public class AMGuiHelper{
 		return color;
 	}
 
-	public static int createRenderTexture(){
+	public static int createRenderTexture() {
 		int colorTextureID = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colorTextureID);                                    // Bind the colorbuffer texture
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);                // make it linear filterd
@@ -561,74 +579,79 @@ public class AMGuiHelper{
 		return colorTextureID;
 	}
 
-	public static int createFBO(int textureID, int w, int h, boolean depthBuffer){
+	public static int createFBO(int textureID, int w, int h, boolean depthBuffer) {
 		boolean FBOEnabled = GLContext.getCapabilities().GL_EXT_framebuffer_object;
-		if (!FBOEnabled)
+		if(!FBOEnabled) {
 			return -1;
-		IntBuffer buffer = ByteBuffer.allocateDirect(1 * 4).order(ByteOrder.nativeOrder()).asIntBuffer(); // allocate a 1 int byte buffer
+		}
+		IntBuffer buffer = ByteBuffer.allocateDirect(4)
+									 .order(ByteOrder.nativeOrder())
+									 .asIntBuffer(); // allocate a 1 int byte buffer
 		EXTFramebufferObject.glGenFramebuffersEXT(buffer); // generate
 		int myFBOId = buffer.get();
 		EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, myFBOId);
 		EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, GL11.GL_TEXTURE_2D, textureID, 0);
 		int framebuffer = EXTFramebufferObject.glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT);
-		switch (framebuffer){
-		case EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT:
-			break;
-		case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-			throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT exception");
-		case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-			throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT exception");
-		case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-			throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT exception");
-		case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-			throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT exception");
-		case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-			throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT exception");
-		case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-			throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT exception");
-		default:
-			throw new RuntimeException("Unexpected reply from glCheckFramebufferStatusEXT: " + framebuffer);
+		switch(framebuffer) {
+			case EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT:
+				break;
+			case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+				throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT exception");
+			case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+				throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT exception");
+			case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+				throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT exception");
+			case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+				throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT exception");
+			case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+				throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT exception");
+			case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+				throw new RuntimeException("FrameBuffer: " + myFBOId + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT exception");
+			default:
+				throw new RuntimeException("Unexpected reply from glCheckFramebufferStatusEXT: " + framebuffer);
 		}
 
 		return myFBOId;
 	}
 
-	public static boolean bindFBOTexture(int FBOId, int w, int h){
-		try{
+	public static boolean bindFBOTexture(int FBOId, int w, int h) {
+		try {
 			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, FBOId);
 			GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT);
 			GL11.glViewport(0, 0, w, h);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
 			return true;
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 			return false;
 		}
 	}
 
-	public static boolean unbindFBOTexture(){
-		try{
+	public static boolean unbindFBOTexture() {
+		try {
 			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
 			GL11.glPopAttrib();
 
 			return true;
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 			return false;
 		}
 	}
 
-	public static void flipView(float f){
+	public static void flipView(float f) {
 		float flip = ExtendedProperties.For(Minecraft.getMinecraft().thePlayer).getFlipRotation();
 		float lastFlip = ExtendedProperties.For(Minecraft.getMinecraft().thePlayer).getPrevFlipRotation();
 		GL11.glRotatef(lastFlip + (flip - lastFlip) * f, 0, 0, 1);
 	}
 
-	public static void shiftView(float f){
+	public static void shiftView(float f) {
 		EntityPlayer entity = Minecraft.getMinecraft().thePlayer;
 		int viewSet = Minecraft.getMinecraft().gameSettings.thirdPersonView;
-		if (viewSet == 0){
+		if(viewSet == 0) {
 			ExtendedProperties exProps = ExtendedProperties.For(entity);
-			if (exProps.getShrinkPct() > 0f){
+			if(exProps.getShrinkPct() > 0f) {
 				float amt = exProps.getPrevShrinkPct() + (exProps.getShrinkPct() - exProps.getPrevShrinkPct()) * f;
 				GL11.glTranslatef(0, 1 * amt, 0);
 			}
@@ -636,46 +659,47 @@ public class AMGuiHelper{
 
 		float flip = ExtendedProperties.For(entity).getFlipRotation();
 		float prevFlip = ExtendedProperties.For(entity).getPrevFlipRotation();
-		if (flip > 0){
+		if(flip > 0) {
 			float smoothedFlip = prevFlip + ((flip - prevFlip) * f);
 			GL11.glTranslatef(0, (entity.height * (smoothedFlip / 180f)) - 0.1f, 0);
 		}
 	}
 
-	public static void overrideKeyboardInput(){
+	public static void overrideKeyboardInput() {
 		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.thePlayer != null && mc.theWorld != null && ExtendedProperties.For(mc.thePlayer).shouldReverseInput()){
+		if(mc.thePlayer != null && mc.theWorld != null && ExtendedProperties.For(mc.thePlayer).shouldReverseInput()) {
 			EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-			if (mc.gameSettings.keyBindLeft.getIsKeyPressed()){
+			if(mc.gameSettings.keyBindLeft.getIsKeyPressed()) {
 				LogHelper.info("Override Left");
 				player.movementInput.moveStrafe -= 2;
 			}
 
-			if (mc.gameSettings.keyBindRight.getIsKeyPressed()){
+			if(mc.gameSettings.keyBindRight.getIsKeyPressed()) {
 				LogHelper.info("Override Rights");
 				player.movementInput.moveStrafe += 2;
 			}
 
-			if (mc.thePlayer.isPotionActive(BuffList.scrambleSynapses)){
-				if (mc.gameSettings.keyBindForward.getIsKeyPressed()){
+			if(mc.thePlayer.isPotionActive(BuffList.scrambleSynapses)) {
+				if(mc.gameSettings.keyBindForward.getIsKeyPressed()) {
 					player.movementInput.moveForward -= 2;
 				}
-				if (mc.gameSettings.keyBindBack.getIsKeyPressed()){
+				if(mc.gameSettings.keyBindBack.getIsKeyPressed()) {
 					player.movementInput.moveForward += 2;
 				}
 			}
 		}
 	}
 
-	public static boolean overrideMouseInput(EntityRenderer renderer, float f, boolean b){
+	public static boolean overrideMouseInput(EntityRenderer renderer, float f, boolean b) {
 		Minecraft mc = Minecraft.getMinecraft();
 
-		if (!mc.inGameHasFocus || mc.thePlayer == null || mc.theWorld == null)
+		if(!mc.inGameHasFocus || mc.thePlayer == null || mc.theWorld == null) {
 			return true;
+		}
 
 		ExtendedProperties props = ExtendedProperties.For(mc.thePlayer);
 
-		if (!(mc.thePlayer.isPotionActive(BuffList.scrambleSynapses) ^ props.getIsFlipped())){
+		if(mc.thePlayer.isPotionActive(BuffList.scrambleSynapses) == props.getIsFlipped()) {
 			return true;
 		}
 
@@ -686,11 +710,11 @@ public class AMGuiHelper{
 		float f4 = (float)mc.mouseHelper.deltaY * f2;
 		byte b0 = -1;
 
-		if (mc.gameSettings.invertMouse){
+		if(mc.gameSettings.invertMouse) {
 			b0 = 1;
 		}
 
-		if (mc.gameSettings.smoothCamera){
+		if(mc.gameSettings.smoothCamera) {
 			String[] scy = {"field_78496_H", "smoothCamYaw"};
 			String[] scp = {"field_78521_m", "smoothCamPitch"};
 			String[] scpt = {"field_78533_p", "smoothCamPartialTicks"};
@@ -710,14 +734,15 @@ public class AMGuiHelper{
 			//f4 = renderer.smoothCamFilterY * f5;
 			f4 = (Float)ReflectionHelper.getPrivateValue(EntityRenderer.class, renderer, scfy) * f5;
 			mc.thePlayer.setAngles(-f3, f4 * (float)b0);
-		}else{
+		}
+		else {
 			mc.thePlayer.setAngles(-f3, f4 * (float)b0);
 		}
 
 		return false;
 	}
 
-	public class CompendiumBreadcrumb{
+	public class CompendiumBreadcrumb {
 		public final String entryName;
 		public final Object[] refData;
 		public final int entryType;
@@ -726,7 +751,7 @@ public class AMGuiHelper{
 		public static final int TYPE_INDEX = 0;
 		public static final int TYPE_ENTRY = 1;
 
-		public CompendiumBreadcrumb(String entryName, Object[] refObject, int entryType, int page){
+		public CompendiumBreadcrumb(String entryName, Object[] refObject, int entryType, int page) {
 			this.entryName = entryName;
 			this.entryType = entryType;
 			this.refData = refObject;

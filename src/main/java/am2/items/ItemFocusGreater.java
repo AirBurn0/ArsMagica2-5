@@ -4,34 +4,34 @@ import am2.texture.ResourceManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 
-public class ItemFocusGreater extends ItemFocus implements ISpellFocus{
+public class ItemFocusGreater extends ItemFocus implements ISpellFocus {
 
-	public ItemFocusGreater(){
+	public ItemFocusGreater() {
 		super();
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
 				"A A", "PFP", "A A",
-				'A', new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_ARCANEASH),
+				'A', new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_ARCANEASH),
 				'F', ItemsCommonProxy.standardFocus,
-				'P', new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_PURIFIEDVINTEUM)
+				'P', new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_PURIFIEDVINTEUM)
 		};
 	}
 
 	@Override
-	public String getInGameName(){
+	public String getInGameName() {
 		return "Greater Focus";
 	}
 
 	@Override
-	public int getFocusLevel(){
+	public int getFocusLevel() {
 		return 2;
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = ResourceManager.RegisterTexture("focus_greater", par1IconRegister);
 	}
 }

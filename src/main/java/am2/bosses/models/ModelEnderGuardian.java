@@ -14,7 +14,7 @@ import thehippomaster.AnimationAPI.client.Animator;
 //
 //import thehippomaster.AnimationAPI.client.Animator;
 
-public class ModelEnderGuardian extends ModelBase{
+public class ModelEnderGuardian extends ModelBase {
 	//fields
 	AM2ModelRenderer Collar;
 	AM2ModelRenderer RibsTop;
@@ -38,9 +38,9 @@ public class ModelEnderGuardian extends ModelBase{
 	AM2ModelRenderer Body;
 	AM2ModelRenderer Tail;
 
-	private Animator animator;
+	private final Animator animator;
 
-	public ModelEnderGuardian(){
+	public ModelEnderGuardian() {
 		textureWidth = 128;
 		textureHeight = 128;
 
@@ -56,7 +56,7 @@ public class ModelEnderGuardian extends ModelBase{
 		animator = new Animator(this);
 	}
 
-	private void setRotationPoints(){
+	private void setRotationPoints() {
 		Body.setRotationPoint(0F, -18F, -2F);
 
 		Head.setRotationPoint(-4, -8, -4);
@@ -89,7 +89,7 @@ public class ModelEnderGuardian extends ModelBase{
 		Tail.setRotationPoint(-1F, 14F, 0F);
 	}
 
-	private void addBoxes(){
+	private void addBoxes() {
 		Body.addBox(-2F, 0F, -2F, 4, 14, 4);
 		Head.addBox(0F, 0F, 0F, 8, 8, 8);
 		Collar.addBox(0F, 0F, 0F, 12, 2, 2);
@@ -113,7 +113,7 @@ public class ModelEnderGuardian extends ModelBase{
 		Tail.addBox(0F, 0F, 0F, 2, 16, 2);
 	}
 
-	private void setTextureSizes(){
+	private void setTextureSizes() {
 		Body.setTextureSize(128, 128);
 		Head.setTextureSize(128, 128);
 		Collar.setTextureSize(128, 128);
@@ -137,7 +137,7 @@ public class ModelEnderGuardian extends ModelBase{
 		Tail.setTextureSize(128, 128);
 	}
 
-	private void instantiateParts(){
+	private void instantiateParts() {
 		Body = new AM2ModelRenderer(this, 0, 17);
 		Head = new AM2ModelRenderer(this, 0, 0);
 		Collar = new AM2ModelRenderer(this, 0, 36);
@@ -161,7 +161,7 @@ public class ModelEnderGuardian extends ModelBase{
 		Tail = new AM2ModelRenderer(this, 0, 46);
 	}
 
-	private void setupMirroring(){
+	private void setupMirroring() {
 		Body.mirror = true;
 		Head.mirror = true;
 		Collar.mirror = true;
@@ -185,7 +185,7 @@ public class ModelEnderGuardian extends ModelBase{
 		RightWing.mirror = false;
 	}
 
-	private void setInitialRotations(){
+	private void setInitialRotations() {
 		setRotation(SpineMiddleBottom, 0F, 0F, 0F);
 		setRotation(SpineBottom, 0F, 0F, 0F);
 		setRotation(LeftArmLower, 0F, 0F, 0F);
@@ -233,7 +233,7 @@ public class ModelEnderGuardian extends ModelBase{
 		Tail.storeRestRotations();
 	}
 
-	private void setHeirarchy(){
+	private void setHeirarchy() {
 		Body.addChild(Head);
 		Body.addChild(Collar);
 		Body.addChild(RibsBottom);
@@ -260,7 +260,7 @@ public class ModelEnderGuardian extends ModelBase{
 		RightArmUpper.addChild(RightArmLower);
 	}
 
-	private void flapWings(EntityEnderGuardian entity, float f, float f1, float f2, float f3, float f4, float f5){
+	private void flapWings(EntityEnderGuardian entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		float angle = MathHelper.sin((entity.getWingFlapTime() + f2 - entity.ticksExisted + f5) * entity.getWingFlapSpeed()) / 3 * 2;
 		float halfangle = angle * 1.5f;
 
@@ -272,7 +272,7 @@ public class ModelEnderGuardian extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		GL11.glEnable(GL11.GL_NORMALIZE);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -281,8 +281,9 @@ public class ModelEnderGuardian extends ModelBase{
 		animate((IAnimatedEntity)entity, f, f1, f2, f3, f4, f5);
 		GL11.glPushMatrix();
 
-		if (((EntityEnderGuardian)entity).shouldFlapWings())
+		if(((EntityEnderGuardian)entity).shouldFlapWings()) {
 			flapWings((EntityEnderGuardian)entity, f, f1, f2, f3, f4, f5);
+		}
 
 		Body.render(f5);
 		GL11.glPopMatrix();
@@ -290,7 +291,7 @@ public class ModelEnderGuardian extends ModelBase{
 		GL11.glColor4f(1, 1, 1, 1);
 	}
 
-	private void setAngles(){
+	private void setAngles() {
 		Body.resetToRestRotations();
 
 		Head.resetToRestRotations();
@@ -323,7 +324,7 @@ public class ModelEnderGuardian extends ModelBase{
 		Tail.resetToRestRotations();
 	}
 
-	public void animate(IAnimatedEntity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void animate(IAnimatedEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		animator.update(entity);
 		setAngles();
 
@@ -537,13 +538,13 @@ public class ModelEnderGuardian extends ModelBase{
 		animator.resetPhase(5);
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;
 	}
 
-	private void setOffsetRotation(AM2ModelRenderer model, float x, float y, float z){
+	private void setOffsetRotation(AM2ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = model.getRestRotationX() + x;
 		model.rotateAngleY = model.getRestRotationY() + y;
 		model.rotateAngleZ = model.getRestRotationZ() + z;

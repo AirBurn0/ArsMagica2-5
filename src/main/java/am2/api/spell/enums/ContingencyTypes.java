@@ -1,6 +1,6 @@
 package am2.api.spell.enums;
 
-public enum ContingencyTypes{
+public enum ContingencyTypes {
 	NONE,
 	FALL,
 	DAMAGE_TAKEN,

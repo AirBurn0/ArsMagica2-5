@@ -7,8 +7,13 @@ import am2.api.spell.enums.Affinity;
 import am2.api.spell.enums.SpellModifiers;
 import am2.blocks.BlocksCommonProxy;
 import am2.damage.DamageSources;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
-import am2.particles.*;
+import am2.particles.AMParticle;
+import am2.particles.ParticleFadeOut;
+import am2.particles.ParticleFloatUpward;
+import am2.particles.ParticleHoldPosition;
+import am2.particles.ParticleOrbitEntity;
 import am2.playerextensions.AffinityData;
 import am2.playerextensions.ExtendedProperties;
 import am2.spell.SpellHelper;
@@ -22,23 +27,26 @@ import net.minecraft.world.World;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class Heal implements ISpellComponent{
+public class Heal implements ISpellComponent {
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 		return false;
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
-		if (target instanceof EntityLivingBase){
-			if (((EntityLivingBase)target).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
+		if(target instanceof EntityLivingBase) {
+			if(((EntityLivingBase)target).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
 				int healing = SpellUtils.instance.getModifiedInt_Mul(10, stack, caster, target, world, 0, SpellModifiers.HEALING);
 				target.setFire(2);
-				return SpellHelper.instance.attackTargetSpecial(stack, target, DamageSources.causeEntityHolyDamage(caster), healing * (0.5f + 2 * AffinityData.For(caster).getAffinityDepth(Affinity.LIFE)));
-			}else{
+				return SpellHelper.instance.attackTargetSpecial(stack, target, DamageSources.causeEntityHolyDamage(caster), healing * (0.5f + 2 * AffinityData.For(caster)
+																																							  .getAffinityDepth(Affinity.LIFE)
+				));
+			}
+			else {
 				int healing = SpellUtils.instance.getModifiedInt_Mul(2, stack, caster, target, world, 0, SpellModifiers.HEALING);
-				if (ExtendedProperties.For((EntityLivingBase)target).getCanHeal()){
+				if(ExtendedProperties.For((EntityLivingBase)target).getCanHeal()) {
 					((EntityLivingBase)target).heal(healing);
 					ExtendedProperties.For((EntityLivingBase)target).setHealCooldown(60);
 					return true;
@@ -49,26 +57,26 @@ public class Heal implements ISpellComponent{
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 225f;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
-		return ArsMagicaApi.instance.getBurnoutFromMana(manaCost(caster));
+	public float burnout(EntityLivingBase caster) {
+		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
-		if (target instanceof EntityLivingBase && ((EntityLivingBase)target).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD){
-			for (int i = 0; i < 25; ++i){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
+		if(target instanceof EntityLivingBase && ((EntityLivingBase)target).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
+			for(int i = 0; i < 25; ++i) {
 				AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "symbols", x, y - 1, z);
-				if (particle != null){
+				if(particle != null) {
 					particle.addRandomOffset(1, 1, 1);
 					particle.AddParticleController(new ParticleHoldPosition(particle, 20, 1, true));
 					particle.AddParticleController(new ParticleFloatUpward(particle, 0, -0.01f, 2, false));
@@ -77,17 +85,19 @@ public class Heal implements ISpellComponent{
 					particle.setRGBColorF(1f, 0.2f, 0.2f);
 				}
 			}
-		}else{
-			for (int i = 0; i < 25; ++i){
+		}
+		else {
+			for(int i = 0; i < 25; ++i) {
 				AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "sparkle", x, y - 1, z);
-				if (particle != null){
+				if(particle != null) {
 					particle.addRandomOffset(1, 1, 1);
 					particle.AddParticleController(new ParticleFloatUpward(particle, 0, 0.1f, 1, false));
-					particle.AddParticleController(new ParticleOrbitEntity(particle, target, 0.5f, 2, false).setIgnoreYCoordinate(true).SetTargetDistance(0.3f + rand.nextDouble() * 0.3));
+					particle.AddParticleController(new ParticleOrbitEntity(particle, target, 0.5f, 2, false).setIgnoreYCoordinate(true)
+																											.SetTargetDistance(0.3f + rand.nextDouble() * 0.3));
 					particle.setMaxAge(20);
 					particle.setParticleScale(0.2f);
 					particle.setRGBColorF(0.1f, 1f, 0.1f);
-					if (colorModifier > -1){
+					if(colorModifier > -1) {
 						particle.setRGBColorF(((colorModifier >> 16) & 0xFF) / 255.0f, ((colorModifier >> 8) & 0xFF) / 255.0f, (colorModifier & 0xFF) / 255.0f);
 					}
 				}
@@ -96,25 +106,25 @@ public class Heal implements ISpellComponent{
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.LIFE);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 25;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_GREEN),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_GREEN),
 				BlocksCommonProxy.aum
 		};
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0.05f;
 	}
 }

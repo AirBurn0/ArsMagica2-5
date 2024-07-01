@@ -11,20 +11,20 @@ import net.minecraft.item.ItemStack;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class CompendiumEntryTalent extends CompendiumEntry{
+public class CompendiumEntryTalent extends CompendiumEntry {
 
 	private int meta = -1;
 
-	public CompendiumEntryTalent(){
+	public CompendiumEntryTalent() {
 		super(CompendiumEntryTypes.instance.TALENT);
 	}
 
 	@Override
-	protected void parseEx(Node node){
+	protected void parseEx(Node node) {
 		NodeList childNodes = node.getChildNodes();
-		for (int i = 0; i < childNodes.getLength(); ++i){
+		for(int i = 0; i < childNodes.getLength(); ++i) {
 			Node child = childNodes.item(i);
-			if (child.getNodeName().equals("meta")){
+			if(child.getNodeName().equals("meta")) {
 				meta = Integer.parseInt(child.getTextContent());
 			}
 		}
@@ -32,14 +32,14 @@ public class CompendiumEntryTalent extends CompendiumEntry{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta){
+	protected GuiArcaneCompendium getCompendiumGui(String searchID, int meta) {
 		return new GuiArcaneCompendium(searchID, ItemsCommonProxy.spell_component, 0);
 	}
 
 	@Override
-	public ItemStack getRepresentItemStack(String searchID, int meta){
+	public ItemStack getRepresentItemStack(String searchID, int meta) {
 		SkillTreeEntry entry = SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill(searchID));
-		if (entry != null){
+		if(entry != null) {
 			return new ItemStack(ItemsCommonProxy.spell_component, 1, SkillManager.instance.getShiftedPartID(entry.registeredItem));
 		}
 		return null;

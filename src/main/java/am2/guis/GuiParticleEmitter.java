@@ -14,10 +14,10 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.StatCollector;
 
 @SideOnly(Side.CLIENT)
-public class GuiParticleEmitter extends GuiScreen{
+public class GuiParticleEmitter extends GuiScreen {
 
 	/**
-	 * The title string that is displayed in the top-center of the screen.
+	 The title string that is displayed in the top-center of the screen.
 	 */
 	protected String screenTitle = StatCollector.translateToLocal("am2.gui.particleEmitter");
 
@@ -41,7 +41,7 @@ public class GuiParticleEmitter extends GuiScreen{
 
 	private final GuiScreen parent;
 
-	public GuiParticleEmitter(TileEntityParticleEmitter target){
+	public GuiParticleEmitter(TileEntityParticleEmitter target) {
 		this.mc = Minecraft.getMinecraft();
 		this.parent = this.mc.currentScreen;
 		this.fontRendererObj = Minecraft.getMinecraft().fontRenderer;
@@ -52,12 +52,12 @@ public class GuiParticleEmitter extends GuiScreen{
 	}
 
 	@Override
-	public boolean doesGuiPauseGame(){
+	public boolean doesGuiPauseGame() {
 		return false;
 	}
 
 	@Override
-	public void initGui(){
+	public void initGui() {
 
 		btnParticleType = new GuiButtonVariableDims(10, 50, 40, AMParticle.particleTypes[tile.getParticleType()]);
 		btnParticleBehaviour = new GuiButtonVariableDims(11, 50, 60, ParticleController.AuraControllerOptions[tile.getParticleBehaviour()]);
@@ -86,11 +86,12 @@ public class GuiParticleEmitter extends GuiScreen{
 
 		sliParticleSpeed = new GuiSlideControl(22, width - 110, 180, 100, StatCollector.translateToLocal("am2.gui.speed"), 1.0f, 0.25f, 10.0f);
 
-		if (tile.getColorDefault() || tile.getColorRandom()){
+		if(tile.getColorDefault() || tile.getColorRandom()) {
 			sliParticleRed.enabled = false;
 			sliParticleBlue.enabled = false;
 			sliParticleGreen.enabled = false;
-		}else{
+		}
+		else {
 			sliParticleRed.enabled = true;
 			sliParticleBlue.enabled = true;
 			sliParticleGreen.enabled = true;
@@ -114,7 +115,7 @@ public class GuiParticleEmitter extends GuiScreen{
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3){
+	public void drawScreen(int par1, int par2, float par3) {
 		this.drawDefaultBackground();
 		drawCenteredString(fontRendererObj, screenTitle, width / 2, 4, 0xffffff);
 		drawString(fontRendererObj, StatCollector.translateToLocal("am2.gui.type"), 10, 45, 0xffffff);
@@ -122,7 +123,7 @@ public class GuiParticleEmitter extends GuiScreen{
 		drawString(fontRendererObj, StatCollector.translateToLocal("am2.gui.color"), 10, 85, 0xffffff);
 		drawString(fontRendererObj, StatCollector.translateToLocal("am2.gui.border"), 10, 105, 0xffffff);
 
-		if (!tile.getShow()){
+		if(!tile.getShow()) {
 			fontRendererObj.drawSplitString(StatCollector.translateToLocal("am2.gui.wrenchWarning"), 10, 125, 100, 0xff0000);
 		}
 
@@ -130,106 +131,114 @@ public class GuiParticleEmitter extends GuiScreen{
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton){
+	protected void actionPerformed(GuiButton par1GuiButton) {
 
 		int index = 0;
 		boolean flag = false;
 
 		activeButton = par1GuiButton;
 
-		switch (par1GuiButton.id){
-		case 10: //particle type
-			index = tile.getParticleType();
-			index++;
-			if (index >= AMParticle.particleTypes.length) index = 0;
+		switch(par1GuiButton.id) {
+			case 10: //particle type
+				index = tile.getParticleType();
+				index++;
+				if(index >= AMParticle.particleTypes.length) {
+					index = 0;
+				}
 
-			tile.setParticleType(index);
-			btnParticleType.displayString = AMParticle.particleTypes[index];
-			break;
-		case 11: //particle behaviour
-			index = tile.getParticleBehaviour();
-			index++;
-			if (index >= ParticleController.AuraControllerOptions.length) index = 0;
-			tile.setParticleBehaviour(index);
-			btnParticleBehaviour.displayString = ParticleController.AuraControllerOptions[index];
-			break;
-		case 12: //default color
-		case 13: //random color
-			if (tile.getColorDefault()){
-				tile.setColorDefault(false);
-				tile.setColorRandom(true);
-				sliParticleRed.enabled = false;
-				sliParticleBlue.enabled = false;
-				sliParticleGreen.enabled = false;
-			}else if (tile.getColorRandom()){
-				tile.setColorDefault(false);
-				tile.setColorRandom(false);
-				sliParticleRed.enabled = true;
-				sliParticleBlue.enabled = true;
-				sliParticleGreen.enabled = true;
-			}else{
-				tile.setColorDefault(true);
-				tile.setColorRandom(false);
-				sliParticleRed.enabled = false;
-				sliParticleBlue.enabled = false;
-				sliParticleGreen.enabled = false;
-			}
-			btnParticleColorMode.displayString = tile.getColorDefault() ? "Default" : tile.getColorRandom() ? StatCollector.translateToLocal("am2.gui.random") : StatCollector.translateToLocal("am2.gui.custom");
-			break;
-		case 14: //scale
-			tile.setScale(((GuiSlideControl)par1GuiButton).getShiftedValue() / 100);
-			break;
-		case 15: //alpha
-			tile.setAlpha(((GuiSlideControl)par1GuiButton).getShiftedValue() / 100);
-			break;
-		case 16: //red
-		case 17: //green
-		case 18: //blue
-			int color = ((int)sliParticleRed.getShiftedValue() & 0xFF) << 16 | ((int)sliParticleGreen.getShiftedValue() & 0xFF) << 8 | (int)sliParticleBlue.getShiftedValue() & 0xFF;
-			tile.setColor(color);
-			break;
-		case 19: //hide/show
-			flag = tile.getShow();
-			tile.setShow(!flag);
-			hideBlock.displayString = !flag ? StatCollector.translateToLocal("am2.gui.visible") : StatCollector.translateToLocal("am2.gui.hidden");
-			break;
-		case 20: //quantity
-			tile.setQuantity((int)sliParticleQuantity.getShiftedValue());
-			break;
-		case 21: //delay
-			tile.setDelay((int)sliParticleDelay.getShiftedValue());
-			break;
-		case 22: //speed
-			tile.setSpeed(sliParticleSpeed.getShiftedValue());
-			break;
-		case 200: //close
-			tile.syncWithServer();
-			this.mc.displayGuiScreen(this.parent);
-			break;
+				tile.setParticleType(index);
+				btnParticleType.displayString = AMParticle.particleTypes[index];
+				break;
+			case 11: //particle behaviour
+				index = tile.getParticleBehaviour();
+				index++;
+				if(index >= ParticleController.AuraControllerOptions.length) {
+					index = 0;
+				}
+				tile.setParticleBehaviour(index);
+				btnParticleBehaviour.displayString = ParticleController.AuraControllerOptions[index];
+				break;
+			case 12: //default color
+			case 13: //random color
+				if(tile.getColorDefault()) {
+					tile.setColorDefault(false);
+					tile.setColorRandom(true);
+					sliParticleRed.enabled = false;
+					sliParticleBlue.enabled = false;
+					sliParticleGreen.enabled = false;
+				}
+				else if(tile.getColorRandom()) {
+					tile.setColorDefault(false);
+					tile.setColorRandom(false);
+					sliParticleRed.enabled = true;
+					sliParticleBlue.enabled = true;
+					sliParticleGreen.enabled = true;
+				}
+				else {
+					tile.setColorDefault(true);
+					tile.setColorRandom(false);
+					sliParticleRed.enabled = false;
+					sliParticleBlue.enabled = false;
+					sliParticleGreen.enabled = false;
+				}
+				btnParticleColorMode.displayString = tile.getColorDefault() ? "Default" : tile.getColorRandom() ? StatCollector.translateToLocal("am2.gui.random") : StatCollector.translateToLocal("am2.gui.custom");
+				break;
+			case 14: //scale
+				tile.setScale(((GuiSlideControl)par1GuiButton).getShiftedValue() / 100);
+				break;
+			case 15: //alpha
+				tile.setAlpha(((GuiSlideControl)par1GuiButton).getShiftedValue() / 100);
+				break;
+			case 16: //red
+			case 17: //green
+			case 18: //blue
+				int color = ((int)sliParticleRed.getShiftedValue() & 0xFF) << 16 | ((int)sliParticleGreen.getShiftedValue() & 0xFF) << 8 | (int)sliParticleBlue.getShiftedValue() & 0xFF;
+				tile.setColor(color);
+				break;
+			case 19: //hide/show
+				flag = tile.getShow();
+				tile.setShow(!flag);
+				hideBlock.displayString = !flag ? StatCollector.translateToLocal("am2.gui.visible") : StatCollector.translateToLocal("am2.gui.hidden");
+				break;
+			case 20: //quantity
+				tile.setQuantity((int)sliParticleQuantity.getShiftedValue());
+				break;
+			case 21: //delay
+				tile.setDelay((int)sliParticleDelay.getShiftedValue());
+				break;
+			case 22: //speed
+				tile.setSpeed(sliParticleSpeed.getShiftedValue());
+				break;
+			case 200: //close
+				tile.syncWithServer();
+				this.mc.displayGuiScreen(this.parent);
+				break;
 		}
 	}
 
 	@Override
-	public void onGuiClosed(){
+	public void onGuiClosed() {
 		tile.syncWithServer();
 		super.onGuiClosed();
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int par1, int par2, int par3){
-		if (activeButton != null && activeButton instanceof GuiSlideControl && par3 != 0){
+	protected void mouseMovedOrUp(int par1, int par2, int par3) {
+		if(activeButton != null && activeButton instanceof GuiSlideControl && par3 != 0) {
 			actionPerformed(activeButton);
-		}else{
+		}
+		else {
 			super.mouseMovedOrUp(par1, par2, par3);
 		}
 	}
 
-	private GuiButton getControlByXY(int x, int y){
-		for (Object btn : this.buttonList){
-			if (btn instanceof GuiButton){
+	private GuiButton getControlByXY(int x, int y) {
+		for(Object btn: this.buttonList) {
+			if(btn instanceof GuiButton) {
 				GuiButton button = (GuiButton)btn;
-				if (button.mousePressed(mc, x, y))
+				if(button.mousePressed(mc, x, y)) {
 					return button;
+				}
 			}
 		}
 		return null;

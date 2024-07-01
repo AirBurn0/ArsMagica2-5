@@ -1,6 +1,6 @@
 package am2.bosses;
 
-public enum BossActions{
+public enum BossActions {
 	IDLE(-1),
 	STRIKE(15),
 	SMASH(20),
@@ -16,11 +16,11 @@ public enum BossActions{
 
 	private final int maxActionTime;
 
-	private BossActions(int maxTime){
+	BossActions(int maxTime) {
 		maxActionTime = maxTime;
 	}
 
-	public int getMaxActionTime(){
+	public int getMaxActionTime() {
 		return maxActionTime;
 	}
 }

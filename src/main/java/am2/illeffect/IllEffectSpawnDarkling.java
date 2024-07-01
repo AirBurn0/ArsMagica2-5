@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class IllEffectSpawnDarkling extends IllEffectBase{
+public class IllEffectSpawnDarkling extends IllEffectBase {
 
 	@Override
-	public IllEffectSeverity GetSeverity(){
+	public IllEffectSeverity GetSeverity() {
 		return IllEffectSeverity.MINOR;
 	}
 
 	@Override
-	public Map<EntityPlayer, Object> ApplyIllEffect(World world, int x, int y, int z){
-		if (!world.isRemote){
+	public Map<EntityPlayer, Object> ApplyIllEffect(World world, int x, int y, int z) {
+		if(!world.isRemote) {
 			EntityDarkling darkling = new EntityDarkling(world);
 			darkling.setPosition(x, y + 1, z);
 			world.spawnEntityInWorld(darkling);
@@ -29,7 +29,7 @@ public class IllEffectSpawnDarkling extends IllEffectBase{
 	}
 
 	@Override
-	public String getDescription(EntityPlayer player, Object meta){
+	public String getDescription(EntityPlayer player, Object meta) {
 		return "A Darkling has been spawned.";
 	}
 

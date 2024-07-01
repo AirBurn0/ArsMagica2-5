@@ -33,8 +33,13 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.ItemStack;
@@ -52,7 +57,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import java.io.File;
 
 @Mod(modid = "arsmagica2", name = "Ars Magica 2", version = "@VERSION@", dependencies = "required-after:AnimationAPI")
-public class AMCore{
+public class AMCore {
 
 	@Instance(value = "arsmagica2")
 	public static AMCore instance;
@@ -66,11 +71,11 @@ public class AMCore{
 
 	private String compendiumBase;
 
-	public AMCore(){
+	public AMCore() {
 	}
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
+	public void preInit(FMLPreInitializationEvent event) {
 
 		String configBase = event.getSuggestedConfigurationFile().getAbsolutePath();
 		configBase = popPathFolder(configBase);
@@ -88,15 +93,16 @@ public class AMCore{
 		proxy.preinit();
 	}
 
-	private String popPathFolder(String path){
+	private String popPathFolder(String path) {
 		int lastIndex = path.lastIndexOf(File.separatorChar);
-		if (lastIndex == -1)
+		if(lastIndex == -1) {
 			lastIndex = path.length() - 1; //no path separator...strange, but ok.  Use full string.
+		}
 		return path.substring(0, lastIndex);
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event){
+	public void init(FMLInitializationEvent event) {
 
 		FMLInterModComms.sendMessage("Waila", "register", "am2.interop.WailaSupport.callbackRegister");
 
@@ -105,21 +111,21 @@ public class AMCore{
 
 		initAPI();
 
-		if (AMCore.config.getEnableWitchwoodForest()){
+		if(AMCore.config.getEnableWitchwoodForest()) {
 			BiomeDictionary.registerBiomeType(BiomeWitchwoodForest.instance, Type.FOREST, Type.MAGICAL);
 			BiomeManager.warmBiomes.add(new BiomeEntry(BiomeWitchwoodForest.instance, 6));
 		}
 	}
 
 	@EventHandler
-	public void postInit(FMLPostInitializationEvent event){
+	public void postInit(FMLPostInitializationEvent event) {
 		//Register Flicker Operators
 		registerFlickerOperators();
 
 		proxy.setCompendiumSaveBase(compendiumBase);
 		proxy.postinit();
 
-		if (config.retroactiveWorldgen()){
+		if(config.retroactiveWorldgen()) {
 			LogHelper.info("Retroactive Worldgen is enabled");
 		}
 
@@ -130,12 +136,13 @@ public class AMCore{
 						FluidContainerRegistry.EMPTY_BUCKET));
 
 		SeventhSanctum.instance.init();
-		if (Loader.isModLoaded("Thaumcraft"))
+		if(Loader.isModLoaded("Thaumcraft")) {
 			TC4Interop.initialize();
+		}
 
 	}
 
-	private void registerFlickerOperators(){
+	private void registerFlickerOperators() {
 		FlickerOperatorRegistry.instance.registerFlickerOperator(
 				new FlickerOperatorItemTransport(),
 				Affinity.AIR
@@ -191,7 +198,7 @@ public class AMCore{
 	}
 
 	@EventHandler
-	public void serverStarting(FMLServerStartingEvent event){
+	public void serverStarting(FMLServerStartingEvent event) {
 		ICommandManager commandManager = event.getServer().getCommandManager();
 		ServerCommandManager serverCommandManager = ((ServerCommandManager)commandManager);
 		serverCommandManager.registerCommand(new SetMagicLevelCommand());
@@ -212,58 +219,65 @@ public class AMCore{
 	}
 
 	@EventHandler
-	public void serverStopping(FMLServerStoppingEvent event){
-		for (WorldServer ws : MinecraftServer.getServer().worldServers){
+	public void serverStopping(FMLServerStoppingEvent event) {
+		for(WorldServer ws: MinecraftServer.getServer().worldServers) {
 			PowerNodeCache.instance.saveWorldToFile(ws);
 		}
 	}
 
 	@EventHandler
-	public void onIMCReceived(FMLInterModComms.IMCEvent event){
-		for (IMCMessage msg : event.getMessages()){
-			if (msg.key == "dsb"){
+	public void onIMCReceived(FMLInterModComms.IMCEvent event) {
+		for(IMCMessage msg: event.getMessages()) {
+			if(msg.key == "dsb") {
 				LogHelper.info("Received dimension spawn blacklist IMC!  Processing.");
 				String[] split = msg.getStringValue().split("|");
-				if (split.length != 2){
+				if(split.length != 2) {
 					LogHelper.warn("Could not parse dsb IMC - malformed identifiers!  Syntax is 'ClassName|DimensionID', for example:  EntityDryad|22");
 					continue;
 				}
-				try{
+				try {
 					SpawnBlacklists.addBlacklistedDimensionSpawn(split[0], Integer.parseInt(split[1]));
-				}catch (NumberFormatException nex){
+				}
+				catch(NumberFormatException nex) {
 					LogHelper.warn("Could not parse dsb IMC - improper dimension ID (not a number)!  Syntax is 'ClassName|DimensionID', for example:  EntityDryad|22");
 				}
-			}else if (msg.key == "bsb"){
+			}
+			else if(msg.key == "bsb") {
 				LogHelper.info("Received biome spawn blacklist IMC!  Processing.");
 				String[] split = msg.getStringValue().split("|");
-				if (split.length != 2){
+				if(split.length != 2) {
 					LogHelper.warn("Could not parse bsb IMC - malformed identifiers!  Syntax is 'ClassName|BiomeID', for example:  EntityDryad|22");
 					continue;
 				}
-				try{
+				try {
 					SpawnBlacklists.addBlacklistedBiomeSpawn(split[0], Integer.parseInt(split[1]));
-				}catch (NumberFormatException nex){
+				}
+				catch(NumberFormatException nex) {
 					LogHelper.warn("Could not parse bsb IMC - improper biome ID (not a number)!  Syntax is 'ClassName|BiomeID', for example:  EntityDryad|22");
 				}
-			}else if (msg.key == "dwg"){
+			}
+			else if(msg.key == "dwg") {
 				LogHelper.info("Received dimension worldgen blacklist IMC!  Processing.");
-				try{
+				try {
 					SpawnBlacklists.addBlacklistedDimensionForWorldgen(Integer.parseInt(msg.getStringValue()));
-				}catch (NumberFormatException nex){
+				}
+				catch(NumberFormatException nex) {
 					LogHelper.warn("Could not parse dwg IMC - improper dimension ID (not a number)!  Syntax is 'dimensionID', for example:  2");
 				}
-			}else if (msg.key == "adb"){
+			}
+			else if(msg.key == "adb") {
 				LogHelper.info("Received dispel blacklist IMC!  Processing.");
-				try{
+				try {
 					BuffList.instance.addDispelExclusion(Integer.parseInt(msg.getStringValue()));
-				}catch (NumberFormatException nex){
+				}
+				catch(NumberFormatException nex) {
 					LogHelper.warn("Could not parse adb IMC - improper potion ID (not a number)!  Syntax is 'potionID', for example:  10");
 				}
 			}
 		}
 	}
 
-	public void initAPI(){
+	public void initAPI() {
 		LogHelper.info("Initializing API Hooks...");
 		ArsMagicaApi.instance.setSpellPartManager(SkillManager.instance);
 		ArsMagicaApi.instance.setEnchantmentHelper(new AMEnchantmentHelper());
@@ -284,7 +298,7 @@ public class AMCore{
 		LogHelper.info("Finished API Initialization");
 	}
 
-	public String getVersion(){
+	public String getVersion() {
 		Mod modclass = this.getClass().getAnnotation(Mod.class);
 		return modclass.version();
 	}

@@ -1,10 +1,17 @@
 package am2.bosses;
 
 import am2.AMCore;
-import am2.bosses.ai.*;
+import am2.bosses.ai.EntityAICastSpell;
+import am2.bosses.ai.EntityAIPlantGuardianThrowSickle;
+import am2.bosses.ai.EntityAIShieldBash;
+import am2.bosses.ai.EntityAISpinAttack;
+import am2.bosses.ai.EntityAIStrikeAttack;
+import am2.bosses.ai.ISpellCastCallback;
 import am2.damage.DamageSourceFire;
 import am2.damage.DamageSourceFrost;
 import am2.damage.DamageSources;
+import am2.items.ItemEssence;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.network.AMNetHandler;
 import am2.particles.AMParticle;
@@ -16,7 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityNatureGuardian extends AM2Boss{
+public class EntityNatureGuardian extends AM2Boss {
 
 	public float tendrilRotation;
 	public boolean hasSickle;
@@ -32,23 +39,23 @@ public class EntityNatureGuardian extends AM2Boss{
 
 	public float spinRotation = 0;
 
-	public EntityNatureGuardian(World par1World){
+	public EntityNatureGuardian(World par1World) {
 		super(par1World);
 		this.setSize(1.65f, 4.75f);
 		hasSickle = true;
 	}
 
 	@Override
-	protected void applyEntityAttributes(){
+	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(500D);
 	}
 
 	@Override
-	protected void initSpecificAI(){
-		this.tasks.addTask(1, new EntityAICastSpell(this, NPCSpells.instance.dispel, 16, 23, 50, BossActions.CASTING, new ISpellCastCallback<EntityNatureGuardian>(){
+	protected void initSpecificAI() {
+		this.tasks.addTask(1, new EntityAICastSpell(this, NPCSpells.instance.dispel, 16, 23, 50, BossActions.CASTING, new ISpellCastCallback<EntityNatureGuardian>() {
 			@Override
-			public boolean shouldCast(EntityNatureGuardian host, ItemStack spell){
+			public boolean shouldCast(EntityNatureGuardian host, ItemStack spell) {
 				return host.getActivePotionEffects().size() > 0;
 			}
 		}));
@@ -59,8 +66,8 @@ public class EntityNatureGuardian extends AM2Boss{
 	}
 
 	@Override
-	public void onUpdate(){
-		if (worldObj.isRemote){
+	public void onUpdate() {
+		if(worldObj.isRemote) {
 			updateMovementAngles();
 			spawnParticles();
 		}
@@ -68,119 +75,121 @@ public class EntityNatureGuardian extends AM2Boss{
 	}
 
 	@Override
-	public int getTotalArmorValue(){
+	public int getTotalArmorValue() {
 		return 20;
 	}
 
-	private void spawnParticles(){
+	private void spawnParticles() {
 		AMParticle leaf = (AMParticle)AMCore.proxy.particleManager.spawn(worldObj, "leaf", posX + (rand.nextDouble() * 3) - 1.5f, posY + (rand.nextDouble() * 5f), posZ + (rand.nextDouble() * 3) - 1.5f);
-		if (leaf != null){
+		if(leaf != null) {
 			leaf.setMaxAge(20);
 			leaf.setIgnoreMaxAge(false);
 			leaf.AddParticleController(new ParticleFloatUpward(leaf, 0.05f, -0.02f, 1, false));
-			if (getCurrentAction() == BossActions.SPINNING){
+			if(getCurrentAction() == BossActions.SPINNING) {
 				leaf.AddParticleController(new ParticleOrbitEntity(leaf, this, 0.6f, 1, false));
 			}
 		}
 	}
 
 	@Override
-	public void setCurrentAction(BossActions action){
+	public void setCurrentAction(BossActions action) {
 		super.setCurrentAction(action);
 		this.spinRotation = 0;
 
-		if (!worldObj.isRemote){
+		if(!worldObj.isRemote) {
 			AMNetHandler.INSTANCE.sendActionUpdateToAllAround(this);
 		}
 	}
 
-	private void updateMovementAngles(){
+	private void updateMovementAngles() {
 		tendrilRotation += 0.2f;
 		tendrilRotation %= 360;
 
-		switch (currentAction){
-		case IDLE:
-			break;
-		case SPINNING:
-			this.spinRotation = (this.spinRotation - 40) % 360;
-			break;
-		case STRIKE:
-			break;
-		case THROWING_SICKLE:
-			break;
-		default:
-			break;
+		switch(currentAction) {
+			case IDLE:
+				break;
+			case SPINNING:
+				this.spinRotation = (this.spinRotation - 40) % 360;
+				break;
+			case STRIKE:
+				break;
+			case THROWING_SICKLE:
+				break;
+			default:
+				break;
 
 		}
 	}
 
 	@Override
-	public ItemStack getHeldItem(){
+	public ItemStack getHeldItem() {
 		return null;
 	}
 
 	@Override
-	public void setCurrentItemOrArmor(int i, ItemStack itemstack){
+	public void setCurrentItemOrArmor(int i, ItemStack itemstack) {
 	}
 
 	@Override
-	public ItemStack[] getLastActiveItems(){
+	public ItemStack[] getLastActiveItems() {
 		return new ItemStack[0];
 	}
 
 	@Override
-	public boolean isActionValid(BossActions action){
-		if (action == BossActions.STRIKE || action == BossActions.SPINNING || action == BossActions.THROWING_SICKLE){
+	public boolean isActionValid(BossActions action) {
+		if(action == BossActions.STRIKE || action == BossActions.SPINNING || action == BossActions.THROWING_SICKLE) {
 			return hasSickle;
 		}
 		return true;
 	}
 
 	@Override
-	protected void dropFewItems(boolean par1, int par2){
-		if (par1)
-			this.entityDropItem(new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_INF_ORB_RED), 0.0f);
+	protected void dropFewItems(boolean par1, int par2) {
+		if(par1) {
+			this.entityDropItem(new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_INF_ORB_RED), 0.0f);
+		}
 
 		int i = rand.nextInt(4);
 
-		for (int j = 0; j < i; j++){
-			this.entityDropItem(new ItemStack(ItemsCommonProxy.essence, 1, ItemsCommonProxy.essence.META_NATURE), 0.0f);
+		for(int j = 0; j < i; j++) {
+			this.entityDropItem(new ItemStack(ItemsCommonProxy.essence, 1, ItemEssence.META_NATURE), 0.0f);
 		}
 
 		i = rand.nextInt(10);
 
-		if (i < 3 && par1){
+		if(i < 3 && par1) {
 			this.entityDropItem(ItemsCommonProxy.natureScytheEnchanted.copy(), 0.0f);
 		}
 	}
 
 	@Override
-	protected float modifyDamageAmount(DamageSource source, float damageAmt){
-		if (source instanceof DamageSourceFire || source.isFireDamage()){
+	protected float modifyDamageAmount(DamageSource source, float damageAmt) {
+		if(source instanceof DamageSourceFire || source.isFireDamage()) {
 			damageAmt *= 2f;
-		}else if (source instanceof DamageSourceFrost){
+		}
+		else if(source instanceof DamageSourceFrost) {
 			damageAmt *= 1.5f;
 		}
 		return damageAmt;
 	}
 
 	@Override
-	protected String getHurtSound(){
+	protected String getHurtSound() {
 		return "arsmagica2:mob.natureguardian.hit";
 	}
 
 	@Override
-	protected String getDeathSound(){
+	protected String getDeathSound() {
 		return "arsmagica2:mob.natureguardian.death";
 	}
 
 	@Override
-	protected String getLivingSound(){
+	protected String getLivingSound() {
 		return "arsmagica2:mob.natureguardian.idle";
 	}
 
 	@Override
-	public String getAttackSound(){
+	public String getAttackSound() {
 		return "arsmagica2:mob.natureguardian.attack";
 	}
 }

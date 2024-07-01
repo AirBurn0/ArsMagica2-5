@@ -15,38 +15,36 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-import java.util.Random;
+public class BlockInertSpawner extends PoweredBlock {
 
-public class BlockInertSpawner extends PoweredBlock{
-
-	protected BlockInertSpawner(){
+	protected BlockInertSpawner() {
 		super(Material.iron);
 		setHardness(3.0f);
 		setResistance(3.0f);
 	}
 
 	@Override
-	public int getRenderBlockPass(){
+	public int getRenderBlockPass() {
 		return 1;
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 	}
 
 	@Override
-	public IIcon getIcon(int par1, int par2){
+	public IIcon getIcon(int par1, int par2) {
 		return Blocks.mob_spawner.getIcon(par1, par2);
 	}
 
 	@Override
-	public boolean isOpaqueCube(){
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int meta, float hitX, float hitY, float hitZ){
-		if (this.HandleSpecialItems(world, player, x, y, z)){
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int meta, float hitX, float hitY, float hitZ) {
+		if(this.HandleSpecialItems(world, player, x, y, z)) {
 			return false;
 		}
 		FMLNetworkHandler.openGui(player, AMCore.instance, ArsMagicaGuiIdList.GUI_INERT_SPAWNER, world, x, y, z);
@@ -54,20 +52,21 @@ public class BlockInertSpawner extends PoweredBlock{
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_){
+	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
 		return new TileEntityInertSpawner();
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y, int z, Block oldBlockID, int oldMetadata){
+	public void breakBlock(World world, int x, int y, int z, Block oldBlockID, int oldMetadata) {
 		TileEntityInertSpawner spawner = (TileEntityInertSpawner)world.getTileEntity(x, y, z);
 
 		//if there is no habitat at the location break out
-		if (spawner == null)
+		if(spawner == null) {
 			return;
+		}
 
 		//if the habitat has a flicker throw it on the ground
-		if (spawner.getStackInSlot(0) != null){
+		if(spawner.getStackInSlot(0) != null) {
 			ItemStack stack = spawner.getStackInSlot(0);
 
 			float offsetX = world.rand.nextFloat() * 0.8F + 0.1F;

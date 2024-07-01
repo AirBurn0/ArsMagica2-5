@@ -6,14 +6,14 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 
-public class ItemCreatureFocus extends ItemFilterFocus{
+public class ItemCreatureFocus extends ItemFilterFocus {
 
-	protected ItemCreatureFocus(){
+	protected ItemCreatureFocus() {
 		super();
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
 				" P ",
 				"LFT",
@@ -27,17 +27,17 @@ public class ItemCreatureFocus extends ItemFilterFocus{
 	}
 
 	@Override
-	public String getInGameName(){
+	public String getInGameName() {
 		return "Creature Focus";
 	}
 
 	@Override
-	public Class getFilterClass(){
+	public Class getFilterClass() {
 		return EntityCreature.class;
 	}
 
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = ResourceManager.RegisterTexture("focus_seer_creature", par1IconRegister);
 	}
 

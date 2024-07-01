@@ -1,12 +1,13 @@
 package am2.bosses.models;
 
+import am2.bosses.BossActions;
 import am2.bosses.EntityArcaneGuardian;
 import am2.entities.renderers.AM2ModelRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
-public class ModelArcaneGuardian extends ModelBase{
+public class ModelArcaneGuardian extends ModelBase {
 	//fields
 	AM2ModelRenderer FootLeft;
 	AM2ModelRenderer FootRight;
@@ -39,7 +40,7 @@ public class ModelArcaneGuardian extends ModelBase{
 	AM2ModelRenderer SigilHelper;
 	AM2ModelRenderer PantsRight;
 
-	public ModelArcaneGuardian(){
+	public ModelArcaneGuardian() {
 		textureWidth = 128;
 		textureHeight = 128;
 
@@ -246,9 +247,9 @@ public class ModelArcaneGuardian extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 
-		if (entity instanceof EntityArcaneGuardian){
+		if(entity instanceof EntityArcaneGuardian) {
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0, (float)Math.sin(f2 / 10f) / 10f, 0);
 			setHeadRotations(f3, f4);
@@ -292,7 +293,7 @@ public class ModelArcaneGuardian extends ModelBase{
 		}
 	}
 
-	private void setHeadRotations(float yaw, float pitch){
+	private void setHeadRotations(float yaw, float pitch) {
 
 		yaw = (float)Math.toRadians(yaw);
 		pitch = (float)Math.toRadians(pitch);
@@ -314,18 +315,18 @@ public class ModelArcaneGuardian extends ModelBase{
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	private void updateRotations(EntityArcaneGuardian guardian, float f, float f1, float f2, float f3, float f4, float f5){
+	private void updateRotations(EntityArcaneGuardian guardian, float f, float f1, float f2, float f3, float f4, float f5) {
 
 		float rotationSpeed = 0.3f;
-		if (guardian.getTarget() != null){
+		if(guardian.getTarget() != null) {
 			rotationSpeed = 0.085f;
 		}
 
-		if (Math.abs(SigilHelper.rotateAngleY - guardian.getRuneRotationY()) < rotationSpeed){
+		if(Math.abs(SigilHelper.rotateAngleY - guardian.getRuneRotationY()) < rotationSpeed) {
 			rotationSpeed = 0;
 		}
 
-		if (SigilHelper.rotateAngleY < guardian.getRuneRotationY()){
+		if(SigilHelper.rotateAngleY < guardian.getRuneRotationY()) {
 			rotationSpeed *= -1f;
 		}
 
@@ -335,8 +336,7 @@ public class ModelArcaneGuardian extends ModelBase{
 		float main_arm_rotation_x = 0;
 		float pants_rotation = 0;
 
-		switch (guardian.getCurrentAction()){
-		case CASTING:
+		if(guardian.getCurrentAction() == BossActions.CASTING) {
 			float max_degrees_x = 160;
 			float final_degrees_x = 80;
 
@@ -346,17 +346,22 @@ public class ModelArcaneGuardian extends ModelBase{
 			float fast_action_ticks = 3;
 			float final_action_ticks = 6;
 
-			if (guardian.getTicksInCurrentAction() < action_ticks){
+			if(guardian.getTicksInCurrentAction() < action_ticks) {
 				main_arm_rotation_x = (float)Math.toRadians(-max_degrees_x * ((guardian.getTicksInCurrentAction() + (f2 - guardian.ticksExisted)) / action_ticks));
-			}else if (guardian.getTicksInCurrentAction() < action_ticks + fast_action_ticks){
+			}
+			else if(guardian.getTicksInCurrentAction() < action_ticks + fast_action_ticks) {
 				main_arm_rotation_x = (float)Math.toRadians(-max_degrees_x + (final_degrees_x * ((guardian.getTicksInCurrentAction() + (f2 - guardian.ticksExisted) - action_ticks) / fast_action_ticks)));
 				pants_rotation = (float)Math.toRadians(-max_pants_degrees * ((guardian.getTicksInCurrentAction() + (f2 - guardian.ticksExisted) - action_ticks) / fast_action_ticks));
-			}else{
-				main_arm_rotation_x = final_degrees_x;
-				if (guardian.getTicksInCurrentAction() < action_ticks + fast_action_ticks + final_action_ticks)
-					pants_rotation = (float)Math.toRadians(-max_pants_degrees + (max_pants_degrees * ((guardian.getTicksInCurrentAction() + (f2 - guardian.ticksExisted) - action_ticks - fast_action_ticks) / final_action_ticks)));
 			}
-			break;
+			else {
+				main_arm_rotation_x = final_degrees_x;
+				if(guardian.getTicksInCurrentAction() < action_ticks + fast_action_ticks + final_action_ticks) {
+					pants_rotation = (float)Math.toRadians(-max_pants_degrees + (max_pants_degrees * ((guardian.getTicksInCurrentAction() + (f2 - guardian.ticksExisted) - action_ticks - fast_action_ticks) / final_action_ticks)));
+				}
+			}
+		}
+		else if(guardian.getCurrentAction() == null) {
+			throw new NullPointerException();
 		}
 
 		RightUpperArm.rotateAngleX = RightUpperArm.getRestRotationX() + main_arm_rotation_x;
@@ -372,13 +377,13 @@ public class ModelArcaneGuardian extends ModelBase{
 		PantsBackRight.rotateAngleX = PantsBackRight.getRestRotationZ() - pants_rotation;
 	}
 
-	private void setRotation(AM2ModelRenderer model, float x, float y, float z){
+	private void setRotation(AM2ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;
 	}
 
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5){
+	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5) {
 	}
 
 }

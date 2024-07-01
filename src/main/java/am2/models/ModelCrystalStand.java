@@ -4,7 +4,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-public class ModelCrystalStand extends ModelBase{
+public class ModelCrystalStand extends ModelBase {
 	//fields
 	ModelRenderer Pillar1;
 	ModelRenderer Pillar2;
@@ -19,7 +19,7 @@ public class ModelCrystalStand extends ModelBase{
 	ModelRenderer Foot2;
 	ModelRenderer Foot3;
 
-	public ModelCrystalStand(){
+	public ModelCrystalStand() {
 		textureWidth = 64;
 		textureHeight = 32;
 
@@ -97,7 +97,7 @@ public class ModelCrystalStand extends ModelBase{
 		setRotation(Foot3, 0F, 0F, 0F);
 	}
 
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		Pillar1.render(f5);
 		Pillar2.render(f5);
@@ -113,7 +113,7 @@ public class ModelCrystalStand extends ModelBase{
 		Foot3.render(f5);
 	}
 
-	public void renderBlock(float f5){
+	public void renderBlock(float f5) {
 		Pillar1.render(f5);
 		Pillar2.render(f5);
 		Pillar3.render(f5);
@@ -128,7 +128,7 @@ public class ModelCrystalStand extends ModelBase{
 		Foot3.render(f5);
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z){
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

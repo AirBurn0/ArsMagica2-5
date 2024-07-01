@@ -13,68 +13,72 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-public class Dispelling implements IArmorImbuement{
+public class Dispelling implements IArmorImbuement {
 
 	@Override
-	public String getID(){
+	public String getID() {
 		return "dispel";
 	}
 
 	@Override
-	public int getIconIndex(){
+	public int getIconIndex() {
 		return 25;
 	}
 
 	@Override
-	public ImbuementTiers getTier(){
+	public ImbuementTiers getTier() {
 		return ImbuementTiers.FOURTH;
 	}
 
 	@Override
-	public EnumSet<ImbuementApplicationTypes> getApplicationTypes(){
+	public EnumSet<ImbuementApplicationTypes> getApplicationTypes() {
 		return EnumSet.of(ImbuementApplicationTypes.ON_TICK);
 	}
 
 	@Override
-	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params){
-		if (player.getActivePotionEffects().size() == 0)
+	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params) {
+		if(player.getActivePotionEffects().size() == 0) {
 			return false;
+		}
 
-		if (player.worldObj.isRemote)
+		if(player.worldObj.isRemote) {
 			return false;
+		}
 
 		ArrayList<Integer> effectsToRemove = new ArrayList<Integer>();
 		Object[] safeCopy = player.getActivePotionEffects().toArray();
-		for (Object o : safeCopy){
+		for(Object o: safeCopy) {
 			PotionEffect pe = (PotionEffect)o;
 			boolean badEffect = ReflectionHelper.getPrivateValue(Potion.class, Potion.potionTypes[pe.getPotionID()], 35);
-			if (pe.getIsAmbient() || !badEffect) continue;
+			if(pe.getIsAmbient() || !badEffect) {
+				continue;
+			}
 			effectsToRemove.add(pe.getPotionID());
 		}
 
-		for (Integer i : effectsToRemove){
+		for(Integer i: effectsToRemove) {
 			player.removePotionEffect(i);
 		}
 		return effectsToRemove.size() > 0;
 	}
 
 	@Override
-	public int[] getValidSlots(){
+	public int[] getValidSlots() {
 		return new int[]{ImbuementRegistry.SLOT_LEGS};
 	}
 
 	@Override
-	public boolean canApplyOnCooldown(){
+	public boolean canApplyOnCooldown() {
 		return false;
 	}
 
 	@Override
-	public int getCooldown(){
+	public int getCooldown() {
 		return 600;
 	}
 
 	@Override
-	public int getArmorDamage(){
+	public int getArmorDamage() {
 		return 75;
 	}
 }

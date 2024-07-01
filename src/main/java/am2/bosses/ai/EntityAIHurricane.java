@@ -16,45 +16,48 @@ import net.minecraft.init.Blocks;
 
 import java.util.List;
 
-public class EntityAIHurricane extends EntityAIBase{
+public class EntityAIHurricane extends EntityAIBase {
 
 	private final EntityAirGuardian host;
 	private final float moveSpeed;
 	private EntityLivingBase target;
 	private int cooldownTicks = 0;
 
-	public EntityAIHurricane(EntityAirGuardian host, float moveSpeed){
+	public EntityAIHurricane(EntityAirGuardian host, float moveSpeed) {
 		this.host = host;
 		this.moveSpeed = moveSpeed;
 		this.setMutexBits(1);
 	}
 
 	@Override
-	public boolean shouldExecute(){
-		if (cooldownTicks-- > 0 || ((IArsMagicaBoss)host).getCurrentAction() != BossActions.IDLE || !((IArsMagicaBoss)host).isActionValid(BossActions.SPINNING))
+	public boolean shouldExecute() {
+		if(cooldownTicks-- > 0 || ((IArsMagicaBoss)host).getCurrentAction() != BossActions.IDLE || !((IArsMagicaBoss)host).isActionValid(BossActions.SPINNING)) {
 			return false;
+		}
 		EntityLivingBase AITarget = host.getAttackTarget();
-		if (AITarget == null || AITarget.isDead || AITarget.getDistanceSqToEntity(host) > 25) return false;
+		if(AITarget == null || AITarget.isDead || AITarget.getDistanceSqToEntity(host) > 25) {
+			return false;
+		}
 		this.target = AITarget;
 		((IArsMagicaBoss)host).setCurrentAction(BossActions.SPINNING);
 		return true;
 	}
 
 	@Override
-	public boolean continueExecuting(){
-		EntityLivingBase AITarget = ((EntityLiving)host).getAttackTarget();
-		if (host.hitCount >= 10){
+	public boolean continueExecuting() {
+		EntityLivingBase AITarget = host.getAttackTarget();
+		if(host.hitCount >= 10) {
 			((IArsMagicaBoss)host).setCurrentAction(BossActions.IDLE);
 			cooldownTicks = 20;
 			return false;
 		}
-		if (AITarget == null || AITarget.isDead || ((IArsMagicaBoss)host).getTicksInCurrentAction() > BossActions.SPINNING.getMaxActionTime()){
+		if(AITarget == null || AITarget.isDead || ((IArsMagicaBoss)host).getTicksInCurrentAction() > BossActions.SPINNING.getMaxActionTime()) {
 
-			if (!host.worldObj.isRemote){
+			if(!host.worldObj.isRemote) {
 				int y = (int)host.posY + 1;
-				for (int x = -1; x <= 1; ++x){
-					for (int z = -1; z <= 1; ++z){
-						while (!host.worldObj.canBlockSeeTheSky((int)host.posX + x, y, (int)host.posZ + z) && host.worldObj.getBlock((int)host.posX + x, y, (int)host.posZ + z) != Blocks.bedrock){
+				for(int x = -1; x <= 1; ++x) {
+					for(int z = -1; z <= 1; ++z) {
+						while(!host.worldObj.canBlockSeeTheSky((int)host.posX + x, y, (int)host.posZ + z) && host.worldObj.getBlock((int)host.posX + x, y, (int)host.posZ + z) != Blocks.bedrock) {
 							host.worldObj.func_147478_e((int)host.posX + x, y++, (int)host.posZ + z, true);
 						}
 						y = (int)host.posY + 2;
@@ -63,8 +66,10 @@ public class EntityAIHurricane extends EntityAIBase{
 			}
 
 			List<EntityLivingBase> nearbyEntities = host.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, host.boundingBox.expand(2, 2, 2));
-			for (EntityLivingBase ent : nearbyEntities){
-				if (ent == host) continue;
+			for(EntityLivingBase ent: nearbyEntities) {
+				if(ent == host) {
+					continue;
+				}
 				AMVector3 movement = MathUtilities.GetMovementVectorBetweenPoints(new AMVector3(host), new AMVector3(ent));
 				float factor = 2.15f;
 
@@ -76,7 +81,7 @@ public class EntityAIHurricane extends EntityAIBase{
 
 				ent.addVelocity(x, y, z);
 
-				if (ent instanceof EntityPlayer){
+				if(ent instanceof EntityPlayer) {
 					AMNetHandler.INSTANCE.sendVelocityAddPacket(host.worldObj, ent, x, y, z);
 				}
 				ent.fallDistance = 0f;
@@ -89,14 +94,16 @@ public class EntityAIHurricane extends EntityAIBase{
 	}
 
 	@Override
-	public void updateTask(){
+	public void updateTask() {
 		host.getLookHelper().setLookPositionWithEntity(target, 30, 30);
 		//host.getNavigator().tryMoveToEntityLiving(target, moveSpeed);
 		List<EntityLivingBase> nearbyEntities = host.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, host.boundingBox.expand(6, 3, 6));
-		for (EntityLivingBase ent : nearbyEntities){
-			if (ent == host) continue;
+		for(EntityLivingBase ent: nearbyEntities) {
+			if(ent == host) {
+				continue;
+			}
 
-			if (!host.worldObj.isRemote && ent instanceof EntityWhirlwind){
+			if(!host.worldObj.isRemote && ent instanceof EntityWhirlwind) {
 				ent.setDead();
 				continue;
 			}
@@ -110,17 +117,17 @@ public class EntityAIHurricane extends EntityAIBase{
 			double oX = ent.motionX, oY = ent.motionY, oZ = ent.motionZ;
 			ent.addVelocity(x, y, z);
 
-			if (Math.abs(ent.motionX) > Math.abs(x * 2)){
-				ent.motionX = x * (ent.motionX / ent.motionX);
+			if(Math.abs(ent.motionX) > Math.abs(x * 2)) {
+				ent.motionX = x * (1.0);
 			}
-			if (Math.abs(ent.motionY) > Math.abs(y * 2)){
-				ent.motionY = y * (ent.motionY / ent.motionY);
+			if(Math.abs(ent.motionY) > Math.abs(y * 2)) {
+				ent.motionY = y * (1.0);
 			}
-			if (Math.abs(ent.motionZ) > Math.abs(z * 2)){
-				ent.motionZ = z * (ent.motionZ / ent.motionZ);
+			if(Math.abs(ent.motionZ) > Math.abs(z * 2)) {
+				ent.motionZ = z * (1.0);
 			}
 
-			if (ent instanceof EntityPlayer){
+			if(ent instanceof EntityPlayer) {
 				AMNetHandler.INSTANCE.sendVelocityAddPacket(host.worldObj, ent, -(oX - ent.motionX), -(oY - ent.motionY), -(oZ - ent.motionZ));
 			}
 			ent.fallDistance = 0f;

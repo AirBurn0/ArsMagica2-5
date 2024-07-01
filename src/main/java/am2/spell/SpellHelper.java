@@ -40,40 +40,41 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class SpellHelper{
+public class SpellHelper {
 
 	public static final SpellHelper instance = new SpellHelper();
 
-	private SpellHelper(){
+	private SpellHelper() {
 	}
 
-	public SpellCastResult applyStageToGround(ItemStack stack, EntityLivingBase caster, World world, int blockX, int blockY, int blockZ, int blockFace, double impactX, double impactY, double impactZ, int stage, boolean consumeMBR){
+	public SpellCastResult applyStageToGround(ItemStack stack, EntityLivingBase caster, World world, int blockX, int blockY, int blockZ, int blockFace, double impactX, double impactY, double impactZ, int stage, boolean consumeMBR) {
 		ISpellShape stageShape = SpellUtils.instance.getShapeForStage(stack, 0);
-		if (stageShape == null || stageShape == SkillManager.instance.missingShape){
+		if(stageShape == null || stageShape == SkillManager.instance.missingShape) {
 			return SpellCastResult.MALFORMED_SPELL_STACK;
 		}
 
 		ISpellComponent[] components = SpellUtils.instance.getComponentsForStage(stack, 0);
 
-		for (ISpellComponent component : components){
+		for(ISpellComponent component: components) {
 
-			if (SkillTreeManager.instance.isSkillDisabled(component))
+			if(SkillTreeManager.instance.isSkillDisabled(component)) {
 				continue;
+			}
 
 			//special logic for spell sealed doors
-			if (BlocksCommonProxy.spellSealedDoor.applyComponentToDoor(world, component, blockX, blockY, blockZ))
+			if(BlocksCommonProxy.spellSealedDoor.applyComponentToDoor(world, component, blockX, blockY, blockZ)) {
 				continue;
+			}
 
-			if (component.applyEffectBlock(stack, world, blockX, blockY, blockZ, blockFace, impactX, impactY, impactZ, caster)){
-				if (world.isRemote){
+			if(component.applyEffectBlock(stack, world, blockX, blockY, blockZ, blockFace, impactX, impactY, impactZ, caster)) {
+				if(world.isRemote) {
 					int color = -1;
-					if (SpellUtils.instance.modifierIsPresent(SpellModifiers.COLOR, stack, 0)){
+					if(SpellUtils.instance.modifierIsPresent(SpellModifiers.COLOR, stack, 0)) {
 						ISpellModifier[] mods = SpellUtils.instance.getModifiersForStage(stack, 0);
 						int ordinalCount = 0;
-						for (ISpellModifier mod : mods){
-							if (mod instanceof Colour){
+						for(ISpellModifier mod: mods) {
+							if(mod instanceof Colour) {
 								byte[] meta = SpellUtils.instance.getModifierMetadataFromStack(stack, mod, 0, ordinalCount++);
 								color = (int)mod.getModifier(SpellModifiers.COLOR, null, null, null, meta);
 							}
@@ -81,19 +82,22 @@ public class SpellHelper{
 					}
 					component.spawnParticles(world, blockX, blockY, blockZ, caster, caster, world.rand, color);
 				}
-				if (consumeMBR)
+				if(consumeMBR) {
 					SpellUtils.instance.doAffinityShift(caster, component, stageShape);
+				}
 			}
 		}
 
 		return SpellCastResult.SUCCESS;
 	}
 
-	public SpellCastResult applyStageToEntity(ItemStack stack, EntityLivingBase caster, World world, Entity target, int stage, boolean shiftAffinityAndXP){
+	public SpellCastResult applyStageToEntity(ItemStack stack, EntityLivingBase caster, World world, Entity target, int stage, boolean shiftAffinityAndXP) {
 		ISpellShape stageShape = SpellUtils.instance.getShapeForStage(stack, 0);
-		if (stageShape == null) return SpellCastResult.MALFORMED_SPELL_STACK;
+		if(stageShape == null) {
+			return SpellCastResult.MALFORMED_SPELL_STACK;
+		}
 
-		if ((!AMCore.config.getAllowCreativeTargets()) && target instanceof EntityPlayerMP && ((EntityPlayerMP) target).capabilities.isCreativeMode) {
+		if((!AMCore.config.getAllowCreativeTargets()) && target instanceof EntityPlayerMP && ((EntityPlayerMP)target).capabilities.isCreativeMode) {
 			return SpellCastResult.EFFECT_FAILED;
 		}
 
@@ -101,20 +105,21 @@ public class SpellHelper{
 
 		boolean appliedOneComponent = false;
 
-		for (ISpellComponent component : components){
+		for(ISpellComponent component: components) {
 
-			if (SkillTreeManager.instance.isSkillDisabled(component))
+			if(SkillTreeManager.instance.isSkillDisabled(component)) {
 				continue;
+			}
 
-			if (component.applyEffectEntity(stack, world, caster, target)){
+			if(component.applyEffectEntity(stack, world, caster, target)) {
 				appliedOneComponent = true;
-				if (world.isRemote){
+				if(world.isRemote) {
 					int color = -1;
-					if (SpellUtils.instance.modifierIsPresent(SpellModifiers.COLOR, stack, 0)){
+					if(SpellUtils.instance.modifierIsPresent(SpellModifiers.COLOR, stack, 0)) {
 						ISpellModifier[] mods = SpellUtils.instance.getModifiersForStage(stack, 0);
 						int ordinalCount = 0;
-						for (ISpellModifier mod : mods){
-							if (mod instanceof Colour){
+						for(ISpellModifier mod: mods) {
+							if(mod instanceof Colour) {
 								byte[] meta = SpellUtils.instance.getModifierMetadataFromStack(stack, mod, 0, ordinalCount++);
 								color = (int)mod.getModifier(SpellModifiers.COLOR, null, null, null, meta);
 							}
@@ -122,18 +127,21 @@ public class SpellHelper{
 					}
 					component.spawnParticles(world, target.posX, target.posY + target.getEyeHeight(), target.posZ, caster, target, world.rand, color);
 				}
-				if (shiftAffinityAndXP)
+				if(shiftAffinityAndXP) {
 					SpellUtils.instance.doAffinityShift(caster, component, stageShape);
+				}
 			}
 		}
 
-		if (appliedOneComponent)
+		if(appliedOneComponent) {
 			return SpellCastResult.SUCCESS;
-		else
+		}
+		else {
 			return SpellCastResult.EFFECT_FAILED;
+		}
 	}
 
-	private SpellCastingEvent.Pre preSpellCast(ItemStack stack, EntityLivingBase caster, boolean isChanneled){
+	private SpellCastingEvent.Pre preSpellCast(ItemStack stack, EntityLivingBase caster, boolean isChanneled) {
 
 		SpellRequirements reqs = SpellUtils.instance.getSpellRequirements(stack, caster);
 
@@ -150,46 +158,50 @@ public class SpellHelper{
 
 		SpellCastingEvent.Pre event = new SpellCastingEvent().new Pre(stack, (ItemSpellBase)stack.getItem(), caster, manaCost, burnout, isChanneled);
 
-		if (MinecraftForge.EVENT_BUS.post(event)){
+		if(MinecraftForge.EVENT_BUS.post(event)) {
 			event.castResult = SpellCastResult.EFFECT_FAILED;
 			return event;
 		}
 
 		event.castResult = SpellCastResult.SUCCESS;
 
-		if (!SpellUtils.instance.casterHasAllReagents(caster, reagents))
+		if(!SpellUtils.instance.casterHasAllReagents(caster, reagents)) {
 			event.castResult = SpellCastResult.REAGENTS_MISSING;
-		if (!SpellUtils.instance.casterHasMana(caster, manaCost))
+		}
+		if(!SpellUtils.instance.casterHasMana(caster, manaCost)) {
 			event.castResult = SpellCastResult.NOT_ENOUGH_MANA;
+		}
 
 		return event;
 	}
 
-	public SpellCastResult applyStackStage(ItemStack stack, EntityLivingBase caster, EntityLivingBase target, double x, double y, double z, int side, World world, boolean consumeMBR, boolean giveXP, int ticksUsed){
+	public SpellCastResult applyStackStage(ItemStack stack, EntityLivingBase caster, EntityLivingBase target, double x, double y, double z, int side, World world, boolean consumeMBR, boolean giveXP, int ticksUsed) {
 
-		if (caster.isPotionActive(BuffList.silence.id))
+		if(caster.isPotionActive(BuffList.silence.id)) {
 			return SpellCastResult.SILENCED;
+		}
 
 		ItemStack parsedStack = SpellUtils.instance.constructSpellStack(stack);
 
-		if (SpellUtils.instance.numStages(parsedStack) == 0){
+		if(SpellUtils.instance.numStages(parsedStack) == 0) {
 			return SpellCastResult.SUCCESS;
 		}
 		ISpellShape shape = SpellUtils.instance.getShapeForStage(parsedStack, 0);
 		ItemSpellBase item = (ItemSpellBase)parsedStack.getItem();
 
-		if (SkillTreeManager.instance.isSkillDisabled(shape))
+		if(SkillTreeManager.instance.isSkillDisabled(shape)) {
 			return SpellCastResult.EFFECT_FAILED;
+		}
 
-		if (!(caster instanceof EntityPlayer)){
+		if(!(caster instanceof EntityPlayer)) {
 			consumeMBR = false;
 		}
 
 		SpellCastingEvent.Pre checkEvent = null;
-		if (consumeMBR){
+		if(consumeMBR) {
 			checkEvent = preSpellCast(parsedStack, caster, false);
-			if (checkEvent.castResult != SpellCastResult.SUCCESS){
-				if (checkEvent.castResult == SpellCastResult.NOT_ENOUGH_MANA && caster.worldObj.isRemote && caster instanceof EntityPlayer){
+			if(checkEvent.castResult != SpellCastResult.SUCCESS) {
+				if(checkEvent.castResult == SpellCastResult.NOT_ENOUGH_MANA && caster.worldObj.isRemote && caster instanceof EntityPlayer) {
 					AMCore.proxy.flashManaBar();
 				}
 				SpellCastingEvent.Post event = new SpellCastingEvent().new Post(parsedStack, (ItemSpellBase)parsedStack.getItem(), caster, checkEvent.manaCost, checkEvent.burnout, false, checkEvent.castResult);
@@ -201,17 +213,18 @@ public class SpellHelper{
 
 		SpellCastResult result = SpellCastResult.MALFORMED_SPELL_STACK;
 
-		if (shape != null){
+		if(shape != null) {
 			result = shape.beginStackStage(item, parsedStack, caster, target, world, x, y, z, side, giveXP, ticksUsed);
 
-			if (!world.isRemote){
+			if(!world.isRemote) {
 				AMDataWriter writer = new AMDataWriter();
 				writer.add(parsedStack);
 				writer.add(caster.getEntityId());
-				if (target != null){
+				if(target != null) {
 					writer.add(true);
 					writer.add(target.getEntityId());
-				}else{
+				}
+				else {
 					writer.add(false);
 				}
 				writer.add(x).add(y).add(z);
@@ -225,28 +238,29 @@ public class SpellHelper{
 		float manaCost = 0;
 		float burnout = 0;
 
-		if (consumeMBR){
+		if(consumeMBR) {
 			manaCost = checkEvent.manaCost;
 			burnout = checkEvent.burnout;
 
-			if (result == SpellCastResult.SUCCESS_REDUCE_MANA){
+			if(result == SpellCastResult.SUCCESS_REDUCE_MANA) {
 				result = SpellCastResult.SUCCESS;
 				manaCost *= 0.2f;
 				burnout *= 0.2f;
 			}
 		}
 
-		if (result == SpellCastResult.SUCCESS){
-			if (consumeMBR){
+		if(result == SpellCastResult.SUCCESS) {
+			if(consumeMBR) {
 				ExtendedProperties.For(caster).deductMana(manaCost);
 				ExtendedProperties.For(caster).addBurnout(burnout);
 			}
-			if (world.isRemote){
+			if(world.isRemote) {
 				String sfx = shape.getSoundForAffinity(SpellUtils.instance.mainAffinityFor(parsedStack), parsedStack, null);
-				if (sfx != null){
-					if (!shape.isChanneled()){
+				if(sfx != null) {
+					if(!shape.isChanneled()) {
 						world.playSound(caster.posX, caster.posY, caster.posZ, sfx, 0.4f, world.rand.nextFloat() * 0.1F + 0.9F, false);
-					}else{
+					}
+					else {
 						//SoundHelper.instance.loopSound(world, (float)x, (float)y, (float)z, sfx, 0.6f);
 					}
 				}
@@ -259,62 +273,71 @@ public class SpellHelper{
 		return result;
 	}
 
-	public SpellCastResult applyStackStageOnUsing(ItemStack stack, EntityLivingBase caster, EntityLivingBase target, double x, double y, double z, World world, boolean consumeMBR, boolean giveXP, int ticks){
-		if (SpellUtils.instance.numStages(stack) == 0){
+	public SpellCastResult applyStackStageOnUsing(ItemStack stack, EntityLivingBase caster, EntityLivingBase target, double x, double y, double z, World world, boolean consumeMBR, boolean giveXP, int ticks) {
+		if(SpellUtils.instance.numStages(stack) == 0) {
 			return SpellCastResult.SUCCESS;
 		}
 
-		if (!SpellUtils.instance.spellIsChanneled(stack)){
+		if(!SpellUtils.instance.spellIsChanneled(stack)) {
 			return SpellCastResult.EFFECT_FAILED;
 		}
 
 		return applyStackStage(stack, caster, target, x, y, z, 0, world, consumeMBR, giveXP, ticks);
 	}
 
-	public boolean attackTargetSpecial(ItemStack spellStack, Entity target, DamageSource damagesource, float magnitude){
+	public boolean attackTargetSpecial(ItemStack spellStack, Entity target, DamageSource damagesource, float magnitude) {
 
-		if (target.worldObj.isRemote)
+		if(target.worldObj.isRemote) {
 			return true;
+		}
 
 		EntityPlayer dmgSrcPlayer = null;
 
-		if (damagesource.getSourceOfDamage() != null){
-			if (damagesource.getSourceOfDamage() instanceof EntityLivingBase){
+		if(damagesource.getSourceOfDamage() != null) {
+			if(damagesource.getSourceOfDamage() instanceof EntityLivingBase) {
 				EntityLivingBase source = (EntityLivingBase)damagesource.getSourceOfDamage();
-				if ((source instanceof EntityLightMage || source instanceof EntityDarkMage) && target.getClass() == EntityCreeper.class){
+				if((source instanceof EntityLightMage || source instanceof EntityDarkMage) && target.getClass() == EntityCreeper.class) {
 					return false;
-				}else if (source instanceof EntityLightMage && target instanceof EntityLightMage){
+				}
+				else if(source instanceof EntityLightMage && target instanceof EntityLightMage) {
 					return false;
-				}else if (source instanceof EntityDarkMage && target instanceof EntityDarkMage){
+				}
+				else if(source instanceof EntityDarkMage && target instanceof EntityDarkMage) {
 					return false;
-				}else if (source instanceof EntityPlayer && target instanceof EntityPlayer && !target.worldObj.isRemote && (!MinecraftServer.getServer().isPVPEnabled() || ((EntityPlayer)target).capabilities.isCreativeMode)){
+				}
+				else if(source instanceof EntityPlayer && target instanceof EntityPlayer && !target.worldObj.isRemote && (!MinecraftServer.getServer()
+																																		  .isPVPEnabled() || ((EntityPlayer)target).capabilities.isCreativeMode
+				)) {
 					return false;
 				}
 
-				if (source.isPotionActive(BuffList.fury))
+				if(source.isPotionActive(BuffList.fury)) {
 					magnitude += 4;
+				}
 			}
 
-			if (damagesource.getSourceOfDamage() instanceof EntityPlayer){
+			if(damagesource.getSourceOfDamage() instanceof EntityPlayer) {
 				dmgSrcPlayer = (EntityPlayer)damagesource.getSourceOfDamage();
 				int armorSet = ArmorHelper.getFullArsMagicaArmorSet(dmgSrcPlayer);
-				if (armorSet == ArsMagicaArmorMaterial.MAGE.getMaterialID()){
+				if(armorSet == ArsMagicaArmorMaterial.MAGE.getMaterialID()) {
 					magnitude *= 1.05f;
-				}else if (armorSet == ArsMagicaArmorMaterial.BATTLEMAGE.getMaterialID()){
+				}
+				else if(armorSet == ArsMagicaArmorMaterial.BATTLEMAGE.getMaterialID()) {
 					magnitude *= 1.025f;
-				}else if (armorSet == ArsMagicaArmorMaterial.ARCHMAGE.getMaterialID()){
+				}
+				else if(armorSet == ArsMagicaArmorMaterial.ARCHMAGE.getMaterialID()) {
 					magnitude *= 1.1f;
 				}
 
 				ItemStack equipped = (dmgSrcPlayer).getCurrentEquippedItem();
-				if (equipped != null && equipped.getItem() == ItemsCommonProxy.arcaneSpellbook){
+				if(equipped != null && equipped.getItem() == ItemsCommonProxy.arcaneSpellbook) {
 					magnitude *= 1.1f;
 				}
 			}
 		}
 
-		if (target instanceof EntityLivingBase){
-			if (EntityUtilities.isSummon((EntityLivingBase)target) && damagesource.damageType.equals("magic")){
+		if(target instanceof EntityLivingBase) {
+			if(EntityUtilities.isSummon((EntityLivingBase)target) && damagesource.damageType.equals("magic")) {
 				magnitude *= 3.0f;
 			}
 		}
@@ -324,19 +347,20 @@ public class SpellHelper{
 		ItemStack oldItemStack = null;
 
 		boolean success = false;
-		if (target instanceof EntityDragon){
+		if(target instanceof EntityDragon) {
 			success = ((EntityDragon)target).attackEntityFromPart(((EntityDragon)target).dragonPartBody, damagesource, magnitude);
-		}else{
+		}
+		else {
 			success = target.attackEntityFrom(damagesource, magnitude);
 		}
 
-		if (dmgSrcPlayer != null){
-			if (spellStack != null && target instanceof EntityLivingBase){
-				if (!target.worldObj.isRemote &&
+		if(dmgSrcPlayer != null) {
+			if(spellStack != null && target instanceof EntityLivingBase) {
+				if(!target.worldObj.isRemote &&
 						((EntityLivingBase)target).getHealth() <= 0 &&
-						SpellUtils.instance.modifierIsPresent(SpellModifiers.DISMEMBERING_LEVEL, spellStack, 0)){
+						SpellUtils.instance.modifierIsPresent(SpellModifiers.DISMEMBERING_LEVEL, spellStack, 0)) {
 					double chance = SpellUtils.instance.getModifiedDouble_Add(0, spellStack, dmgSrcPlayer, target, dmgSrcPlayer.worldObj, 0, SpellModifiers.DISMEMBERING_LEVEL);
-					if (dmgSrcPlayer.worldObj.rand.nextDouble() <= chance){
+					if(dmgSrcPlayer.worldObj.rand.nextDouble() <= chance) {
 						dropHead(target, dmgSrcPlayer.worldObj);
 					}
 				}
@@ -346,23 +370,27 @@ public class SpellHelper{
 		return success;
 	}
 
-	private void dropHead(Entity target, World world){
-		if (target.getClass() == EntitySkeleton.class){
-			if (((EntitySkeleton)target).getSkeletonType() == 1){
+	private void dropHead(Entity target, World world) {
+		if(target.getClass() == EntitySkeleton.class) {
+			if(((EntitySkeleton)target).getSkeletonType() == 1) {
 				dropHead_do(world, target.posX, target.posY, target.posZ, 1);
-			}else{
+			}
+			else {
 				dropHead_do(world, target.posX, target.posY, target.posZ, 0);
 			}
-		}else if (target.getClass() == EntityZombie.class){
+		}
+		else if(target.getClass() == EntityZombie.class) {
 			dropHead_do(world, target.posX, target.posY, target.posZ, 2);
-		}else if (target.getClass() == EntityCreeper.class){
+		}
+		else if(target.getClass() == EntityCreeper.class) {
 			dropHead_do(world, target.posX, target.posY, target.posZ, 4);
-		}else if (target instanceof EntityPlayer){
+		}
+		else if(target instanceof EntityPlayer) {
 			dropHead_do(world, target.posX, target.posY, target.posZ, 3);
 		}
 	}
 
-	private void dropHead_do(World world, double x, double y, double z, int type){
+	private void dropHead_do(World world, double x, double y, double z, int type) {
 		EntityItem item = new EntityItem(world);
 		ItemStack stack = new ItemStack(Items.skull, 1, type);
 		item.setEntityItemStack(stack);

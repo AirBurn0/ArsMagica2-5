@@ -13,88 +13,91 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemEssenceBag extends ArsMagicaItem{
+public class ItemEssenceBag extends ArsMagicaItem {
 
-	public ItemEssenceBag(){
+	public ItemEssenceBag() {
 		super();
 		setMaxStackSize(1);
 		setMaxDamage(0);
 	}
 
 	@Override
-	public boolean getShareTag(){
+	public boolean getShareTag() {
 		return true;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack par1ItemStack,
-							   EntityPlayer par2EntityPlayer, List par3List, boolean par4){
+							   EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		par3List.add(StatCollector.translateToLocal("am2.tooltip.rupees"));
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer entityplayer){
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer entityplayer) {
 		FMLNetworkHandler.openGui(entityplayer, AMCore.instance, ArsMagicaGuiIdList.GUI_ESSENCE_BAG, world, (int)entityplayer.posX, (int)entityplayer.posY, (int)entityplayer.posZ);
 		return stack;
 	}
 
-	private ItemStack[] getMyInventory(ItemStack itemStack){
+	private ItemStack[] getMyInventory(ItemStack itemStack) {
 		return ReadFromStackTagCompound(itemStack);
 	}
 
-	public void UpdateStackTagCompound(ItemStack itemStack, ItemStack[] values){
-		if (itemStack.stackTagCompound == null){
+	public void UpdateStackTagCompound(ItemStack itemStack, ItemStack[] values) {
+		if(itemStack.stackTagCompound == null) {
 			itemStack.stackTagCompound = new NBTTagCompound();
 		}
-		for (int i = 0; i < values.length; ++i){
+		for(int i = 0; i < values.length; ++i) {
 			ItemStack stack = values[i];
-			if (stack == null){
+			if(stack == null) {
 				itemStack.stackTagCompound.removeTag("essencebagstacksize" + i);
 				itemStack.stackTagCompound.removeTag("essencebagmeta" + i);
 				continue;
-			}else{
+			}
+			else {
 				itemStack.stackTagCompound.setInteger("essencebagstacksize" + i, stack.stackSize);
 				itemStack.stackTagCompound.setInteger("essencebagmeta" + i, stack.getItemDamage());
 			}
 		}
 	}
 
-	public void UpdateStackTagCompound(ItemStack itemStack, InventoryEssenceBag inventory){
-		if (itemStack.stackTagCompound == null){
+	public void UpdateStackTagCompound(ItemStack itemStack, InventoryEssenceBag inventory) {
+		if(itemStack.stackTagCompound == null) {
 			itemStack.stackTagCompound = new NBTTagCompound();
 		}
-		for (int i = 0; i < inventory.getSizeInventory(); ++i){
+		for(int i = 0; i < inventory.getSizeInventory(); ++i) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (stack == null){
+			if(stack == null) {
 				continue;
-			}else{
+			}
+			else {
 				itemStack.stackTagCompound.setInteger("essencebagstacksize" + i, stack.stackSize);
 				itemStack.stackTagCompound.setInteger("essencebagmeta" + i, stack.getItemDamage());
 			}
 		}
 	}
 
-	public ItemStack[] ReadFromStackTagCompound(ItemStack itemStack){
-		if (itemStack.stackTagCompound == null){
+	public ItemStack[] ReadFromStackTagCompound(ItemStack itemStack) {
+		if(itemStack.stackTagCompound == null) {
 			return new ItemStack[InventoryEssenceBag.inventorySize];
 		}
 		ItemStack[] items = new ItemStack[InventoryEssenceBag.inventorySize];
-		for (int i = 0; i < items.length; ++i){
-			if (!itemStack.stackTagCompound.hasKey("essencebagmeta" + i) || itemStack.stackTagCompound.getInteger("essencebagmeta" + i) == -1){
+		for(int i = 0; i < items.length; ++i) {
+			if(!itemStack.stackTagCompound.hasKey("essencebagmeta" + i) || itemStack.stackTagCompound.getInteger("essencebagmeta" + i) == -1) {
 				items[i] = null;
 				continue;
 			}
 			int stacksize = itemStack.stackTagCompound.getInteger("essencebagstacksize" + i);
 			int meta = 0;
-			if (itemStack.stackTagCompound.hasKey("essencebagmeta" + i))
+			if(itemStack.stackTagCompound.hasKey("essencebagmeta" + i)) {
 				meta = itemStack.stackTagCompound.getInteger("essencebagmeta" + i);
+			}
 			items[i] = new ItemStack(ItemsCommonProxy.essence, stacksize, meta);
 		}
 		return items;
 	}
 
-	public InventoryEssenceBag ConvertToInventory(ItemStack essenceBagStack){
+	public InventoryEssenceBag ConvertToInventory(ItemStack essenceBagStack) {
 		InventoryEssenceBag ieb = new InventoryEssenceBag();
 		ieb.SetInventoryContents(getMyInventory(essenceBagStack));
 		return ieb;

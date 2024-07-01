@@ -8,11 +8,11 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
-public class ContainerArmorInfuser extends Container{
+public class ContainerArmorInfuser extends Container {
 
-	private TileEntityArmorImbuer tileEntity;
+	private final TileEntityArmorImbuer tileEntity;
 
-	public ContainerArmorInfuser(EntityPlayer player, TileEntityArmorImbuer infuser){
+	public ContainerArmorInfuser(EntityPlayer player, TileEntityArmorImbuer infuser) {
 		this.tileEntity = infuser;
 		//armor infusion slot
 		addSlotToContainer(new Slot(infuser, 0, 113, 197)); //inventory, index, x, y
@@ -26,21 +26,22 @@ public class ContainerArmorInfuser extends Container{
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer){
+	public boolean canInteractWith(EntityPlayer entityplayer) {
 		return tileEntity.isUseableByPlayer(entityplayer);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int index){
+	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
 		Slot slot = (Slot)this.inventorySlots.get(index);
 		ItemStack stack = slot.getStack();
-		if (stack == null)
+		if(stack == null) {
 			return null;
-		if (stack.getItem() instanceof ItemArmor){
+		}
+		if(stack.getItem() instanceof ItemArmor) {
 			ItemArmor armor = (ItemArmor)stack.getItem();
-			if (index == 0){
+			if(index == 0) {
 				Slot playerSlot = (Slot)inventorySlots.get(armor.armorType + 1);
-				if (!playerSlot.getHasStack()){
+				if(!playerSlot.getHasStack()) {
 					ItemStack clone = stack.copy();
 					playerSlot.putStack(clone);
 					slot.putStack(null);
@@ -48,9 +49,10 @@ public class ContainerArmorInfuser extends Container{
 					slot.onSlotChanged();
 					return clone;
 				}
-			}else{
+			}
+			else {
 				Slot armorSlot = (Slot)this.inventorySlots.get(0);
-				if (!armorSlot.getHasStack()){
+				if(!armorSlot.getHasStack()) {
 					ItemStack clone = stack.copy();
 					armorSlot.putStack(clone);
 					slot.putStack(null);

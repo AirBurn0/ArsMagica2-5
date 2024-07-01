@@ -6,6 +6,8 @@ import am2.api.spell.component.interfaces.ISpellComponent;
 import am2.api.spell.enums.Affinity;
 import am2.buffs.BuffEffect;
 import am2.buffs.BuffList;
+import am2.items.ItemOre;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.particles.AMParticle;
 import am2.particles.ParticleOrbitEntity;
@@ -22,22 +24,28 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
-public class Dispel implements ISpellComponent{
+public class Dispel implements ISpellComponent {
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 		return false;
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
 
-		if (!(target instanceof EntityLivingBase) || target instanceof IBossDisplayData) return false;
+		if(!(target instanceof EntityLivingBase) || target instanceof IBossDisplayData) {
+			return false;
+		}
 
-		if (EntityUtilities.isSummon((EntityLivingBase)target)){
-			if (EntityUtilities.getOwner((EntityLivingBase)target) == caster.getEntityId()){
+		if(EntityUtilities.isSummon((EntityLivingBase)target)) {
+			if(EntityUtilities.getOwner((EntityLivingBase)target) == caster.getEntityId()) {
 				target.attackEntityFrom(DamageSource.magic, 50000);
 				return true;
 			}
@@ -49,30 +57,30 @@ public class Dispel implements ISpellComponent{
 
 		int magnitudeLeft = 6;
 
-		while (iter.hasNext()){
+		while(iter.hasNext()) {
 			Integer potionID = ((PotionEffect)iter.next()).getPotionID();
-			if (BuffList.instance.isDispelBlacklisted(potionID)){
+			if(BuffList.isDispelBlacklisted(potionID)) {
 				continue;
 			}
 			PotionEffect pe = ((EntityLivingBase)target).getActivePotionEffect(Potion.potionTypes[potionID]);
 
 			int magnitudeCost = pe.getAmplifier();
 
-			if (magnitudeLeft >= magnitudeCost){
+			if(magnitudeLeft >= magnitudeCost) {
 				magnitudeLeft -= magnitudeCost;
 				effectsToRemove.add(potionID);
 
-				if (pe instanceof BuffEffect && !world.isRemote){
+				if(pe instanceof BuffEffect && !world.isRemote) {
 					((BuffEffect)pe).stopEffect((EntityLivingBase)target);
 				}
 			}
 		}
 
-		if (effectsToRemove.size() == 0 && ExtendedProperties.For((EntityLivingBase)target).getNumSummons() == 0){
+		if(effectsToRemove.size() == 0 && ExtendedProperties.For((EntityLivingBase)target).getNumSummons() == 0) {
 			return false;
 		}
 
-		if (!world.isRemote){
+		if(!world.isRemote) {
 			removePotionEffects((EntityLivingBase)target, effectsToRemove);
 		}
 
@@ -92,10 +100,10 @@ public class Dispel implements ISpellComponent{
 		return true;
 	}
 
-	private void removePotionEffects(EntityLivingBase target, List<Integer> effectsToRemove){
-		for (Integer i : effectsToRemove){
-			if (i == BuffList.flight.id || i == BuffList.levitation.id){
-				if (target instanceof EntityPlayer && target.isPotionActive(BuffList.flight.id)){
+	private void removePotionEffects(EntityLivingBase target, List<Integer> effectsToRemove) {
+		for(Integer i: effectsToRemove) {
+			if(i == BuffList.flight.id || i == BuffList.levitation.id) {
+				if(target instanceof EntityPlayer && target.isPotionActive(BuffList.flight.id)) {
 					((EntityPlayer)target).capabilities.isFlying = false;
 					((EntityPlayer)target).capabilities.allowFlying = false;
 				}
@@ -105,32 +113,33 @@ public class Dispel implements ISpellComponent{
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 200;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
+	public float burnout(EntityLivingBase caster) {
 		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
-		for (int i = 0; i < 25; ++i){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
+		for(int i = 0; i < 25; ++i) {
 			AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "sparkle2", x, y, z);
-			if (particle != null){
+			if(particle != null) {
 				particle.addRandomOffset(1, 2, 1);
 				particle.AddParticleController(new ParticleOrbitEntity(particle, target, 0.1f + rand.nextFloat() * 0.1f, 1, false));
-				if (rand.nextBoolean())
+				if(rand.nextBoolean()) {
 					particle.setRGBColorF(0.7f, 0.1f, 0.7f);
+				}
 				particle.setMaxAge(20);
 				particle.setParticleScale(0.1f);
-				if (colorModifier > -1){
+				if(colorModifier > -1) {
 					particle.setRGBColorF(((colorModifier >> 16) & 0xFF) / 255.0f, ((colorModifier >> 8) & 0xFF) / 255.0f, (colorModifier & 0xFF) / 255.0f);
 				}
 			}
@@ -138,27 +147,27 @@ public class Dispel implements ISpellComponent{
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.NONE);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 10;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_PURPLE),
-				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_ARCANEASH),
-				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_BLUETOPAZ),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_PURPLE),
+				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_ARCANEASH),
+				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_BLUETOPAZ),
 				Items.milk_bucket
 		};
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0;
 	}
 }

@@ -5,15 +5,14 @@ import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
- * Raised when a player learns a skill at the Occulus
- *
- * @author Mithion
- */
-public class SkillLearnedEvent extends Event{
+ Raised when a player learns a skill at the Occulus
+
+ @author Mithion */
+public class SkillLearnedEvent extends Event {
 	public final EntityPlayer player;
 	public final ISkillTreeEntry skill;
 
-	public SkillLearnedEvent(EntityPlayer player, ISkillTreeEntry entry){
+	public SkillLearnedEvent(EntityPlayer player, ISkillTreeEntry entry) {
 		this.player = player;
 		this.skill = entry;
 	}

@@ -17,7 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.HashMap;
 
-public class TileEntityFlickerControllerBase extends TileEntityAMPower implements IFlickerController{
+public class TileEntityFlickerControllerBase extends TileEntityAMPower implements IFlickerController {
 	private HashMap<Integer, byte[]> sigilMetadata;
 	private IFlickerFunctionality operator;
 	private int tickCounter;
@@ -25,92 +25,104 @@ public class TileEntityFlickerControllerBase extends TileEntityAMPower implement
 	private boolean lastOpWasPowered = false;
 	private boolean firstOp = true;
 
-	public TileEntityFlickerControllerBase(){
+	public TileEntityFlickerControllerBase() {
 		super(500);
 		sigilMetadata = new HashMap<Integer, byte[]>();
 	}
 
-	protected void setOperator(IFlickerFunctionality operator){
-		if (this.operator != null){
-			this.operator.RemoveOperator(worldObj, this, PowerNodeRegistry.For(worldObj).checkPower(this, this.operator.PowerPerOperation()), nearbyList);
+	protected void setOperator(IFlickerFunctionality operator) {
+		if(this.operator != null) {
+			this.operator.RemoveOperator(worldObj, this, PowerNodeRegistry.For(worldObj)
+																		  .checkPower(this, this.operator.PowerPerOperation()), nearbyList);
 		}
 		this.operator = operator;
 		tickCounter = 0;
 	}
 
-	public void updateOperator(ItemStack stack){
-		if (stack == null || stack.getItem() != ItemsCommonProxy.flickerFocus)
+	public void updateOperator(ItemStack stack) {
+		if(stack == null || stack.getItem() != ItemsCommonProxy.flickerFocus) {
 			return;
+		}
 		operator = FlickerOperatorRegistry.instance.getOperatorForMask(stack.getItemDamage());
 	}
 
-	public void scanForNearbyUpgrades(){
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS){
+	public void scanForNearbyUpgrades() {
+		for(ForgeDirection direction: ForgeDirection.VALID_DIRECTIONS) {
 			TileEntity te = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ);
-			if (te != null && te instanceof TileEntityFlickerHabitat){
+			if(te != null && te instanceof TileEntityFlickerHabitat) {
 				nearbyList[direction.ordinal()] = ((TileEntityFlickerHabitat)te).getSelectedAffinity();
 			}
 		}
 	}
 
-	public void notifyOfNearbyUpgradeChange(TileEntity neighbor){
-		if (neighbor instanceof TileEntityFlickerHabitat){
+	public void notifyOfNearbyUpgradeChange(TileEntity neighbor) {
+		if(neighbor instanceof TileEntityFlickerHabitat) {
 			ForgeDirection direction = getNeighboringForgeDirection(neighbor);
-			if (direction != ForgeDirection.UNKNOWN){
+			if(direction != ForgeDirection.UNKNOWN) {
 				nearbyList[direction.ordinal()] = ((TileEntityFlickerHabitat)neighbor).getSelectedAffinity();
 			}
 		}
 	}
 
-	private ForgeDirection getNeighboringForgeDirection(TileEntity neighbor){
-		if (neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord + 1)
+	private ForgeDirection getNeighboringForgeDirection(TileEntity neighbor) {
+		if(neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord + 1) {
 			return ForgeDirection.SOUTH;
-		else if (neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord - 1)
+		}
+		else if(neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord - 1) {
 			return ForgeDirection.NORTH;
-		else if (neighbor.xCoord == this.xCoord + 1 && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord)
+		}
+		else if(neighbor.xCoord == this.xCoord + 1 && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord) {
 			return ForgeDirection.EAST;
-		else if (neighbor.xCoord == this.xCoord - 1 && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord)
+		}
+		else if(neighbor.xCoord == this.xCoord - 1 && neighbor.yCoord == this.yCoord && neighbor.zCoord == this.zCoord) {
 			return ForgeDirection.WEST;
-		else if (neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord + 1 && neighbor.zCoord == this.zCoord)
+		}
+		else if(neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord + 1 && neighbor.zCoord == this.zCoord) {
 			return ForgeDirection.UP;
-		else if (neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord - 1 && neighbor.zCoord == this.zCoord)
+		}
+		else if(neighbor.xCoord == this.xCoord && neighbor.yCoord == this.yCoord - 1 && neighbor.zCoord == this.zCoord) {
 			return ForgeDirection.DOWN;
+		}
 
 		return ForgeDirection.UNKNOWN;
 	}
 
 	@Override
-	public void updateEntity(){
+	public void updateEntity() {
 		//handle any power update ticks
 		super.updateEntity();
 
 		//if redstone powered, increment the tick counter (so that operator time still continues), but do nothing else.
 		//this allows a redstone signal to effectively turn off any flicker habitat.
-		if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)){
+		if(worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
 			tickCounter++;
 			return;
 		}
 
 		//tick operator, if it exists
-		if (operator != null){
+		if(operator != null) {
 			boolean powered = PowerNodeRegistry.For(worldObj).checkPower(this, operator.PowerPerOperation());
 
 			//check which neighbors are not receiving power
 			//this allows individual upgrades to be turned off by providing them with a redstone signal.
-			Affinity unpoweredNeighbors[] = getUnpoweredNeighbors();
+			Affinity[] unpoweredNeighbors = getUnpoweredNeighbors();
 
-			if (tickCounter++ >= operator.TimeBetweenOperation(powered, unpoweredNeighbors)){
+			if(tickCounter++ >= operator.TimeBetweenOperation(powered, unpoweredNeighbors)) {
 				tickCounter = 0;
-				if ((powered && operator.RequiresPower()) || !operator.RequiresPower()){
-					if (firstOp){
+				if((powered && operator.RequiresPower()) || !operator.RequiresPower()) {
+					if(firstOp) {
 						scanForNearbyUpgrades();
 						firstOp = false;
 					}
 					boolean success = operator.DoOperation(worldObj, this, powered, unpoweredNeighbors);
-					if (success || operator.RequiresPower())
-						PowerNodeRegistry.For(worldObj).consumePower(this, PowerNodeRegistry.For(worldObj).getHighestPowerType(this), operator.PowerPerOperation());
+					if(success || operator.RequiresPower()) {
+						PowerNodeRegistry.For(worldObj)
+										 .consumePower(this, PowerNodeRegistry.For(worldObj)
+																			  .getHighestPowerType(this), operator.PowerPerOperation());
+					}
 					lastOpWasPowered = true;
-				}else if (lastOpWasPowered && operator.RequiresPower() && !powered){
+				}
+				else if(lastOpWasPowered && operator.RequiresPower() && !powered) {
 					operator.RemoveOperator(worldObj, this, powered, unpoweredNeighbors);
 					lastOpWasPowered = false;
 				}
@@ -118,42 +130,43 @@ public class TileEntityFlickerControllerBase extends TileEntityAMPower implement
 		}
 	}
 
-	private Affinity[] getUnpoweredNeighbors(){
+	private Affinity[] getUnpoweredNeighbors() {
 		Affinity[] aff = new Affinity[ForgeDirection.values().length];
-		for (int i = 0; i < nearbyList.length; ++i){
+		for(int i = 0; i < nearbyList.length; ++i) {
 			ForgeDirection dir = ForgeDirection.values()[i];
-			if (nearbyList[i] == null || worldObj.isBlockIndirectlyGettingPowered(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ)){
+			if(nearbyList[i] == null || worldObj.isBlockIndirectlyGettingPowered(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ)) {
 				aff[i] = null;
-			}else{
+			}
+			else {
 				aff[i] = nearbyList[i];
 			}
 		}
 		return aff;
 	}
 
-	private Integer getFlagForOperator(IFlickerFunctionality operator){
+	private Integer getFlagForOperator(IFlickerFunctionality operator) {
 		return FlickerOperatorRegistry.instance.getMaskForOperator(operator);
 	}
 
-	public void setMetadata(IFlickerFunctionality operator, byte[] meta){
+	public void setMetadata(IFlickerFunctionality operator, byte[] meta) {
 		sigilMetadata.put(getFlagForOperator(operator), meta);
 	}
 
-	public byte[] getMetadata(IFlickerFunctionality operator){
+	public byte[] getMetadata(IFlickerFunctionality operator) {
 		byte[] arr = sigilMetadata.get(getFlagForOperator(operator));
 		return arr != null ? arr : new byte[0];
 	}
 
-	public void removeMetadata(IFlickerFunctionality operator){
+	public void removeMetadata(IFlickerFunctionality operator) {
 		sigilMetadata.remove(getFlagForOperator(operator));
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound par1nbtTagCompound){
+	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
 		super.writeToNBT(par1nbtTagCompound);
 
 		NBTTagList sigilMetaStore = new NBTTagList();
-		for (Integer i : sigilMetadata.keySet()){
+		for(Integer i: sigilMetadata.keySet()) {
 			NBTTagCompound sigilMetaEntry = new NBTTagCompound();
 			sigilMetaEntry.setInteger("sigil_mask", i);
 			sigilMetaEntry.setByteArray("sigil_meta", sigilMetadata.get(i));
@@ -164,14 +177,14 @@ public class TileEntityFlickerControllerBase extends TileEntityAMPower implement
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound){
+	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
 		super.readFromNBT(par1nbtTagCompound);
 
 		sigilMetadata = new HashMap<Integer, byte[]>();
 
 		NBTTagList sigilMetaStore = par1nbtTagCompound.getTagList("sigil_metadata_collection", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < sigilMetaStore.tagCount(); ++i){
-			NBTTagCompound sigilMetaEntry = (NBTTagCompound)sigilMetaStore.getCompoundTagAt(i);
+		for(int i = 0; i < sigilMetaStore.tagCount(); ++i) {
+			NBTTagCompound sigilMetaEntry = sigilMetaStore.getCompoundTagAt(i);
 			Integer mask = sigilMetaEntry.getInteger("sigil_mask");
 			byte[] meta = sigilMetaEntry.getByteArray("sigil_meta");
 			sigilMetadata.put(mask, meta);
@@ -179,41 +192,41 @@ public class TileEntityFlickerControllerBase extends TileEntityAMPower implement
 	}
 
 	@Override
-	public boolean canProvidePower(PowerTypes type){
+	public boolean canProvidePower(PowerTypes type) {
 		return false;
 	}
 
 	@Override
-	public boolean canRelayPower(PowerTypes type){
+	public boolean canRelayPower(PowerTypes type) {
 		return false;
 	}
 
 	@Override
-	public boolean canRequestPower(){
+	public boolean canRequestPower() {
 		return true;
 	}
 
 	@Override
-	public boolean isSource(){
+	public boolean isSource() {
 		return false;
 	}
 
 	@Override
-	public int getChargeRate(){
+	public int getChargeRate() {
 		return 100;
 	}
 
 	@Override
-	public PowerTypes[] getValidPowerTypes(){
+	public PowerTypes[] getValidPowerTypes() {
 		return PowerTypes.all();
 	}
 
 	@Override
-	public float particleOffset(int axis){
+	public float particleOffset(int axis) {
 		return 0.5f;
 	}
 
-	public Affinity[] getNearbyUpgrades(){
+	public Affinity[] getNearbyUpgrades() {
 		return this.getUnpoweredNeighbors();
 	}
 }

@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class BuffEffectCharmed extends BuffEffect{
+public class BuffEffectCharmed extends BuffEffect {
 
 	private final int particleTicks;
 
@@ -14,20 +14,21 @@ public class BuffEffectCharmed extends BuffEffect{
 
 	private EntityLivingBase charmer;
 
-	public BuffEffectCharmed(int duration, int amplifier){
+	public BuffEffectCharmed(int duration, int amplifier) {
 		super(BuffList.charmed.id, duration, amplifier);
 		particleTicks = 0;
 	}
 
-	public void setCharmer(EntityLivingBase entity){
+	public void setCharmer(EntityLivingBase entity) {
 		charmer = entity;
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entityliving){
-		if (getAmplifier() + 1 == CHARM_TO_PLAYER && entityliving instanceof EntityCreature && charmer instanceof EntityPlayer){
+	public void applyEffect(EntityLivingBase entityliving) {
+		if(getAmplifier() + 1 == CHARM_TO_PLAYER && entityliving instanceof EntityCreature && charmer instanceof EntityPlayer) {
 			EntityUtilities.makeSummon_PlayerFaction((EntityCreature)entityliving, (EntityPlayer)charmer, true);
-		}else if (getAmplifier() + 1 == CHARM_TO_MONSTER && entityliving instanceof EntityCreature){
+		}
+		else if(getAmplifier() + 1 == CHARM_TO_MONSTER && entityliving instanceof EntityCreature) {
 			EntityUtilities.makeSummon_MonsterFaction((EntityCreature)entityliving, true);
 		}
 		EntityUtilities.setOwner(entityliving, charmer);
@@ -35,14 +36,14 @@ public class BuffEffectCharmed extends BuffEffect{
 	}
 
 	@Override
-	public void stopEffect(EntityLivingBase entityliving){
-		if (entityliving instanceof EntityCreature){
+	public void stopEffect(EntityLivingBase entityliving) {
+		if(entityliving instanceof EntityCreature) {
 			EntityUtilities.revertAI((EntityCreature)entityliving);
 		}
 	}
 
 	@Override
-	protected String spellBuffName(){
+	protected String spellBuffName() {
 		return "Charmed";
 	}
 

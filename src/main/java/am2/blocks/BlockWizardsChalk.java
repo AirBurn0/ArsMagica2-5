@@ -14,62 +14,63 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-public class BlockWizardsChalk extends AMSpecialRenderBlock{
+public class BlockWizardsChalk extends AMSpecialRenderBlock {
 
 	@SideOnly(Side.CLIENT)
 	private IIcon[] blockIcons;
 
-	public BlockWizardsChalk(){
+	public BlockWizardsChalk() {
 		super(Material.circuits);
 		setBlockBounds(0, 0, 0, 1, 0.02f, 1);
 	}
 
 	@Override
-	public int getLightOpacity(IBlockAccess world, int x, int y, int z){
+	public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
 		return 0;
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		blockIcons = new IIcon[16];
 
-		for (int i = 0; i < 16; ++i)
+		for(int i = 0; i < 16; ++i) {
 			blockIcons[i] = ResourceManager.RegisterTexture("wizardchalk/WizardChalk" + (i + 1), par1IconRegister);
+		}
 	}
 
 	@Override
-	public int getRenderType(){
+	public int getRenderType() {
 		return BlocksCommonProxy.commonBlockRenderID;
 	}
 
 	@Override
-	public IIcon getIcon(int side, int meta){
+	public IIcon getIcon(int side, int meta) {
 		return blockIcons[meta];
 	}
 
 	@Override
-	public int getRenderBlockPass(){
+	public int getRenderBlockPass() {
 		return 1;
 	}
 
 	@Override
-	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 		return new ArrayList<ItemStack>();
 	}
 
 	@Override
-	public float getAmbientOcclusionLightValue(){
+	public float getAmbientOcclusionLightValue() {
 		return 1.0f;
 	}
 
 	@Override
-	public int getBlockColor(){
+	public int getBlockColor() {
 		return 0xFFFFFF;
 	}
 
 	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world,
-								  int x, int y, int z){
+								  int x, int y, int z) {
 		return new ItemStack(ItemsCommonProxy.wizardChalk);
 	}
 }

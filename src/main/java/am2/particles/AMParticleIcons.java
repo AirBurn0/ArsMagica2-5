@@ -9,7 +9,7 @@ import net.minecraft.util.IIcon;
 import java.util.HashMap;
 import java.util.Random;
 
-public class AMParticleIcons{
+public class AMParticleIcons {
 
 	public static final AMParticleIcons instance = new AMParticleIcons();
 
@@ -17,16 +17,16 @@ public class AMParticleIcons{
 	private final HashMap<String, IIcon> hiddenIcons;
 	private static final Random rand = new Random();
 
-	private AMParticleIcons(){
+	private AMParticleIcons() {
 		icons = new HashMap<String, IIcon>();
 		hiddenIcons = new HashMap<String, IIcon>();
 	}
 
-	public int numParticles(){
+	public int numParticles() {
 		return icons.size();
 	}
 
-	public void init(IIconRegister IIconRegister){
+	public void init(IIconRegister IIconRegister) {
 		icons.clear();
 
 		loadAndInitIcon("arcane", "arcane", IIconRegister);
@@ -64,11 +64,11 @@ public class AMParticleIcons{
 		loadAndInitIcon("beam1", "beam1", IIconRegister, false);
 		loadAndInitIcon("beam2", "beam2", IIconRegister, false);
 
-		for (int i = 1; i <= 28; ++i){
+		for(int i = 1; i <= 28; ++i) {
 			loadAndInitIcon("Symbols" + i, "symbols/Symbols" + i, IIconRegister, false);
 		}
 
-		for (int i = 1; i <= 9; ++i){
+		for(int i = 1; i <= 9; ++i) {
 			loadAndInitIcon("snowflake" + i, "snowflakes/snowflake" + i, IIconRegister, false);
 		}
 
@@ -81,100 +81,107 @@ public class AMParticleIcons{
 		AMCore.config.clientInit();
 	}
 
-	private void loadAndInitIcon(String name, String IIconPath, IIconRegister register){
+	private void loadAndInitIcon(String name, String IIconPath, IIconRegister register) {
 		loadAndInitIcon(name, IIconPath, register, true);
 	}
 
-	private void loadAndInitIcon(String name, String IIconPath, IIconRegister register, boolean registerName){
+	private void loadAndInitIcon(String name, String IIconPath, IIconRegister register, boolean registerName) {
 		IIcon icon = ResourceManager.RegisterTexture("particles/" + IIconPath, register);
-		if (registerName){
-			if (icon != null){
+		if(registerName) {
+			if(icon != null) {
 				icons.put(name, icon);
 			}
-		}else{
-			if (icon != null){
+		}
+		else {
+			if(icon != null) {
 				hiddenIcons.put(name, icon);
 			}
 		}
 	}
 
-	public void RegisterIcon(String name, IIcon IIcon){
+	public void RegisterIcon(String name, IIcon IIcon) {
 		icons.put(name, IIcon);
 	}
 
-	public IIcon getIconByName(String name){
+	public IIcon getIconByName(String name) {
 		IIcon icon = null;
-		if (name.equals("symbols")){
+		if(name.equals("symbols")) {
 			icon = hiddenIcons.get("Symbols" + (rand.nextInt(28) + 1));
-		}else if (name.equals("snowflakes")){
+		}
+		else if(name.equals("snowflakes")) {
 			icon = hiddenIcons.get("snowflake" + (rand.nextInt(9) + 1));
-		}else{
+		}
+		else {
 			icon = icons.get(name);
 		}
-		if (icon == null) return icons.get("lights");
+		if(icon == null) {
+			return icons.get("lights");
+		}
 		return icon;
 	}
 
-	public IIcon getHiddenIconByName(String name){
+	public IIcon getHiddenIconByName(String name) {
 		IIcon icon = hiddenIcons.get(name);
-		if (icon == null) return icons.get("lights");
+		if(icon == null) {
+			return icons.get("lights");
+		}
 		return icon;
 	}
 
-	public String getParticleForAffinity(Affinity aff){
-		switch (aff){
-		case AIR:
-			return "wind";
-		case ARCANE:
-			return "arcane";
-		case EARTH:
-			return "rock";
-		case ENDER:
-			return "pulse";
-		case FIRE:
-			return "explosion_2";
-		case ICE:
-			return "ember";
-		case LIFE:
-			return "sparkle";
-		case LIGHTNING:
-			return "lightning_hand";
-		case NATURE:
-			return "plant";
-		case WATER:
-			return "water_ball";
-		case NONE:
-		default:
-			return "lens_flare";
+	public String getParticleForAffinity(Affinity aff) {
+		switch(aff) {
+			case AIR:
+				return "wind";
+			case ARCANE:
+				return "arcane";
+			case EARTH:
+				return "rock";
+			case ENDER:
+				return "pulse";
+			case FIRE:
+				return "explosion_2";
+			case ICE:
+				return "ember";
+			case LIFE:
+				return "sparkle";
+			case LIGHTNING:
+				return "lightning_hand";
+			case NATURE:
+				return "plant";
+			case WATER:
+				return "water_ball";
+			case NONE:
+			default:
+				return "lens_flare";
 
 		}
 	}
 
-	public String getSecondaryParticleForAffinity(Affinity aff){
-		switch (aff){
-		case AIR:
-			return "air_hand";
-		case ARCANE:
-			return "symbols";
-		case EARTH:
-			return "earth_hand";
-		case ENDER:
-			return "ghost";
-		case FIRE:
-			return "smoke";
-		case ICE:
-			return "snowflakes";
-		case LIFE:
-			return "sparkle2";
-		case LIGHTNING:
-			return "lightning_hand";
-		case NATURE:
-			return "leaf";
-		case WATER:
-			return "water_hand";
-		case NONE:
-		default:
-			return "lights";
+	public String getSecondaryParticleForAffinity(Affinity aff) {
+		switch(aff) {
+			case AIR:
+				return "air_hand";
+			case ARCANE:
+				return "symbols";
+			case EARTH:
+				return "earth_hand";
+			case ENDER:
+				return "ghost";
+			case FIRE:
+				return "smoke";
+			case ICE:
+				return "snowflakes";
+			case LIFE:
+				return "sparkle2";
+			case LIGHTNING:
+				return "lightning_hand";
+			case NATURE:
+				return "leaf";
+			case WATER:
+				return "water_hand";
+			case NONE:
+			default:
+				return "lights";
 
 		}
 	}

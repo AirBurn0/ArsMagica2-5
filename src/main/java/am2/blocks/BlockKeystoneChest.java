@@ -17,12 +17,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import java.util.Random;
 
+public class BlockKeystoneChest extends AMSpecialRenderBlockContainer {
 
-public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
-
-	protected BlockKeystoneChest(){
+	protected BlockKeystoneChest() {
 		super(Material.wood);
 		this.setCreativeTab(BlocksCommonProxy.blockTab);
 		this.setResistance(900000);
@@ -31,34 +29,36 @@ public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
 	}
 
 	@Override
-	public void onBlockAdded(World par1World, int par2, int par3, int par4){
+	public void onBlockAdded(World par1World, int par2, int par3, int par4) {
 		super.onBlockAdded(par1World, par2, par3, par4);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World par1World, int i){
+	public TileEntity createNewTileEntity(World par1World, int i) {
 		return new TileEntityKeystoneChest();
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int par2, int par3, int par4, EntityPlayer entityplayer, int par6, float par7, float par8, float par9){
+	public boolean onBlockActivated(World world, int par2, int par3, int par4, EntityPlayer entityplayer, int par6, float par7, float par8, float par9) {
 
 		super.onBlockActivated(world, par2, par3, par4, entityplayer, par6, par7, par8, par9);
 
-		if (!world.isRemote){
+		if(!world.isRemote) {
 
 			TileEntity myTE = world.getTileEntity(par2, par3, par4);
 
-			if (!(myTE instanceof TileEntityKeystoneChest)) return false;
+			if(!(myTE instanceof TileEntityKeystoneChest)) {
+				return false;
+			}
 
 			TileEntityKeystoneChest te = (TileEntityKeystoneChest)myTE;
 			ItemStack currentItem = entityplayer.getCurrentEquippedItem();
 
-			if (KeystoneUtilities.HandleKeystoneRecovery(entityplayer, te)){
+			if(KeystoneUtilities.HandleKeystoneRecovery(entityplayer, te)) {
 				return true;
 			}
 
-			if (!KeystoneUtilities.instance.canPlayerAccess(te, entityplayer, KeystoneAccessType.USE)){
+			if(!KeystoneUtilities.instance.canPlayerAccess(te, entityplayer, KeystoneAccessType.USE)) {
 				return true;
 			}
 
@@ -68,18 +68,20 @@ public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
 			FMLNetworkHandler.openGui(entityplayer, AMCore.instance, ArsMagicaGuiIdList.GUI_KEYSTONE_CHEST, world, par2, par3, par4);
 
 			return true;
-		}else{
+		}
+		else {
 			return true;
 		}
 	}
 
 	@Override
-	public void onBlockHarvested(World world, int x, int y, int z, int meta, EntityPlayer player){
+	public void onBlockHarvested(World world, int x, int y, int z, int meta, EntityPlayer player) {
 		TileEntityKeystoneChest receptacle = (TileEntityKeystoneChest)world.getTileEntity(x, y, z);
-		if (receptacle == null)
+		if(receptacle == null) {
 			return;
-		if (KeystoneUtilities.instance.canPlayerAccess(receptacle, player, KeystoneAccessType.BREAK)){
-			for (int i = receptacle.getSizeInventory() - 3; i < receptacle.getSizeInventory(); i++){
+		}
+		if(KeystoneUtilities.instance.canPlayerAccess(receptacle, player, KeystoneAccessType.BREAK)) {
+			for(int i = receptacle.getSizeInventory() - 3; i < receptacle.getSizeInventory(); i++) {
 				receptacle.decrStackSize(i, 9001);
 				// arbitrary number, just in case rune stack sizes increase in the future
 				// yes, it's hard-coded; yes, it's also less computationally intensive than a stack size lookup
@@ -88,31 +90,33 @@ public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
 	}
 
 	@Override
-	public void breakBlock(World world, int i, int j, int k, Block par5, int metadata){
-		if (world.isRemote){
+	public void breakBlock(World world, int i, int j, int k, Block par5, int metadata) {
+		if(world.isRemote) {
 			super.breakBlock(world, i, j, k, par5, metadata);
 			return;
 		}
 		TileEntityKeystoneChest receptacle = (TileEntityKeystoneChest)world.getTileEntity(i, j, k);
 
-		if (receptacle == null) return;
+		if(receptacle == null) {
+			return;
+		}
 
-		if (KeystoneUtilities.instance.getKeyFromRunes(receptacle.getRunesInKey()) == 0){
+		if(KeystoneUtilities.instance.getKeyFromRunes(receptacle.getRunesInKey()) == 0) {
 
-			for (int l = 0; l < receptacle.getSizeInventory() - 3; l++){
+			for(int l = 0; l < receptacle.getSizeInventory() - 3; l++) {
 				ItemStack itemstack = receptacle.getStackInSlot(l);
-				if (itemstack == null){
+				if(itemstack == null) {
 					continue;
 				}
 				float f = world.rand.nextFloat() * 0.8F + 0.1F;
 				float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
 				float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
-				do{
-					if (itemstack.stackSize <= 0){
+				do {
+					if(itemstack.stackSize <= 0) {
 						break;
 					}
 					int i1 = world.rand.nextInt(21) + 10;
-					if (i1 > itemstack.stackSize){
+					if(i1 > itemstack.stackSize) {
 						i1 = itemstack.stackSize;
 					}
 					itemstack.stackSize -= i1;
@@ -124,28 +128,29 @@ public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
 					entityitem.motionY = (float)world.rand.nextGaussian() * f3 + 0.2F;
 					entityitem.motionZ = (float)world.rand.nextGaussian() * f3;
 					world.spawnEntityInWorld(entityitem);
-				}while (true);
+				}
+				while(true);
 			}
 			super.breakBlock(world, i, j, k, par5, metadata);
 		}
 	}
 
 	@Override
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack stack){
+	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack stack) {
 		int p = MathHelper.floor_double((par5EntityLiving.rotationYaw * 4F) / 360F + 0.5D) & 3;
 
 		byte byte0 = 3;
 
-		if (p == 0){
+		if(p == 0) {
 			byte0 = 1;
 		}
-		if (p == 1){
+		if(p == 1) {
 			byte0 = 4;
 		}
-		if (p == 2){
+		if(p == 2) {
 			byte0 = 3;
 		}
-		if (p == 3){
+		if(p == 3) {
 			byte0 = 2;
 		}
 
@@ -154,30 +159,32 @@ public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
 	}
 
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z){
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
 		TileEntityKeystoneChest chest = (TileEntityKeystoneChest)world.getTileEntity(x, y, z);
-		if (!KeystoneUtilities.instance.canPlayerAccess(chest, player, KeystoneAccessType.BREAK)) return false;
+		if(!KeystoneUtilities.instance.canPlayerAccess(chest, player, KeystoneAccessType.BREAK)) {
+			return false;
+		}
 
 		return super.removedByPlayer(world, player, x, y, z);
 	}
 
 	@Override
-	public boolean canPlaceBlockAt(World par1World, int par2, int par3, int par4){
+	public boolean canPlaceBlockAt(World par1World, int par2, int par3, int par4) {
 		int var5 = 0;
 
-		if (par1World.getBlock(par2 - 1, par3, par4) == this){
+		if(par1World.getBlock(par2 - 1, par3, par4) == this) {
 			++var5;
 		}
 
-		if (par1World.getBlock(par2 + 1, par3, par4) == this){
+		if(par1World.getBlock(par2 + 1, par3, par4) == this) {
 			++var5;
 		}
 
-		if (par1World.getBlock(par2, par3, par4 - 1) == this){
+		if(par1World.getBlock(par2, par3, par4 - 1) == this) {
 			++var5;
 		}
 
-		if (par1World.getBlock(par2, par3, par4 + 1) == this){
+		if(par1World.getBlock(par2, par3, par4 + 1) == this) {
 			++var5;
 		}
 
@@ -185,6 +192,6 @@ public class BlockKeystoneChest extends AMSpecialRenderBlockContainer{
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 	}
 }

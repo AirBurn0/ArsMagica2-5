@@ -13,26 +13,26 @@ import net.minecraft.world.World;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class ScrambleSynapses implements ISpellComponent{
+public class ScrambleSynapses implements ISpellComponent {
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[0];
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 74;
 	}
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 		return false;
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
-		if (target instanceof EntityLivingBase){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
+		if(target instanceof EntityLivingBase) {
 			int duration = SpellUtils.instance.getModifiedInt_Mul(200, stack, caster, target, world, 0, SpellModifiers.DURATION);
 			duration = SpellUtils.instance.modifyDurationBasedOnArmor(caster, duration);
 
@@ -40,39 +40,40 @@ public class ScrambleSynapses implements ISpellComponent{
 			int y = (int)Math.floor(target.posY);
 			int z = (int)Math.floor(target.posZ);
 
-			if (!world.isRemote)
+			if(!world.isRemote) {
 				((EntityLivingBase)target).addPotionEffect(new BuffEffectScrambleSynapses(duration, 0));
+			}
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 7000;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
+	public float burnout(EntityLivingBase caster) {
 		return 100;
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.LIGHTNING);
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0.05f;
 	}
 

@@ -8,46 +8,46 @@ import net.minecraft.command.ICommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigureAMUICommand extends CommandBase{
+public class ConfigureAMUICommand extends CommandBase {
 
 	private static boolean showGUI = false;
 
-	public static void showIfQueued(){
-		if (showGUI){
+	public static void showIfQueued() {
+		if(showGUI) {
 			Minecraft.getMinecraft().displayGuiScreen(new GuiHudCustomization());
 			showGUI = false;
 		}
 	}
 
 	@Override
-	public String getCommandName(){
+	public String getCommandName() {
 		return "amuicfg";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender){
+	public String getCommandUsage(ICommandSender icommandsender) {
 		return "/amuicfg";
 	}
 
 	@Override
-	public int getRequiredPermissionLevel(){
+	public int getRequiredPermissionLevel() {
 		return 0;
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender){
+	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender) {
 		return true;
 	}
 
 	@Override
-	public List getCommandAliases(){
+	public List getCommandAliases() {
 		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("AMUICFG");
 		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] astring){
+	public void processCommand(ICommandSender icommandsender, String[] astring) {
 		showGUI = true;
 	}
 

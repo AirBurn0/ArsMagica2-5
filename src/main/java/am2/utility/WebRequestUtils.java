@@ -8,11 +8,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
-public class WebRequestUtils{
+public class WebRequestUtils {
 	private static final String charset = "UTF-8";
 	private static final String USER_AGENT = "Mozilla/5.0";
 
-	public static String sendPost(String webURL, HashMap<String, String> postOptions) throws Exception{
+	public static String sendPost(String webURL, HashMap<String, String> postOptions) throws Exception {
 		URL obj = new URL(webURL);
 		HttpURLConnection con = (HttpURLConnection)obj.openConnection();
 
@@ -22,11 +22,12 @@ public class WebRequestUtils{
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
 		String urlParameters = "";
-		for (String s : postOptions.keySet()){
+		for(String s: postOptions.keySet()) {
 			urlParameters += String.format("%s=%s&", s, URLEncoder.encode(postOptions.get(s), charset));
 		}
-		if (urlParameters.contains("&"))
+		if(urlParameters.contains("&")) {
 			urlParameters = urlParameters.substring(0, urlParameters.lastIndexOf('&'));
+		}
 
 		// Send post request
 		con.setDoOutput(true);
@@ -44,7 +45,7 @@ public class WebRequestUtils{
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 
-		while ((inputLine = in.readLine()) != null){
+		while((inputLine = in.readLine()) != null) {
 			response.append(inputLine + "\r\n");
 		}
 		in.close();

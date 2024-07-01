@@ -5,9 +5,10 @@ import am2.api.ArsMagicaApi;
 import am2.api.spell.component.interfaces.ISpellComponent;
 import am2.api.spell.enums.Affinity;
 import am2.api.spell.enums.SpellModifiers;
+import am2.blocks.BlocksCommonProxy;
 import am2.buffs.BuffEffectSpellReflect;
 import am2.buffs.BuffList;
-import am2.blocks.BlocksCommonProxy;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.particles.AMParticle;
 import am2.particles.ParticleHoldPosition;
@@ -21,56 +22,57 @@ import net.minecraft.world.World;
 import java.util.EnumSet;
 import java.util.Random;
 
-public class Reflect implements ISpellComponent{
+public class Reflect implements ISpellComponent {
 
 	@Override
-	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster){
+	public boolean applyEffectBlock(ItemStack stack, World world, int blockx, int blocky, int blockz, int blockFace, double impactX, double impactY, double impactZ, EntityLivingBase caster) {
 		return false;
 	}
 
 	@Override
-	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target){
-		if (target instanceof EntityLivingBase){
+	public boolean applyEffectEntity(ItemStack stack, World world, EntityLivingBase caster, Entity target) {
+		if(target instanceof EntityLivingBase) {
 
-			if (((EntityLivingBase)target).isPotionActive(BuffList.magicShield.id)){
+			if(((EntityLivingBase)target).isPotionActive(BuffList.magicShield.id)) {
 				return true;
 			}
 
 			int duration = SpellUtils.instance.getModifiedInt_Mul(BuffList.default_buff_duration, stack, caster, target, world, 0, SpellModifiers.DURATION);
 			duration = SpellUtils.instance.modifyDurationBasedOnArmor(caster, duration);
-			if (!world.isRemote)
+			if(!world.isRemote) {
 				((EntityLivingBase)target).addPotionEffect(new BuffEffectSpellReflect(duration, SpellUtils.instance.countModifiers(SpellModifiers.BUFF_POWER, stack, 0)));
+			}
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public float manaCost(EntityLivingBase caster){
+	public float manaCost(EntityLivingBase caster) {
 		return 1440;
 	}
 
 	@Override
-	public float burnout(EntityLivingBase caster){
-		return ArsMagicaApi.instance.getBurnoutFromMana(manaCost(caster));
+	public float burnout(EntityLivingBase caster) {
+		return ArsMagicaApi.getBurnoutFromMana(manaCost(caster));
 	}
 
 	@Override
-	public ItemStack[] reagents(EntityLivingBase caster){
+	public ItemStack[] reagents(EntityLivingBase caster) {
 		return null;
 	}
 
 	@Override
-	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier){
-		for (int i = 0; i < 25; ++i){
+	public void spawnParticles(World world, double x, double y, double z, EntityLivingBase caster, Entity target, Random rand, int colorModifier) {
+		for(int i = 0; i < 25; ++i) {
 			AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(world, "lens_flare", x, y, z);
-			if (particle != null){
+			if(particle != null) {
 				particle.addRandomOffset(1, 2, 1);
 				particle.AddParticleController(new ParticleHoldPosition(particle, 20, 1, false));
 				particle.setMaxAge(20);
 				particle.setParticleScale(0.2f);
 				particle.setRGBColorF(0.5f + rand.nextFloat() * 0.5f, 0.1f, 0.5f + rand.nextFloat() * 0.5f);
-				if (colorModifier > -1){
+				if(colorModifier > -1) {
 					particle.setRGBColorF(((colorModifier >> 16) & 0xFF) / 255.0f, ((colorModifier >> 8) & 0xFF) / 255.0f, (colorModifier & 0xFF) / 255.0f);
 				}
 			}
@@ -78,19 +80,19 @@ public class Reflect implements ISpellComponent{
 	}
 
 	@Override
-	public EnumSet<Affinity> getAffinity(){
+	public EnumSet<Affinity> getAffinity() {
 		return EnumSet.of(Affinity.ARCANE);
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 45;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.rune, 1, ItemsCommonProxy.rune.META_WHITE),
+				new ItemStack(ItemsCommonProxy.rune, 1, ItemRune.META_WHITE),
 				Blocks.glass,
 				Blocks.iron_block,
 				BlocksCommonProxy.witchwoodLog
@@ -98,7 +100,7 @@ public class Reflect implements ISpellComponent{
 	}
 
 	@Override
-	public float getAffinityShift(Affinity affinity){
+	public float getAffinityShift(Affinity affinity) {
 		return 0.05f;
 	}
 }

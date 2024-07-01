@@ -15,9 +15,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-import java.util.Random;
-
-public class TileEntityParticleEmitter extends TileEntity{
+public class TileEntityParticleEmitter extends TileEntity {
 
 	private int particleType;
 	private int particleQuantity;
@@ -37,7 +35,7 @@ public class TileEntityParticleEmitter extends TileEntity{
 	private int showTicks = 0;
 	boolean forceShow;
 
-	public TileEntityParticleEmitter(){
+	public TileEntityParticleEmitter() {
 		particleType = 0;
 		particleQuantity = 1;
 		spawnRate = 5;
@@ -52,62 +50,69 @@ public class TileEntityParticleEmitter extends TileEntity{
 	}
 
 	@Override
-	public void updateEntity(){
-		if (worldObj.isRemote && spawnTicks++ >= spawnRate){
-			for (int i = 0; i < particleQuantity; ++i)
+	public void updateEntity() {
+		if(worldObj.isRemote && spawnTicks++ >= spawnRate) {
+			for(int i = 0; i < particleQuantity; ++i) {
 				doSpawn();
+			}
 			spawnTicks = 0;
 		}
 
-		if (!show && worldObj.isRemote && ((forceShow && showTicks++ > 100) || !forceShow)){
+		if(!show && worldObj.isRemote && (!forceShow || showTicks++ > 100)) {
 			showTicks = 0;
 			forceShow = false;
 			EntityPlayer localPlayer = AMCore.proxy.getLocalPlayer();
-			if (localPlayer != null && localPlayer.inventory.getCurrentItem() != null && localPlayer.inventory.getCurrentItem().getItem() == ItemsCommonProxy.crystalWrench){
+			if(localPlayer != null && localPlayer.inventory.getCurrentItem() != null && localPlayer.inventory.getCurrentItem()
+																											 .getItem() == ItemsCommonProxy.crystalWrench) {
 				AMVector3 myLoc = new AMVector3(xCoord, yCoord, zCoord);
 				AMVector3 playerLoc = new AMVector3(localPlayer);
-				if (myLoc.distanceSqTo(playerLoc) < 64D){
+				if(myLoc.distanceSqTo(playerLoc) < 64D) {
 					forceShow = true;
 				}
 			}
 
 			int oldMeta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 
-			if (forceShow){
+			if(forceShow) {
 				this.worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, oldMeta & ~0x8, 2);
-			}else{
+			}
+			else {
 				this.worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, oldMeta | 0x8, 2);
 			}
 		}
 	}
 
-	private void doSpawn(){
-		if (!hasReceivedFullUpdate) return;
+	private void doSpawn() {
+		if(!hasReceivedFullUpdate) {
+			return;
+		}
 		double x = randomizeCoord(xCoord + 0.5);
 		double y = randomizeCoord(yCoord + 0.5);
 		double z = randomizeCoord(zCoord + 0.5);
 		AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(worldObj, AMParticle.particleTypes[particleType], x, y, z);
-		if (particle != null){
+		if(particle != null) {
 			particle.AddParticleController(AMCore.proxy.particleManager.createDefaultParticleController(particleBehaviour, particle, new AMVector3(x, y, z), speed, worldObj.getBlockMetadata(xCoord, yCoord, zCoord)));
 			particle.setParticleAge(Math.min(Math.max(spawnRate, 10), 40));
 			particle.setIgnoreMaxAge(false);
 			particle.setParticleScale(particleScale);
 			particle.SetParticleAlpha(particleAlpha);
-			if (!defaultColor){
-				if (!randomColor)
+			if(!defaultColor) {
+				if(!randomColor) {
 					particle.setRGBColorF(((particleColor >> 16) & 0xFF) / 255f, ((particleColor >> 8) & 0xFF) / 255f, (particleColor & 0xFF) / 255f);
-				else
+				}
+				else {
 					particle.setRGBColorF(worldObj.rand.nextFloat(), worldObj.rand.nextFloat(), worldObj.rand.nextFloat());
+				}
 			}
 		}
 	}
 
-	private double randomizeCoord(double base){
+	private double randomizeCoord(double base) {
 		return base + worldObj.rand.nextDouble() - 0.5;
 	}
 
 	@Override
-	public Packet getDescriptionPacket(){
+	public Packet getDescriptionPacket() {
 		NBTTagCompound compound = new NBTTagCompound();
 		this.writeToNBT(compound);
 		S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), compound);
@@ -115,34 +120,55 @@ public class TileEntityParticleEmitter extends TileEntity{
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.func_148857_g());
 		applyParamConstraints();
 		hasReceivedFullUpdate = true;
 	}
 
-	private void applyParamConstraints(){
-		if (spawnRate < 1) spawnRate = 1;
-		if (particleQuantity < 1) particleQuantity = 1;
-		if (particleQuantity > 5) particleQuantity = 5;
-		if (particleType < 0) particleType = 0;
-		if (particleType > AMParticleIcons.instance.numParticles())
+	private void applyParamConstraints() {
+		if(spawnRate < 1) {
+			spawnRate = 1;
+		}
+		if(particleQuantity < 1) {
+			particleQuantity = 1;
+		}
+		if(particleQuantity > 5) {
+			particleQuantity = 5;
+		}
+		if(particleType < 0) {
+			particleType = 0;
+		}
+		if(particleType > AMParticleIcons.instance.numParticles()) {
 			particleType = AMParticleIcons.instance.numParticles() - 1;
-		if (particleBehaviour < 0) particleBehaviour = 0;
-		if (particleBehaviour > 6) particleBehaviour = 6;
-		if (particleScale < 0) particleScale = 0;
-		if (particleScale > 1) particleScale = 1;
-		if (particleAlpha < 0) particleAlpha = 0;
-		if (particleAlpha > 1) particleAlpha = 1;
+		}
+		if(particleBehaviour < 0) {
+			particleBehaviour = 0;
+		}
+		if(particleBehaviour > 6) {
+			particleBehaviour = 6;
+		}
+		if(particleScale < 0) {
+			particleScale = 0;
+		}
+		if(particleScale > 1) {
+			particleScale = 1;
+		}
+		if(particleAlpha < 0) {
+			particleAlpha = 0;
+		}
+		if(particleAlpha > 1) {
+			particleAlpha = 1;
+		}
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound compound){
+	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		readSettingsFromNBT(compound);
 	}
 
-	public void readSettingsFromNBT(NBTTagCompound compound){
+	public void readSettingsFromNBT(NBTTagCompound compound) {
 		particleType = compound.getInteger("particleType");
 		particleQuantity = compound.getInteger("particleQuantity");
 		spawnRate = compound.getInteger("spawnRate");
@@ -157,12 +183,12 @@ public class TileEntityParticleEmitter extends TileEntity{
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound compound){
+	public void writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		writeSettingsToNBT(compound);
 	}
 
-	public void writeSettingsToNBT(NBTTagCompound compound){
+	public void writeSettingsToNBT(NBTTagCompound compound) {
 		compound.setInteger("particleType", particleType);
 		compound.setInteger("particleQuantity", particleQuantity);
 		compound.setInteger("spawnRate", spawnRate);
@@ -176,44 +202,45 @@ public class TileEntityParticleEmitter extends TileEntity{
 		compound.setFloat("speed", speed);
 	}
 
-	public void setParticleType(int particleType){
+	public void setParticleType(int particleType) {
 		this.particleType = particleType;
 	}
 
-	public void setParticleBehaviour(int particleBehaviour){
+	public void setParticleBehaviour(int particleBehaviour) {
 		this.particleBehaviour = particleBehaviour;
 	}
 
-	public void setColorDefault(boolean def){
+	public void setColorDefault(boolean def) {
 		this.defaultColor = def;
 	}
 
-	public void setColorRandom(boolean rand){
+	public void setColorRandom(boolean rand) {
 		this.randomColor = rand;
 	}
 
-	public void setColor(int color){
+	public void setColor(int color) {
 		this.particleColor = color;
 	}
 
-	public void setScale(float scale){
+	public void setScale(float scale) {
 		this.particleScale = scale;
 	}
 
-	public void setAlpha(float alpha){
+	public void setAlpha(float alpha) {
 		this.particleAlpha = alpha;
 	}
 
-	public void setShow(boolean show){
+	public void setShow(boolean show) {
 		this.show = show;
-		if (worldObj.isRemote && show){
+		if(worldObj.isRemote && show) {
 			forceShow = false;
 			showTicks = 0;
 			EntityPlayer localPlayer = AMCore.proxy.getLocalPlayer();
-			if (localPlayer != null && localPlayer.inventory.getCurrentItem() != null && localPlayer.inventory.getCurrentItem().getItem() == ItemsCommonProxy.crystalWrench){
+			if(localPlayer != null && localPlayer.inventory.getCurrentItem() != null && localPlayer.inventory.getCurrentItem()
+																											 .getItem() == ItemsCommonProxy.crystalWrench) {
 				AMVector3 myLoc = new AMVector3(xCoord, yCoord, zCoord);
 				AMVector3 playerLoc = new AMVector3(localPlayer);
-				if (myLoc.distanceSqTo(playerLoc) < 64D){
+				if(myLoc.distanceSqTo(playerLoc) < 64D) {
 					forceShow = true;
 				}
 			}
@@ -224,65 +251,65 @@ public class TileEntityParticleEmitter extends TileEntity{
 		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, show ? oldMeta & ~0x8 : oldMeta | 0x8, 2);
 	}
 
-	public int getParticleType(){
+	public int getParticleType() {
 		return this.particleType;
 	}
 
-	public int getParticleBehaviour(){
+	public int getParticleBehaviour() {
 		return this.particleBehaviour;
 	}
 
-	public boolean getColorDefault(){
+	public boolean getColorDefault() {
 		return this.defaultColor;
 	}
 
-	public boolean getColorRandom(){
+	public boolean getColorRandom() {
 		return this.randomColor;
 	}
 
-	public int getColor(){
+	public int getColor() {
 		return this.particleColor;
 	}
 
-	public float getScale(){
+	public float getScale() {
 		return this.particleScale;
 	}
 
-	public float getAlpha(){
+	public float getAlpha() {
 		return this.particleAlpha;
 	}
 
-	public boolean getShow(){
+	public boolean getShow() {
 		return this.show;
 	}
 
-	public void setQuantity(int quantity){
+	public void setQuantity(int quantity) {
 		this.particleQuantity = quantity;
 	}
 
-	public int getQuantity(){
+	public int getQuantity() {
 		return this.particleQuantity;
 	}
 
-	public void setDelay(int delay){
+	public void setDelay(int delay) {
 		this.spawnRate = delay;
 		this.spawnTicks = 0;
 	}
 
-	public int getDelay(){
+	public int getDelay() {
 		return this.spawnRate;
 	}
 
-	public void setSpeed(float speed){
+	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
 
-	public float getSpeed(){
+	public float getSpeed() {
 		return speed;
 	}
 
-	public void syncWithServer(){
-		if (this.worldObj.isRemote){
+	public void syncWithServer() {
+		if(this.worldObj.isRemote) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(this.xCoord);
 			writer.add(this.yCoord);

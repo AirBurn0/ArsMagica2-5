@@ -2,7 +2,7 @@ package am2.api.spell.enums;
 
 import net.minecraft.item.Item;
 
-public enum Affinity{
+public enum Affinity {
 	NONE(0,
 			0xFFFFFF,
 			-1, //no direct opposite
@@ -82,15 +82,15 @@ public enum Affinity{
 
 
 	public int ID;
-	private int directOpposingAffinity;
-	private int[] majorOppositions;
-	private int[] minorOppositions;
-	private int[] adjacentAffinities;
+	private final int directOpposingAffinity;
+	private final int[] majorOppositions;
+	private final int[] minorOppositions;
+	private final int[] adjacentAffinities;
 	public Item representItem;
 	public int representMeta;
 	public final int color;
 
-	private Affinity(int ID, int color, int directOppositeAffinity, int[] majorOppositions, int[] minorOppositions, int[] adjacentAffinities){
+	Affinity(int ID, int color, int directOppositeAffinity, int[] majorOppositions, int[] minorOppositions, int[] adjacentAffinities) {
 		this.ID = ID;
 		this.directOpposingAffinity = directOppositeAffinity;
 		this.majorOppositions = majorOppositions;
@@ -99,56 +99,57 @@ public enum Affinity{
 		this.color = color;
 	}
 
-	public Affinity getOpposingAffinity(){
-		if (this.directOpposingAffinity > -1)
+	public Affinity getOpposingAffinity() {
+		if(this.directOpposingAffinity > -1) {
 			return Affinity.values()[this.directOpposingAffinity];
+		}
 		return Affinity.NONE;
 	}
 
-	public Affinity[] getMajorOpposingAffinities(){
+	public Affinity[] getMajorOpposingAffinities() {
 		Affinity[] opposing = new Affinity[this.majorOppositions.length];
 		int count = 0;
-		for (int i : this.majorOppositions){
+		for(int i: this.majorOppositions) {
 			opposing[count++] = Affinity.values()[i];
 		}
 		return opposing;
 	}
 
-	public Affinity[] getMinorOpposingAffinities(){
+	public Affinity[] getMinorOpposingAffinities() {
 		Affinity[] opposing = new Affinity[this.minorOppositions.length];
 		int count = 0;
-		for (int i : this.minorOppositions){
+		for(int i: this.minorOppositions) {
 			opposing[count++] = Affinity.values()[i];
 		}
 		return opposing;
 	}
 
-	public Affinity[] getAdjacentAffinities(){
+	public Affinity[] getAdjacentAffinities() {
 		Affinity[] adjacent = new Affinity[this.adjacentAffinities.length];
 		int count = 0;
-		for (int i : this.adjacentAffinities){
+		for(int i: this.adjacentAffinities) {
 			adjacent[count++] = Affinity.values()[i];
 		}
 		return adjacent;
 	}
 
-	public void setRepresentItem(Item representItem, int meta){
-		if (this.representItem == null){
+	public void setRepresentItem(Item representItem, int meta) {
+		if(this.representItem == null) {
 			this.representItem = representItem;
 			this.representMeta = meta;
 		}
 	}
 
-	public static Affinity getByID(int ID){
-		for (Affinity affinity : Affinity.values()){
-			if (affinity.ID == ID){
+	public static Affinity getByID(int ID) {
+		for(Affinity affinity: Affinity.values()) {
+			if(affinity.ID == ID) {
 				return affinity;
 			}
 		}
 		return Affinity.NONE;
 	}
 
-	public static Affinity[] getOrderedAffinities(){
+	public static Affinity[] getOrderedAffinities() {
 		return new Affinity[]{
 				AIR,
 				LIGHTNING,
@@ -163,31 +164,31 @@ public enum Affinity{
 		};
 	}
 
-	public int getAffinityMask(){
-		switch (this){
-		case AIR:
-			return 0x1;
-		case ARCANE:
-			return 0x2;
-		case EARTH:
-			return 0x4;
-		case ENDER:
-			return 0x8;
-		case FIRE:
-			return 0x10;
-		case ICE:
-			return 0x20;
-		case LIFE:
-			return 0x40;
-		case LIGHTNING:
-			return 0x80;
-		case NATURE:
-			return 0x100;
-		case WATER:
-			return 0x200;
-		case NONE:
-		default:
-			return 0;
+	public int getAffinityMask() {
+		switch(this) {
+			case AIR:
+				return 0x1;
+			case ARCANE:
+				return 0x2;
+			case EARTH:
+				return 0x4;
+			case ENDER:
+				return 0x8;
+			case FIRE:
+				return 0x10;
+			case ICE:
+				return 0x20;
+			case LIFE:
+				return 0x40;
+			case LIGHTNING:
+				return 0x80;
+			case NATURE:
+				return 0x100;
+			case WATER:
+				return 0x200;
+			case NONE:
+			default:
+				return 0;
 		}
 	}
 }

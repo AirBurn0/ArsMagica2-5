@@ -16,32 +16,32 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class PowerNodeEntry{
+public class PowerNodeEntry {
 	HashMap<PowerTypes, Float> powerAmounts;
-	private HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> nodePaths;
+	private final HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> nodePaths;
 
-	public PowerNodeEntry(){
+	public PowerNodeEntry() {
 		powerAmounts = new HashMap<PowerTypes, Float>();
 		nodePaths = new HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>>();
 	}
 
-	public void clearNodePaths(){
-		for (PowerTypes type : nodePaths.keySet()){
+	public void clearNodePaths() {
+		for(PowerTypes type: nodePaths.keySet()) {
 			nodePaths.get(type).clear();
 		}
 	}
 
-	public void registerNodePath(PowerTypes type, LinkedList<AMVector3> path){
+	public void registerNodePath(PowerTypes type, LinkedList<AMVector3> path) {
 		ArrayList<LinkedList<AMVector3>> paths = nodePaths.get(type);
-		if (paths == null){
+		if(paths == null) {
 			paths = new ArrayList<LinkedList<AMVector3>>();
 			nodePaths.put(type, paths);
 		}
 
 		//do we already have a path that ends here?
 		Iterator<LinkedList<AMVector3>> it = paths.iterator();
-		while (it.hasNext()){
-			if (it.next().getLast().equals(path.getLast())){
+		while(it.hasNext()) {
+			if(it.next().getLast().equals(path.getLast())) {
 				it.remove();
 				break;
 			}
@@ -50,43 +50,47 @@ public class PowerNodeEntry{
 		paths.add(path);
 	}
 
-	public float requestPower(World world, PowerTypes type, float amount, float capacity){
-		if (getPower(type) >= capacity)
+	public float requestPower(World world, PowerTypes type, float amount, float capacity) {
+		if(getPower(type) >= capacity) {
 			return 0f;
+		}
 		ArrayList<LinkedList<AMVector3>> paths = nodePaths.get(type);
-		if (paths == null || paths.size() == 0){
+		if(paths == null || paths.size() == 0) {
 			//AMCore.log.info("No Paths!");
 			return 0;
 		}
 
 		//AMCore.log.info("Path Exists");
 
-		if (powerAmounts.containsKey(type) && powerAmounts.get(type) + amount > capacity){
+		if(powerAmounts.containsKey(type) && powerAmounts.get(type) + amount > capacity) {
 			amount = capacity - powerAmounts.get(type);
 		}
 
 		float requested = 0f;
-		for (LinkedList<AMVector3> path : paths){
+		for(LinkedList<AMVector3> path: paths) {
 			requested += requestPowerFrom(world, path, type, amount - requested);
-			if (requested >= amount)
+			if(requested >= amount) {
 				break;
+			}
 		}
 		return requested;
 	}
 
-	private boolean validatePath(World world, LinkedList<AMVector3> path){
-		for (AMVector3 vec : path){
+	private boolean validatePath(World world, LinkedList<AMVector3> path) {
+		for(AMVector3 vec: path) {
 			//power can't transfer through unloaded chunks!
 			Chunk chunk = world.getChunkFromBlockCoords((int)vec.x, (int)vec.z);
-			if (!chunk.isChunkLoaded)
+			if(!chunk.isChunkLoaded) {
 				return false;
+			}
 			TileEntity te = world.getTileEntity((int)vec.x, (int)vec.y, (int)vec.z);
 			//if valid, continue the loop, otherwise return false.
-			if (te != null && te instanceof IPowerNode)
+			if(te != null && te instanceof IPowerNode) {
 				continue;
+			}
 
 			//set a marker block to say that a conduit or other power relay of some sort was here and is now not
-			if (!world.isRemote && world.isAirBlock((int)vec.x, (int)vec.y, (int)vec.z)){
+			if(!world.isRemote && world.isAirBlock((int)vec.x, (int)vec.y, (int)vec.z)) {
 				world.setBlock((int)vec.x, (int)vec.y, (int)vec.z, BlocksCommonProxy.brokenLinkBlock);
 			}
 
@@ -96,24 +100,25 @@ public class PowerNodeEntry{
 		return true;
 	}
 
-	private float requestPowerFrom(World world, LinkedList<AMVector3> path, PowerTypes type, float amount){
-		if (!validatePath(world, path))
+	private float requestPowerFrom(World world, LinkedList<AMVector3> path, PowerTypes type, float amount) {
+		if(!validatePath(world, path)) {
 			return 0f;
+		}
 		AMVector3 end = path.getLast();
 		TileEntity te = world.getTileEntity((int)end.x, (int)end.y, (int)end.z);
-		if (te != null && te instanceof IPowerNode){
-			if (((IPowerNode)te).canProvidePower(type)){
+		if(te != null && te instanceof IPowerNode) {
+			if(((IPowerNode)te).canProvidePower(type)) {
 				return PowerNodeRegistry.For(world).consumePower(((IPowerNode)te), type, amount);
 			}
 		}
 		return 0f;
 	}
 
-	public PowerTypes getHighestPowerType(){
+	public PowerTypes getHighestPowerType() {
 		float highest = 0;
 		PowerTypes hType = PowerTypes.NONE;
-		for (PowerTypes type : powerAmounts.keySet()){
-			if (powerAmounts.get(type) > highest){
+		for(PowerTypes type: powerAmounts.keySet()) {
+			if(powerAmounts.get(type) > highest) {
 				highest = powerAmounts.get(type);
 				hType = type;
 			}
@@ -121,35 +126,38 @@ public class PowerNodeEntry{
 		return hType;
 	}
 
-	public float getHighestPower(){
+	public float getHighestPower() {
 		float highest = 0;
-		for (PowerTypes type : powerAmounts.keySet()){
-			if (powerAmounts.get(type) > highest){
+		for(PowerTypes type: powerAmounts.keySet()) {
+			if(powerAmounts.get(type) > highest) {
 				highest = powerAmounts.get(type);
 			}
 		}
 		return highest;
 	}
 
-	public float getPower(PowerTypes type){
+	public float getPower(PowerTypes type) {
 		Float f = powerAmounts.get(type);
 		return f == null ? 0 : f;
 	}
 
-	public void setPower(PowerTypes type, float amt){
-		if (type != null)
+	public void setPower(PowerTypes type, float amt) {
+		if(type != null) {
 			powerAmounts.put(type, amt);
+		}
 	}
 
-	public NBTTagCompound saveToNBT(){
+	public NBTTagCompound saveToNBT() {
 		NBTTagCompound compound = new NBTTagCompound();
 
 		//power amounts
 		//list of entries containing power type IDs and the associated amount
 		NBTTagList powerAmountStore = new NBTTagList();
-		for (PowerTypes type : this.powerAmounts.keySet()){
-			if (type == null) //sanity check
+		for(PowerTypes type: this.powerAmounts.keySet()) {
+			if(type == null) //sanity check
+			{
 				continue;
+			}
 			//individual power type/amount entry
 			NBTTagCompound powerType = new NBTTagCompound();
 			//set power type ID
@@ -165,7 +173,7 @@ public class PowerNodeEntry{
 		//power paths
 		NBTTagList powerPathList = new NBTTagList();
 
-		for (PowerTypes type : nodePaths.keySet()){
+		for(PowerTypes type: nodePaths.keySet()) {
 
 			//This is the actual entry in the power path list
 			NBTTagCompound powerPathEntry = new NBTTagCompound();
@@ -173,10 +181,10 @@ public class PowerNodeEntry{
 			ArrayList<LinkedList<AMVector3>> paths = nodePaths.get(type);
 			//This stores each path individually for a given power type
 			NBTTagList pathsForType = new NBTTagList();
-			for (LinkedList<AMVector3> path : paths){
+			for(LinkedList<AMVector3> path: paths) {
 				//This stores each individual node in the given path
 				NBTTagList pathNodes = new NBTTagList();
-				for (AMVector3 pathNode : path){
+				for(AMVector3 pathNode: path) {
 					//This stores one individual node in the given path
 					NBTTagCompound node = new NBTTagCompound();
 					pathNode.writeToNBT(node);
@@ -203,16 +211,16 @@ public class PowerNodeEntry{
 		return compound;
 	}
 
-	public void readFromNBT(NBTTagCompound compound){
+	public void readFromNBT(NBTTagCompound compound) {
 		//power amounts
 		//locate the list of power amounts
 		NBTTagList powerAmountStore = compound.getTagList("powerAmounts", Constants.NBT.TAG_COMPOUND);
 		//sanity check
-		if (powerAmountStore != null){
+		if(powerAmountStore != null) {
 			//spin through nodes
-			for (int i = 0; i < powerAmountStore.tagCount(); ++i){
+			for(int i = 0; i < powerAmountStore.tagCount(); ++i) {
 				//reference current node
-				NBTTagCompound powerType = (NBTTagCompound)powerAmountStore.getCompoundTagAt(i);
+				NBTTagCompound powerType = powerAmountStore.getCompoundTagAt(i);
 				//resolve power type
 				PowerTypes type = PowerTypes.getByID(powerType.getInteger("powerType"));
 				//resolve power amount
@@ -226,11 +234,11 @@ public class PowerNodeEntry{
 		//locate list of power paths
 		NBTTagList powerPathList = compound.getTagList("powerPathList", Constants.NBT.TAG_COMPOUND);
 		//sanity check
-		if (powerPathList != null){
+		if(powerPathList != null) {
 			//spin through list
-			for (int i = 0; i < powerPathList.tagCount(); ++i){
+			for(int i = 0; i < powerPathList.tagCount(); ++i) {
 				//reference current node
-				NBTTagCompound powerPathEntry = (NBTTagCompound)powerPathList.getCompoundTagAt(i);
+				NBTTagCompound powerPathEntry = powerPathList.getCompoundTagAt(i);
 				//get the power type
 				PowerTypes type = PowerTypes.getByID(powerPathEntry.getInteger("powerType"));
 				//get the list of node paths for this power type
@@ -238,19 +246,19 @@ public class PowerNodeEntry{
 				//initialize list of paths
 				ArrayList<LinkedList<AMVector3>> pathsList = new ArrayList<LinkedList<AMVector3>>();
 				//sanity check
-				if (pathNodes != null){
+				if(pathNodes != null) {
 					//spin through node paths
-					while (pathNodes.tagCount() > 0){
+					while(pathNodes.tagCount() > 0) {
 						//reference current node
 						NBTTagList nodeList = (NBTTagList)pathNodes.removeTag(0);
 						//initialize linked list to hold the path
 						LinkedList<AMVector3> powerPath = new LinkedList<AMVector3>();
 						//sanity check
-						if (nodeList != null){
+						if(nodeList != null) {
 							//spin through node list
-							for (int b = 0; b < nodeList.tagCount(); ++b){
+							for(int b = 0; b < nodeList.tagCount(); ++b) {
 								//reference current node
-								NBTTagCompound node = (NBTTagCompound)nodeList.getCompoundTagAt(b);
+								NBTTagCompound node = nodeList.getCompoundTagAt(b);
 								//resolve AMVector3 from node values								
 								AMVector3 nodeLocation = AMVector3.readFromNBT(node);
 								//tack the node on to the power path
@@ -270,7 +278,7 @@ public class PowerNodeEntry{
 		}
 	}
 
-	public HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> getNodePaths(){
+	public HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>> getNodePaths() {
 		return (HashMap<PowerTypes, ArrayList<LinkedList<AMVector3>>>)nodePaths.clone();
 	}
 }

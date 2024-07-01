@@ -10,9 +10,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
 
-public class WitchwoodStairs extends BlockStairs{
+public class WitchwoodStairs extends BlockStairs {
 
-	protected WitchwoodStairs(Block par2Block, int par3){
+	protected WitchwoodStairs(Block par2Block, int par3) {
 		super(par2Block, par3);
 		this.setHardness(2.0f);
 		this.setResistance(2.0f);
@@ -20,12 +20,12 @@ public class WitchwoodStairs extends BlockStairs{
 	}
 
 	@Override
-	public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List par3List){
+	public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this));
 	}
 
 	@Override
-	public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face){
+	public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
 		return 0;
 	}
 }

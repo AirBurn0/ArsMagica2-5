@@ -11,24 +11,24 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 
 @Mod(modid = "AnimationExample", name = "Animation Example", version = "1.0.0")
 public class AnimationExample {
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent e) {
 	}
-	
+
 	@EventHandler
 	public void init(FMLInitializationEvent e) {
 		EntityRegistry.registerGlobalEntityID(EntityTest.class, "EntityTest", 106, 0, 0);
-		
+
 		proxy.registerRenderers();
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent e) {
 	}
-	
+
 	@Instance("AnimationExample")
 	public static AnimationExample instance;
-	@SidedProxy(clientSide="thehippomaster.AnimationExample.client.ClientProxy", serverSide="thehippomaster.AnimationExample.CommonProxy")
+	@SidedProxy(clientSide = "thehippomaster.AnimationExample.client.ClientProxy", serverSide = "thehippomaster.AnimationExample.CommonProxy")
 	public static CommonProxy proxy;
 }

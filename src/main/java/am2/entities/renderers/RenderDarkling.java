@@ -6,16 +6,16 @@ import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderDarkling extends RenderLiving{
+public class RenderDarkling extends RenderLiving {
 
 	private static final ResourceLocation rLoc = new ResourceLocation("arsmagica2", ResourceManager.getMobTexturePath("darkling.png"));
 
-	public RenderDarkling(){
+	public RenderDarkling() {
 		super(new ModelDarkling(), 0.5f);
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(Entity par1Entity){
+	protected ResourceLocation getEntityTexture(Entity par1Entity) {
 		return rLoc;
 	}
 }

@@ -8,15 +8,15 @@ import net.minecraft.util.ResourceLocation;
 
 @SideOnly(Side.CLIENT)
 public class RenderTest extends RenderLiving {
-	
+
 	public RenderTest() {
 		super(new ModelTest(), 0.25F);
 	}
-	
+
 	@Override
 	protected ResourceLocation getEntityTexture(Entity entity) {
 		return texture;
 	}
-	
+
 	private static final ResourceLocation texture = new ResourceLocation("none");
 }

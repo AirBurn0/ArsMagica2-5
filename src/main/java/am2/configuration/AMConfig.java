@@ -12,7 +12,7 @@ import net.minecraftforge.common.config.Property;
 
 import java.io.File;
 
-public class AMConfig extends Configuration{
+public class AMConfig extends Configuration {
 
 	private final String KEY_PlayerSpellsDamageTerrain = "Player_Spells_Destroy_Terrain";
 	private final String KEY_NPCSpellsDamageTerrain = "NPC_Spells_Destroy_Terrain";
@@ -79,7 +79,7 @@ public class AMConfig extends Configuration{
 	private final String KEY_allowCreativeTargets = "Allow_Creative_Targets";
 
 	/**
-	 * Beta Particles
+	 Beta Particles
 	 **/
 	private final String KEY_AuraType = "AuraType";
 	private final String KEY_AuraBehaviour = "AuraBehaviour";
@@ -94,7 +94,7 @@ public class AMConfig extends Configuration{
 	/** End Beta Particles **/
 
 	/**
-	 * GUI Config
+	 GUI Config
 	 **/
 	private final String KEY_ManaHudPositionX = "ManaHudPositionX";
 	private final String KEY_BurnoutHudPositionX = "BurnoutHudPositionX";
@@ -143,7 +143,7 @@ public class AMConfig extends Configuration{
 	private final String KEY_ShowHUDBars = "ShowHUDBars";
 	private final String KEY_ColourblindMode = "ColourblindMode";
 	/**
-	 * End GUI Config
+	 End GUI Config
 	 **/
 
 	private static final String CATEGORY_BETA = "beta";
@@ -176,7 +176,7 @@ public class AMConfig extends Configuration{
 	private int[] worldgenBlacklist;
 	private boolean enableWitchwoodForest;
 	private int witchwoodForestRarity;
-	
+
 	private boolean allowCreativeTargets;
 
 	private String[] appropriationBlockBlacklist;
@@ -234,7 +234,7 @@ public class AMConfig extends Configuration{
 
 	public static final String DEFAULT_LANGUAGE = "en_US";
 
-	public AMConfig(File file){
+	public AMConfig(File file) {
 		super(file);
 		load();
 		addCustomCategoryComment(CATEGORY_BETA, "This applies to those who have beta auras unlocked only");
@@ -242,7 +242,7 @@ public class AMConfig extends Configuration{
 		addCustomCategoryComment(CATEGORY_MOBS, "Spawn control for different AM mobs.");
 	}
 
-	public void init(){
+	public void init() {
 
 		PlayerSpellsDamageTerrain = get(CATEGORY_GENERAL, KEY_PlayerSpellsDamageTerrain, true).getBoolean(true);
 		NPCSpellsDamageTerrain = get(CATEGORY_GENERAL, KEY_NPCSpellsDamageTerrain, false).getBoolean(false);
@@ -259,7 +259,7 @@ public class AMConfig extends Configuration{
 		Property retroWorldGenProp = get(CATEGORY_GENERAL, KEY_RetroactiveWorldGen, false, "Set this to true to enable retroactive worldgen for Ars Magica structures and ores.  *WARNING* This may break your save!  Do a backup first!  Note: This will automatically turn off after running the game once.");
 		RetroWorldGen = retroWorldGenProp.getBoolean(false);
 
-		if (RetroWorldGen){
+		if(RetroWorldGen) {
 			retroWorldGenProp.set(false);
 		}
 
@@ -338,15 +338,19 @@ public class AMConfig extends Configuration{
 		String[] split = worldgenBlackList.split(",");
 		worldgenBlacklist = new int[split.length];
 		int count = 0;
-		for (String s : split){
-			if (s.equals("")) continue;
-			try{
+		for(String s: split) {
+			if(s.equals("")) {
+				continue;
+			}
+			try {
 				worldgenBlacklist[count] = Integer.parseInt(s.trim());
-			}catch (Throwable t){
+			}
+			catch(Throwable t) {
 				LogHelper.info("Malformed item in worldgen blacklist (%s).  Skipping.", s);
 				t.printStackTrace();
 				worldgenBlacklist[count] = -1;
-			}finally{
+			}
+			finally {
 				count++;
 			}
 		}
@@ -358,15 +362,19 @@ public class AMConfig extends Configuration{
 		split = apEntBL.split(",");
 		appropriationMobBlacklist = new Class[split.length];
 		count = 0;
-		for (String s : split){
-			if (s.equals("")) continue;
-			try{
+		for(String s: split) {
+			if(s.equals("")) {
+				continue;
+			}
+			try {
 				appropriationMobBlacklist[count] = Class.forName(s);
-			}catch (Throwable t){
+			}
+			catch(Throwable t) {
 				LogHelper.info("Malformed item in appropriation entity blacklist (%s).  Skipping.", s);
 				t.printStackTrace();
 				appropriationMobBlacklist[count] = null;
-			}finally{
+			}
+			finally {
 				count++;
 			}
 		}
@@ -376,7 +384,7 @@ public class AMConfig extends Configuration{
 		save();
 	}
 
-	public void clientInit(){
+	public void clientInit() {
 		AuraType = get(CATEGORY_BETA, KEY_AuraType, 15).getInt(15);
 		AuraType %= AMParticle.particleTypes.length;
 		AuraBehaviour = get(CATEGORY_BETA, KEY_AuraBehaviour, 0).getInt(0);
@@ -399,260 +407,260 @@ public class AMConfig extends Configuration{
 	// Getters - Cached
 	//====================================================================================
 
-	public boolean FullGFX(){
+	public boolean FullGFX() {
 		return GFXLevel == 2;
 	}
 
-	public boolean LowGFX(){
+	public boolean LowGFX() {
 		return GFXLevel == 1;
 	}
 
-	public boolean NoGFX(){
+	public boolean NoGFX() {
 		return GFXLevel == 0;
 	}
 
-	public boolean NPCSpellsDamageTerrain(){
+	public boolean NPCSpellsDamageTerrain() {
 		return NPCSpellsDamageTerrain;
 	}
 
-	public boolean PlayerSpellsDamageTerrain(){
+	public boolean PlayerSpellsDamageTerrain() {
 		return PlayerSpellsDamageTerrain;
 	}
 
-	public int getGFXLevel(){
+	public int getGFXLevel() {
 		return GFXLevel;
 	}
 
-	public float getDamageMultiplier(){
+	public float getDamageMultiplier() {
 		return DamageMultiplier;
 	}
 
-	public boolean getIsImbueEnchantEnabled(){
+	public boolean getIsImbueEnchantEnabled() {
 		return IsImbueEnabled;
 	}
 
-	public int getImbueProcCost(int enchantID){
+	public int getImbueProcCost(int enchantID) {
 		return 0;
 	}
 
-	public boolean useSpecialRenderers(){
+	public boolean useSpecialRenderers() {
 		return UseSpecialRenderers;
 	}
 
-	public boolean displayManaInInventory(){
+	public boolean displayManaInInventory() {
 		return DisplayManaInInventory;
 	}
 
-	public double getFrictionCoefficient(){
+	public double getFrictionCoefficient() {
 		return FrictionCoefficient;
 	}
 
-	public boolean retroactiveWorldgen(){
+	public boolean retroactiveWorldgen() {
 		return RetroWorldGen;
 	}
 
-	public int getSkillTreeSecondaryTierCap(){
+	public int getSkillTreeSecondaryTierCap() {
 		return secondarySkillTreeTierCap;
 	}
 
-	public int getVillagerProfessionID(){
+	public int getVillagerProfessionID() {
 		return mageVillagerProfessionID;
 	}
 
-	public AMVector2 getManaHudPosition(){
+	public AMVector2 getManaHudPosition() {
 		return manaHudPosition;
 	}
 
-	public AMVector2 getBurnoutHudPosition(){
+	public AMVector2 getBurnoutHudPosition() {
 		return burnoutHudPosition;
 	}
 
-	public AMVector2 getPositiveBuffsPosition(){
+	public AMVector2 getPositiveBuffsPosition() {
 		return positiveBuffsPosition;
 	}
 
-	public AMVector2 getNegativeBuffsPosition(){
+	public AMVector2 getNegativeBuffsPosition() {
 		return negativeBuffsPosition;
 	}
 
-	public AMVector2 getLevelPosition(){
+	public AMVector2 getLevelPosition() {
 		return levelPosition;
 	}
 
-	public AMVector2 getAffinityPosition(){
+	public AMVector2 getAffinityPosition() {
 		return affinityPosition;
 	}
 
-	public AMVector2 getArmorPositionHead(){
+	public AMVector2 getArmorPositionHead() {
 		return armorPositionHead;
 	}
 
-	public AMVector2 getArmorPositionChest(){
+	public AMVector2 getArmorPositionChest() {
 		return armorPositionChest;
 	}
 
-	public AMVector2 getArmorPositionLegs(){
+	public AMVector2 getArmorPositionLegs() {
 		return armorPositionLegs;
 	}
 
-	public AMVector2 getArmorPositionBoots(){
+	public AMVector2 getArmorPositionBoots() {
 		return armorPositionBoots;
 	}
 
-	public AMVector2 getXPBarPosition(){
+	public AMVector2 getXPBarPosition() {
 		return xpBarPosition;
 	}
 
-	public AMVector2 getContingencyPosition(){
+	public AMVector2 getContingencyPosition() {
 		return contingencyPosition;
 	}
 
-	public AMVector2 getManaNumericPosition(){
+	public AMVector2 getManaNumericPosition() {
 		return manaNumericPosition;
 	}
 
-	public AMVector2 getBurnoutNumericPosition(){
+	public AMVector2 getBurnoutNumericPosition() {
 		return burnoutNumericPosition;
 	}
 
-	public AMVector2 getXPNumericPosition(){
+	public AMVector2 getXPNumericPosition() {
 		return XPNumericPosition;
 	}
 
-	public AMVector2 getSpellBookPosition(){
+	public AMVector2 getSpellBookPosition() {
 		return SpellBookPosition;
 	}
 
-	public boolean getShowBuffs(){
+	public boolean getShowBuffs() {
 		return showBuffs;
 	}
 
-	public boolean getShowNumerics(){
+	public boolean getShowNumerics() {
 		return showNumerics;
 	}
 
-	public String[] getDigBlacklist(){
+	public String[] getDigBlacklist() {
 		return digBlacklist;
 	}
 
-	public int[] getWorldgenBlacklist(){
+	public int[] getWorldgenBlacklist() {
 		return worldgenBlacklist;
 	}
 
-	public boolean moonstoneMeteorsDestroyTerrain(){
+	public boolean moonstoneMeteorsDestroyTerrain() {
 		return moonstoneMeteorsDestroyTerrain;
 	}
 
-	public boolean suggestSpellNames(){
+	public boolean suggestSpellNames() {
 		return suggestSpellNames;
 	}
 
-	public int getWitchwoodForestID(){
+	public int getWitchwoodForestID() {
 		return witchwoodForestID;
 	}
 
-	public int getEverstoneRepairRate(){
+	public int getEverstoneRepairRate() {
 		return everstoneRepairRate;
 	}
 
-	public boolean showHudMinimally(){
+	public boolean showHudMinimally() {
 		return showHudMinimally;
 	}
 
-	public boolean stagedCompendium(){
+	public boolean stagedCompendium() {
 		return stagedCompendium;
 	}
 
-	public boolean showXPAlways(){
+	public boolean showXPAlways() {
 		return showXPAlways;
 	}
 
-	public boolean showHudBars(){
+	public boolean showHudBars() {
 		return showHudBars;
 	}
 
-	public boolean witchwoodLeafPFX(){
+	public boolean witchwoodLeafPFX() {
 		return witchwoodLeafParticles;
 	}
 
-	public boolean colourblindMode(){
+	public boolean colourblindMode() {
 		return colourblindMode;
 	}
 
-	public String[] getAppropriationBlockBlacklist(){
+	public String[] getAppropriationBlockBlacklist() {
 		return appropriationBlockBlacklist;
 	}
 
-	public Class[] getAppropriationMobBlacklist(){
+	public Class[] getAppropriationMobBlacklist() {
 		return appropriationMobBlacklist;
 	}
 
-	public boolean allowVersionChecks(){
+	public boolean allowVersionChecks() {
 		return allowVersionChecks;
 	}
 
-	public boolean allowCompendiumUpdates(){
+	public boolean allowCompendiumUpdates() {
 		return allowCompendiumUpdates;
 	}
 
-	public boolean getHazardousGateways(){
+	public boolean getHazardousGateways() {
 		return hazardousGateways;
 	}
 
-	public double getArmorXPInfusionFactor(){
+	public double getArmorXPInfusionFactor() {
 		return ArmorXPInfusionFactor;
 	}
 
-	public boolean getDisarmAffectsPlayers(){
+	public boolean getDisarmAffectsPlayers() {
 		return disarmAffectsPlayers;
 	}
 
-	public double getManaCap(){
+	public double getManaCap() {
 		return manaCap;
 	}
 
-	public boolean getDigBreaksTileEntities(){
+	public boolean getDigBreaksTileEntities() {
 		return digBreaksTileEntities;
 	}
 
-	public boolean savePowerDataOnWorldSave(){
+	public boolean savePowerDataOnWorldSave() {
 		return savePowerOnWorldSave;
 	}
 
 
-	public boolean canDraydsDespawn(){
+	public boolean canDraydsDespawn() {
 		return canDryadsDespawn;
 	}
 
-	public int getMeteorMinSpawnLevel(){
+	public int getMeteorMinSpawnLevel() {
 		return meteorMinSpawnLevel;
 	}
 
-	public boolean forgeSmeltsVillagers(){
+	public boolean forgeSmeltsVillagers() {
 		return forgeSmeltsVillagers;
 	}
 
-	public boolean showArmorUI(){
+	public boolean showArmorUI() {
 		return this.showArmorUI;
 	}
 
-	public boolean candlesAreRovingLights(){
+	public boolean candlesAreRovingLights() {
 		return candlesAreRovingLights;
 	}
 
-	public int getEnderAffinityAbilityCooldown(){
+	public int getEnderAffinityAbilityCooldown() {
 		return this.enderAffinityAbilityCooldown;
 	}
 
-	public boolean getEnableWitchwoodForest(){
+	public boolean getEnableWitchwoodForest() {
 		return this.enableWitchwoodForest;
 	}
 
-	public int getWitchwoodForestRarity(){
+	public int getWitchwoodForestRarity() {
 		return this.witchwoodForestRarity;
 	}
 
-	public boolean getAllowCreativeTargets(){
+	public boolean getAllowCreativeTargets() {
 		return this.allowCreativeTargets;
 	}
 
@@ -660,43 +668,43 @@ public class AMConfig extends Configuration{
 	// Getters - Aura
 	//====================================================================================
 
-	public int getAuraIndex(){
+	public int getAuraIndex() {
 		return AuraType;
 	}
 
-	public int getAuraBehaviour(){
+	public int getAuraBehaviour() {
 		return AuraBehaviour;
 	}
 
-	public boolean getAuraColorRandom(){
+	public boolean getAuraColorRandom() {
 		return AuraRandomColor;
 	}
 
-	public boolean getAuraColorDefault(){
+	public boolean getAuraColorDefault() {
 		return AuraDefaultColor;
 	}
 
-	public float getAuraScale(){
+	public float getAuraScale() {
 		return AuraScale;
 	}
 
-	public int getAuraColor(){
+	public int getAuraColor() {
 		return AuraColor;
 	}
 
-	public int getAuraDelay(){
+	public int getAuraDelay() {
 		return AuraDelay;
 	}
 
-	public int getAuraQuantity(){
+	public int getAuraQuantity() {
 		return AuraQuantity;
 	}
 
-	public float getAuraSpeed(){
+	public float getAuraSpeed() {
 		return (float)AuraSpeed;
 	}
 
-	public float getAuraAlpha(){
+	public float getAuraAlpha() {
 		return AuraAlpha;
 	}
 
@@ -705,7 +713,7 @@ public class AMConfig extends Configuration{
 	// Getters - Direct
 	//====================================================================================
 	//ping the direct properties once so that they show up in config
-	public void initDirectProperties(){
+	public void initDirectProperties() {
 		get(CATEGORY_MOBS, KEY_hecateSpawnRate, 2);
 		get(CATEGORY_MOBS, KEY_mageSpawnRate, 1);
 		get(CATEGORY_MOBS, KEY_waterElementalSpawnRate, 3);
@@ -718,85 +726,85 @@ public class AMConfig extends Configuration{
 		get(CATEGORY_MOBS, KEY_flickerSpawnRate, 2);
 	}
 
-	public int getConfigurableEnchantmentID(String enchantmentName, int default_value){
+	public int getConfigurableEnchantmentID(String enchantmentName, int default_value) {
 		int val = get(CATEGORY_ENCHANTMENTS, enchantmentName, default_value).getInt(default_value);
 		save();
 		return val;
 	}
 
-	public void updateConfigurableEnchantmentID(String enchantmentName, int new_value){
+	public void updateConfigurableEnchantmentID(String enchantmentName, int new_value) {
 		get(CATEGORY_ENCHANTMENTS, enchantmentName, new_value).set(new_value);
 		save();
 	}
 
-	public int GetHecateSpawnRate(){
+	public int GetHecateSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_hecateSpawnRate, 2);
 		return Math.max(prop.getInt(2), 0);
 	}
 
-	public int GetMageSpawnRate(){
+	public int GetMageSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_mageSpawnRate, 1);
 		return Math.max(prop.getInt(1), 0);
 	}
 
-	public int GetWaterElementalSpawnRate(){
+	public int GetWaterElementalSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_waterElementalSpawnRate, 3);
 		return Math.max(prop.getInt(3), 0);
 	}
 
-	public int GetManaElementalSpawnRate(){
+	public int GetManaElementalSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_manaElementalSpawnRate, 2);
 		return Math.max(prop.getInt(2), 0);
 	}
 
-	public int GetDryadSpawnRate(){
+	public int GetDryadSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_dryadSpawnRate, 5);
 		return Math.max(prop.getInt(5), 0);
 	}
 
-	public int GetManaCreeperSpawnRate(){
+	public int GetManaCreeperSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_manaCreeperSpawnRate, 3);
 		return Math.max(prop.getInt(3), 0);
 	}
 
-	public int GetDarklingSpawnRate(){
+	public int GetDarklingSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_darklingSpawnRate, 5);
 		return Math.max(prop.getInt(5), 0);
 	}
 
-	public int GetEarthElementalSpawnRate(){
+	public int GetEarthElementalSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_earthElementalSpawnRate, 2);
 		return Math.max(prop.getInt(2), 0);
 	}
 
-	public int GetFireElementalSpawnRate(){
+	public int GetFireElementalSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_fireElementalSpawnRate, 2);
 		return Math.max(prop.getInt(2), 0);
 	}
 
-	public int GetFlickerSpawnRate(){
+	public int GetFlickerSpawnRate() {
 		Property prop = get(CATEGORY_MOBS, KEY_flickerSpawnRate, 4);
 		return Math.max(prop.getInt(4), 0);
 	}
 
 	// Gets the first available potion ID
 	// returns -1 if there are no available IDs
-	private static int getNextFreePotionID(){
+	private static int getNextFreePotionID() {
 		int freeID = -1;
-		for(int i = 1; i < Potion.potionTypes.length; i++){
-			if(Potion.potionTypes[i] == null){
-			  freeID = i;
-			  break;
+		for(int i = 1; i < Potion.potionTypes.length; i++) {
+			if(Potion.potionTypes[i] == null) {
+				freeID = i;
+				break;
 			}
 		}
 		return freeID;
 	}
 
-	public int getConfigurablePotionID(String id, int default_value){
+	public int getConfigurablePotionID(String id, int default_value) {
 		// because we auto-configure, default_value is ignored
 		int val = getNextFreePotionID();
-		
-		if(val == -1 && !hasKey(CATEGORY_POTIONS, id)){
+
+		if(val == -1 && !hasKey(CATEGORY_POTIONS, id)) {
 			LogHelper.error("Cannot find a free potion ID for the %s effect. This will cause severe problems!", id);
 			LogHelper.error("Effect %s has been assigned to a default of potion ID 1 (movement speed). Erroneous behaviour *will* result.", id);
 			val = 1;
@@ -811,9 +819,13 @@ public class AMConfig extends Configuration{
 	// Setters
 	//====================================================================================
 
-	public void setAuraIndex(int index){
-		if (index < 0) index = 0;
-		if (index >= AMParticle.particleTypes.length) index = AMParticle.particleTypes.length - 1;
+	public void setAuraIndex(int index) {
+		if(index < 0) {
+			index = 0;
+		}
+		if(index >= AMParticle.particleTypes.length) {
+			index = AMParticle.particleTypes.length - 1;
+		}
 
 		Property prop = get(CATEGORY_BETA, KEY_AuraType, 15);
 		prop.set(index);
@@ -821,10 +833,13 @@ public class AMConfig extends Configuration{
 		this.AuraType = index;
 	}
 
-	public void setAuraBehaviour(int index){
-		if (index < 0) index = 0;
-		if (index >= ParticleController.AuraControllerOptions.length)
+	public void setAuraBehaviour(int index) {
+		if(index < 0) {
+			index = 0;
+		}
+		if(index >= ParticleController.AuraControllerOptions.length) {
 			index = ParticleController.AuraControllerOptions.length - 1;
+		}
 
 		Property prop = get(CATEGORY_BETA, KEY_AuraBehaviour, 0);
 		prop.set(index);
@@ -832,57 +847,73 @@ public class AMConfig extends Configuration{
 		this.AuraBehaviour = index;
 	}
 
-	public void setAuraColorRandom(boolean value){
+	public void setAuraColorRandom(boolean value) {
 		Property prop = get(CATEGORY_BETA, KEY_AuraColorRandomize, false);
 		prop.set(value);
 
 		this.AuraRandomColor = value;
 	}
 
-	public void setAuraColorDefault(boolean value){
+	public void setAuraColorDefault(boolean value) {
 		Property prop = get(CATEGORY_BETA, KEY_AuraColorDefault, true);
 		prop.set(value);
 
 		this.AuraDefaultColor = value;
 	}
 
-	public void setAuraScale(float scale){
-		if (scale < 1) scale = 1;
-		if (scale > 200) scale = 200;
+	public void setAuraScale(float scale) {
+		if(scale < 1) {
+			scale = 1;
+		}
+		if(scale > 200) {
+			scale = 200;
+		}
 		Property prop = get(CATEGORY_BETA, KEY_AuraScale, 50D);
 		prop.set(scale);
 
 		this.AuraScale = scale;
 	}
 
-	public void setAuraColor(int color){
+	public void setAuraColor(int color) {
 		Property prop = get(CATEGORY_BETA, KEY_AuraColor, 0xFFFFFF);
 		prop.set(color);
 
 		this.AuraColor = color;
 	}
 
-	public void setAuraAlpha(float alpha){
-		if (alpha < 0) alpha = 0;
-		if (alpha > 100) alpha = 100;
+	public void setAuraAlpha(float alpha) {
+		if(alpha < 0) {
+			alpha = 0;
+		}
+		if(alpha > 100) {
+			alpha = 100;
+		}
 		Property prop = get(CATEGORY_BETA, KEY_AuraAlpha, 255D);
 		prop.set(alpha);
 
 		this.AuraAlpha = alpha;
 	}
 
-	public void setAuraQuantity(int quantity){
-		if (quantity < 1) quantity = 1;
-		else if (quantity > 5) quantity = 5;
+	public void setAuraQuantity(int quantity) {
+		if(quantity < 1) {
+			quantity = 1;
+		}
+		else if(quantity > 5) {
+			quantity = 5;
+		}
 		Property prop = get(CATEGORY_BETA, KEY_AuraAlpha, 2);
 		prop.set(quantity);
 
 		this.AuraQuantity = quantity;
 	}
 
-	public void setAuraDelay(int delay){
-		if (delay < 1) delay = 1;
-		else if (delay > 200) delay = 200;
+	public void setAuraDelay(int delay) {
+		if(delay < 1) {
+			delay = 1;
+		}
+		else if(delay > 200) {
+			delay = 200;
+		}
 
 		Property prop = get(CATEGORY_BETA, KEY_AuraDelay, 5);
 		prop.set(delay);
@@ -890,9 +921,13 @@ public class AMConfig extends Configuration{
 		this.AuraDelay = delay;
 	}
 
-	public void setAuraSpeed(float speed){
-		if (speed < 0.01f) speed = 0.01f;
-		else if (speed > 10f) speed = 10f;
+	public void setAuraSpeed(float speed) {
+		if(speed < 0.01f) {
+			speed = 0.01f;
+		}
+		else if(speed > 10f) {
+			speed = 10f;
+		}
 
 		Property prop = get(CATEGORY_BETA, KEY_AuraSpeed, 0.02f);
 		prop.set(speed);
@@ -900,7 +935,7 @@ public class AMConfig extends Configuration{
 		this.AuraSpeed = speed;
 	}
 
-	public void setDisplayManaInInventory(boolean value){
+	public void setDisplayManaInInventory(boolean value) {
 		boolean def = !Loader.isModLoaded("NotEnoughItems");
 		Property prop = get(CATEGORY_GENERAL, KEY_DisplayManaInInventory, def, "This will toggle mana display on and off in your inventory.  Default 'O' key in game.");
 		prop.set(value);
@@ -908,14 +943,14 @@ public class AMConfig extends Configuration{
 		this.DisplayManaInInventory = value;
 	}
 
-	public void disableRetroactiveWorldgen(){
+	public void disableRetroactiveWorldgen() {
 		Property prop = get(CATEGORY_GENERAL, KEY_RetroactiveWorldGen, false, "Set this to true to enable retroactive worldgen for Ars Magica structures and ores.  *WARNING* This may break your save!  Do a backup first!");
 		prop.set(false);
 
 		this.RetroWorldGen = false;
 	}
 
-	public void setGuiPositions(AMVector2 manaHud, AMVector2 burnoutHud, AMVector2 levelHud, AMVector2 affinityHud, AMVector2 posBuffsHud, AMVector2 negBuffsHud, AMVector2 armorHead, AMVector2 armorChest, AMVector2 armorLegs, AMVector2 armorBoots, AMVector2 xpBar, AMVector2 contingency, AMVector2 manaNumeric, AMVector2 burnoutNumeric, AMVector2 XPNumeric, AMVector2 spellBookPos, boolean showBuffs, boolean showNumerics, boolean minimalHud, boolean showArmorUI, boolean showXPAlways, boolean showHudBars){
+	public void setGuiPositions(AMVector2 manaHud, AMVector2 burnoutHud, AMVector2 levelHud, AMVector2 affinityHud, AMVector2 posBuffsHud, AMVector2 negBuffsHud, AMVector2 armorHead, AMVector2 armorChest, AMVector2 armorLegs, AMVector2 armorBoots, AMVector2 xpBar, AMVector2 contingency, AMVector2 manaNumeric, AMVector2 burnoutNumeric, AMVector2 XPNumeric, AMVector2 spellBookPos, boolean showBuffs, boolean showNumerics, boolean minimalHud, boolean showArmorUI, boolean showXPAlways, boolean showHudBars) {
 		manaHudPosition = manaHud;
 		burnoutHudPosition = burnoutHud;
 		levelPosition = levelHud;
@@ -940,7 +975,7 @@ public class AMConfig extends Configuration{
 		this.showHudBars = showHudBars;
 	}
 
-	public void saveGuiPositions(){
+	public void saveGuiPositions() {
 		updateAMVector2(KEY_ManaHudPositionX, KEY_ManaHudPositionY, manaHudPosition);
 		updateAMVector2(KEY_BurnoutHudPositionX, KEY_BurnoutHudPositionY, burnoutHudPosition);
 		updateAMVector2(KEY_LevelPositionX, KEY_LevelPositionY, levelPosition);
@@ -985,11 +1020,11 @@ public class AMConfig extends Configuration{
 		save();
 	}
 
-	public void setSkillTreeSecondaryTierCap(int skillTreeLock){
+	public void setSkillTreeSecondaryTierCap(int skillTreeLock) {
 		this.secondarySkillTreeTierCap = skillTreeLock;
 	}
 
-	private void updateAMVector2(String keyX, String keyY, AMVector2 value){
+	private void updateAMVector2(String keyX, String keyY, AMVector2 value) {
 		Property prop;
 		prop = get(CATEGORY_UI, keyX, 0);
 		prop.set(value.x);
@@ -998,7 +1033,7 @@ public class AMConfig extends Configuration{
 		prop.set(value.y);
 	}
 
-	public void setManaCap(double cap){
+	public void setManaCap(double cap) {
 		this.manaCap = cap;
 	}
 }

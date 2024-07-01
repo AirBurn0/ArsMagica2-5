@@ -3,7 +3,16 @@ package am2.entities;
 import am2.AMCore;
 import am2.LogHelper;
 import am2.api.entities.IEntityManager;
-import am2.bosses.*;
+import am2.bosses.EntityAirGuardian;
+import am2.bosses.EntityArcaneGuardian;
+import am2.bosses.EntityEarthGuardian;
+import am2.bosses.EntityEnderGuardian;
+import am2.bosses.EntityFireGuardian;
+import am2.bosses.EntityLifeGuardian;
+import am2.bosses.EntityLightningGuardian;
+import am2.bosses.EntityNatureGuardian;
+import am2.bosses.EntityWaterGuardian;
+import am2.bosses.EntityWinterGuardian;
 import am2.bosses.renderers.*;
 import am2.entities.models.ModelBattleChicken;
 import am2.entities.models.ModelHecate;
@@ -18,11 +27,11 @@ import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
-public class EntityManager implements IEntityManager{
+public class EntityManager implements IEntityManager {
 
 	public static final EntityManager instance = new EntityManager();
 
-	private EntityManager(){
+	private EntityManager() {
 	}
 
 	public String WispMobID = "MobWisp";
@@ -72,7 +81,7 @@ public class EntityManager implements IEntityManager{
 
 	private static final SpawnListEntry flickerSpawns = new SpawnListEntry(EntityFlicker.class, 3, 2, 4);
 
-	public void registerEntities(){
+	public void registerEntities() {
 
 		int updateFrequency = 2;
 		int updateDistance = 64;
@@ -117,7 +126,7 @@ public class EntityManager implements IEntityManager{
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void registerRenderInformation(){
+	public void registerRenderInformation() {
 		RenderingRegistry.registerEntityRenderingHandler(EntityEarthElemental.class, new RenderEarthElemental());
 		RenderingRegistry.registerEntityRenderingHandler(EntityFireElemental.class, new RenderFireElemental());
 		//RenderingRegistry.registerEntityRenderingHandler(EntityWisp.class, new RenderWisp(new ModelWisp(), 0.5F));
@@ -164,7 +173,7 @@ public class EntityManager implements IEntityManager{
 		RenderingRegistry.registerEntityRenderingHandler(EntityShadowHelper.class, new RenderShadowHelper());
 	}
 
-	public void initializeSpawns(){
+	public void initializeSpawns() {
 		BiomeDictionary.registerAllBiomes();
 
 		//SpawnListEntry wisps = new SpawnListEntry(EntityWisp.class, 1, 1, 1);
@@ -204,46 +213,55 @@ public class EntityManager implements IEntityManager{
 
 	}
 
-	private void initSpawnsForBiomeTypes(SpawnListEntry spawnListEntry, EnumCreatureType creatureType, Type[] types, Type[] exclusions){
-		if (spawnListEntry.itemWeight == 0){
+	private void initSpawnsForBiomeTypes(SpawnListEntry spawnListEntry, EnumCreatureType creatureType, Type[] types, Type[] exclusions) {
+		if(spawnListEntry.itemWeight == 0) {
 			LogHelper.info("Skipping spawn list entry for %s (as type %s), as the weight is set to 0.  This can be changed in config.", spawnListEntry.entityClass.getName(), creatureType.toString());
 			return;
 		}
-		for (Type type : types){
+		for(Type type: types) {
 			initSpawnsForBiomes(BiomeDictionary.getBiomesForType(type), spawnListEntry, creatureType, exclusions);
 		}
 	}
 
-	private void initSpawnsForBiomes(BiomeGenBase[] biomes, SpawnListEntry spawnListEntry, EnumCreatureType creatureType, Type[] exclusions){
-		if (biomes == null) return;
-		for (BiomeGenBase biome : biomes){
-			if (biomeIsExcluded(biome, exclusions)) continue;
-			if (!biome.getSpawnableList(creatureType).contains(spawnListEntry))
+	private void initSpawnsForBiomes(BiomeGenBase[] biomes, SpawnListEntry spawnListEntry, EnumCreatureType creatureType, Type[] exclusions) {
+		if(biomes == null) {
+			return;
+		}
+		for(BiomeGenBase biome: biomes) {
+			if(biomeIsExcluded(biome, exclusions)) {
+				continue;
+			}
+			if(!biome.getSpawnableList(creatureType).contains(spawnListEntry)) {
 				biome.getSpawnableList(creatureType).add(spawnListEntry);
+			}
 		}
 	}
 
-	private boolean biomeIsExcluded(BiomeGenBase biome, Type[] exclusions){
+	private boolean biomeIsExcluded(BiomeGenBase biome, Type[] exclusions) {
 
-		Type biomeTypes[] = BiomeDictionary.getTypesForBiome(biome);
+		Type[] biomeTypes = BiomeDictionary.getTypesForBiome(biome);
 
-		for (Type exclusion : exclusions){
-			for (Type biomeType : biomeTypes){
-				if (biomeType == exclusion) return true;
+		for(Type exclusion: exclusions) {
+			for(Type biomeType: biomeTypes) {
+				if(biomeType == exclusion) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public void addButcheryBlacklist(Class... clazz){
-		for (Class l_clazz : clazz)
+	public void addButcheryBlacklist(Class... clazz) {
+		for(Class l_clazz: clazz) {
 			SpawnBlacklists.addButcheryBlacklist(l_clazz);
+		}
 	}
 
 	@Override
-	public void addProgenyBlacklist(Class... clazz){
-		for (Class l_clazz : clazz)
+	public void addProgenyBlacklist(Class... clazz) {
+		for(Class l_clazz: clazz) {
 			SpawnBlacklists.addProgenyBlacklist(l_clazz);
+		}
 	}
 }

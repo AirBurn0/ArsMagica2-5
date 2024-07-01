@@ -10,7 +10,15 @@ import am2.particles.ParticleMoveOnHeading;
 import am2.playerextensions.ExtendedProperties;
 import am2.texture.ResourceManager;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.*;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.ai.EntityAIBreakDoor;
+import net.minecraft.entity.ai.EntityAIFleeSun;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
@@ -26,7 +34,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class EntityHecate extends EntityZombie{
+public class EntityHecate extends EntityZombie {
 
 	private double leftArmAnimTicks;
 	private double rightArmAnimTicks;
@@ -44,7 +52,7 @@ public class EntityHecate extends EntityZombie{
 	private boolean hasSpawnedInvisParticles = false;
 	private final String localTexture;
 
-	public EntityHecate(World par1World){
+	public EntityHecate(World par1World) {
 		super(par1World);
 		leftArmAnimTicks = 0;
 		rightArmAnimTicks = 12;
@@ -65,18 +73,18 @@ public class EntityHecate extends EntityZombie{
 	}
 
 	@Override
-	protected void applyEntityAttributes(){
+	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(12D);
 		this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(5D);
 	}
 
 	@Override
-	protected void entityInit(){
+	protected void entityInit() {
 		super.entityInit();
 	}
 
-	private void initAI(){
+	private void initAI() {
 		this.getNavigator().setBreakDoors(true);
 		this.getNavigator().setAvoidSun(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
@@ -95,71 +103,78 @@ public class EntityHecate extends EntityZombie{
 	}
 
 	@Override
-	public boolean isAIEnabled(){
+	public boolean isAIEnabled() {
 		return true;
 	}
 
 	@Override
-	public int getTotalArmorValue(){
+	public int getTotalArmorValue() {
 		return 5;
 	}
 
-	public float getHorizontalAverageVelocity(){
+	public float getHorizontalAverageVelocity() {
 		return (float)((this.motionX + this.motionZ) / 2);
 	}
 
 	@Override
-	public void onDeath(DamageSource par1DamageSource){
+	public void onDeath(DamageSource par1DamageSource) {
 		super.onDeath(par1DamageSource);
 	}
 
-	private boolean isMoving(){
+	private boolean isMoving() {
 		return (this.prevPosX != this.posX) || (this.prevPosZ != this.posZ);
 	}
 
-	private void updateForwardRotation(){
-		if (isMoving() && currentForwardRotation < forwardThreshold){
+	private void updateForwardRotation() {
+		if(isMoving() && currentForwardRotation < forwardThreshold) {
 			currentForwardRotation += 0.12f;
-		}else if (!isMoving() && currentForwardRotation > 0){
+		}
+		else if(!isMoving() && currentForwardRotation > 0) {
 			currentForwardRotation -= 0.12f;
 		}
 	}
 
-	public float getForwardRotation(){
+	public float getForwardRotation() {
 		return currentForwardRotation;
 	}
 
-	private void checkAttackTarget(){
-		if (this.getAttackTarget() != null){
+	private void checkAttackTarget() {
+		if(this.getAttackTarget() != null) {
 			this.setAttackTarget(null);
 		}
 	}
 
 	@Override
-	public void onUpdate(){
+	public void onUpdate() {
 
-		if (invisibilityCooldown > 0){
+		if(invisibilityCooldown > 0) {
 			invisibilityCooldown--;
 		}
-		if (invisibilityCooldown == 0) hasSpawnedInvisParticles = false;
+		if(invisibilityCooldown == 0) {
+			hasSpawnedInvisParticles = false;
+		}
 
-		if (this.motionY < 0)
+		if(this.motionY < 0) {
 			this.motionY *= 0.79999f;
+		}
 
-		if (this.worldObj != null){
-			if (this.worldObj.isRemote){
-				if (!this.getFlag(5) && this.ticksExisted % 3 == 0){
+		if(this.worldObj != null) {
+			if(this.worldObj.isRemote) {
+				if(!this.getFlag(5) && this.ticksExisted % 3 == 0) {
 					spawnLivingParticles();
-				}else if (!hasSpawnedInvisParticles){
+				}
+				else if(!hasSpawnedInvisParticles) {
 					spawnInvisibilityParticles();
 				}
 
-				if (invisibilityCounter > 0) invisibilityCounter--;
+				if(invisibilityCounter > 0) {
+					invisibilityCounter--;
+				}
 
 				updateArmRotations();
 				updateForwardRotation();
 			}
-			if (this.worldObj.difficultySetting == EnumDifficulty.HARD && this.getAttackTarget() != null && this.invisibilityCooldown == 0){
+			if(this.worldObj.difficultySetting == EnumDifficulty.HARD && this.getAttackTarget() != null && this.invisibilityCooldown == 0) {
 				this.addPotionEffect(new PotionEffect(Potion.invisibility.id, 60, 2));
 				this.invisibilityCooldown = 600;
 			}
@@ -168,11 +183,11 @@ public class EntityHecate extends EntityZombie{
 	}
 
 	@Override
-	public void onLivingUpdate(){
-		if (this.worldObj.isDaytime() && !this.worldObj.isRemote && !this.isDead){
+	public void onLivingUpdate() {
+		if(this.worldObj.isDaytime() && !this.worldObj.isRemote && !this.isDead) {
 			float f = this.getBrightness(1.0F);
 
-			if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))){
+			if(f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))) {
 				AMNetHandler.INSTANCE.sendHecateDeathToAllAround(this);
 				this.attackEntityFrom(DamageSource.onFire, 5000);
 			}
@@ -180,7 +195,7 @@ public class EntityHecate extends EntityZombie{
 		super.onLivingUpdate();
 	}
 
-	private void spawnInvisibilityParticles(){
+	private void spawnInvisibilityParticles() {
 		/*for (int i = 0; i < 50; ++i){
 			ArsMagicaParticle effect = ParticleManager.spawn(this.worldObj, "hr_smoke", this.posX + rand.nextDouble(), this.posY + 1, this.posZ);
 			if (effect != null){
@@ -193,30 +208,31 @@ public class EntityHecate extends EntityZombie{
 		this.invisibilityCooldown = 600;
 	}
 
-	public double getLeftArmOffset(){
+	public double getLeftArmOffset() {
 		return this.leftArmRotationOffset;
 	}
 
-	public double getRightArmOffset(){
+	public double getRightArmOffset() {
 		return this.rightArmRotationOffset;
 	}
 
-	private void spawnLivingParticles(){
+	private void spawnLivingParticles() {
 
-		if (rand.nextInt(3) == 0){
+		if(rand.nextInt(3) == 0) {
 			double yPos = this.posY + 1.1;
-			if (this.currentForwardRotation >= 0.24){
+			if(this.currentForwardRotation >= 0.24) {
 				yPos += 0.3;
 			}
 
-			AMParticle effect = (AMParticle)AMCore.instance.proxy.particleManager.spawn(worldObj, "smoke",
+			AMParticle effect = (AMParticle)AMCore.proxy.particleManager.spawn(worldObj, "smoke",
 					this.posX + ((rand.nextFloat() * 0.2) - 0.1f),
 					yPos,
 					this.posZ + ((rand.nextFloat() * 0.4) - 0.2f));
-			if (effect != null){
-				if (this.currentForwardRotation < 0.24){
+			if(effect != null) {
+				if(this.currentForwardRotation < 0.24) {
 					effect.AddParticleController(new ParticleFloatUpward(effect, 0.1f, -0.06f, 1, false));
-				}else{
+				}
+				else {
 					effect.AddParticleController(new ParticleMoveOnHeading(effect, this.rotationYaw - 90, this.rotationPitch, 0.01f, 1, false));
 				}
 				effect.AddParticleController(new ParticleFadeOut(effect, 2, false).setFadeSpeed(0.04f));
@@ -227,7 +243,7 @@ public class EntityHecate extends EntityZombie{
 		}
 	}
 
-	private void updateArmRotations(){
+	private void updateArmRotations() {
 		leftArmAnimTicks += 0.05;
 		leftArmAnimTicks %= 90;
 		rightArmAnimTicks += 0.05;
@@ -241,51 +257,56 @@ public class EntityHecate extends EntityZombie{
 	}
 
 	@Override
-	protected void dropRareDrop(int par1){
+	protected void dropRareDrop(int par1) {
 		this.entityDropItem(new ItemStack(ItemsCommonProxy.essence, 1, 9), 0.0f);
 	}
 
 	@Override
-	protected Item getDropItem(){
+	protected Item getDropItem() {
 		return null;
 	}
 
 	@Override
-	protected String getHurtSound(){
+	protected String getHurtSound() {
 		return "arsmagica2:mob.hecate.hit";
 	}
 
 	@Override
-	protected String getDeathSound(){
+	protected String getDeathSound() {
 		return "arsmagica2:mob.hecate.death";
 	}
 
 	@Override
-	protected String getLivingSound(){
+	protected String getLivingSound() {
 		return "arsmagica2:mob.hecate.idle";
 	}
 
 	@Override
-	public float getShadowSize(){
+	public float getShadowSize() {
 		return 0;
 	}
 
-	private int getAverageNearbyPlayerMagicLevel(){
-		if (this.worldObj == null) return 0;
+	private int getAverageNearbyPlayerMagicLevel() {
+		if(this.worldObj == null) {
+			return 0;
+		}
 		List<EntityPlayer> players = worldObj.getEntitiesWithinAABB(EntityPlayer.class, this.boundingBox.expand(250, 250, 250));
-		if (players.size() == 0) return 0;
+		if(players.size() == 0) {
+			return 0;
+		}
 		int avgLvl = 0;
-		for (EntityPlayer player : players){
+		for(EntityPlayer player: players) {
 			avgLvl += ExtendedProperties.For(player).getMagicLevel();
 		}
 		return (int)Math.ceil(avgLvl / players.size());
 	}
 
 	@Override
-	public boolean getCanSpawnHere(){
-		if (!SpawnBlacklists.entityCanSpawnHere(this.posX, this.posZ, worldObj, this))
+	public boolean getCanSpawnHere() {
+		if(!SpawnBlacklists.entityCanSpawnHere(this.posX, this.posZ, worldObj, this)) {
 			return false;
-		if (getAverageNearbyPlayerMagicLevel() < 20){
+		}
+		if(getAverageNearbyPlayerMagicLevel() < 20) {
 			return false;
 		}
 		return super.getCanSpawnHere();

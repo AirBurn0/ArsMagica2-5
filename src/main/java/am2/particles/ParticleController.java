@@ -2,9 +2,7 @@ package am2.particles;
 
 import net.minecraft.world.World;
 
-import java.util.Random;
-
-public abstract class ParticleController{
+public abstract class ParticleController {
 
 	protected AMParticle particle;
 
@@ -26,27 +24,28 @@ public abstract class ParticleController{
 			"grow"
 	};
 
-	public ParticleController(AMParticle particleEffect, int priority, boolean exclusive){
+	public ParticleController(AMParticle particleEffect, int priority, boolean exclusive) {
 		this.particle = particleEffect;
 		this.priority = priority;
 		this.exclusive = exclusive;
 		this.killParticleOnFinish = false;
 	}
 
-	protected ParticleController targetNewParticle(AMParticle particle){
-		if (this.particle != null)
+	protected ParticleController targetNewParticle(AMParticle particle) {
+		if(this.particle != null) {
 			this.particle.RemoveParticleController(this);
+		}
 		particle.AddParticleController(this);
 		this.particle = particle;
 		return this;
 	}
 
-	public ParticleController setKillParticleOnFinish(boolean kill){
+	public ParticleController setKillParticleOnFinish(boolean kill) {
 		this.killParticleOnFinish = kill;
 		return this;
 	}
 
-	public boolean getKillParticleOnFinish(){
+	public boolean getKillParticleOnFinish() {
 		return this.killParticleOnFinish;
 	}
 
@@ -55,36 +54,38 @@ public abstract class ParticleController{
 	@Override
 	public abstract ParticleController clone();
 
-	public void onUpdate(World world){
-		if (!world.isRemote){
+	public void onUpdate(World world) {
+		if(!world.isRemote) {
 			//spawned a particle on a server world...
-			if (particle != null) particle.setDead();
+			if(particle != null) {
+				particle.setDead();
+			}
 			return;
 		}
-		if (particle != null){
+		if(particle != null) {
 			doUpdate();
 		}
-		if (firstTick){
+		if(firstTick) {
 			firstTick = false;
 		}
 	}
 
-	public int getPriority(){
+	public int getPriority() {
 		return priority;
 	}
 
-	protected void finish(){
+	protected void finish() {
 		this.finished = true;
-		if (killParticleOnFinish && particle != null){
+		if(killParticleOnFinish && particle != null) {
 			particle.setDead();
 		}
 	}
 
-	public boolean getExclusive(){
+	public boolean getExclusive() {
 		return exclusive;
 	}
 
-	public boolean getFinished(){
+	public boolean getFinished() {
 		return finished;
 	}
 }

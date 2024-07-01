@@ -18,9 +18,9 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
-public class GuiArmorImbuer extends GuiContainer{
+public class GuiArmorImbuer extends GuiContainer {
 
-	private TileEntityArmorImbuer tileEntity;
+	private final TileEntityArmorImbuer tileEntity;
 
 	private static final ResourceLocation foreground = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("ArmorUpgradeGUI.png"));
 	private static final ResourceLocation background = new ResourceLocation("arsmagica2", ResourceManager.GetGuiTexturePath("ArmorUpgradeGUIIcons.png"));
@@ -30,7 +30,7 @@ public class GuiArmorImbuer extends GuiContainer{
 	int spriteWidth = 43;
 	String hoveredID;
 
-	public GuiArmorImbuer(EntityPlayer player, TileEntityArmorImbuer infuser){
+	public GuiArmorImbuer(EntityPlayer player, TileEntityArmorImbuer infuser) {
 		super(new ContainerArmorInfuser(player, infuser));
 		this.tileEntity = infuser;
 		xSize = 247;
@@ -38,8 +38,8 @@ public class GuiArmorImbuer extends GuiContainer{
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3){
-		if (hoveredID != null){
+	protected void mouseClicked(int par1, int par2, int par3) {
+		if(hoveredID != null) {
 			AMNetHandler.INSTANCE.sendImbueToServer(tileEntity, hoveredID);
 			tileEntity.imbueCurrentArmor(hoveredID);
 		}
@@ -47,7 +47,7 @@ public class GuiArmorImbuer extends GuiContainer{
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j){
+	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		int l = (width - xSize) / 2;
 		int i1 = (height - ySize) / 2;
 
@@ -69,20 +69,20 @@ public class GuiArmorImbuer extends GuiContainer{
 
 		GL11.glColor3f(1, 1, 1);
 		hoveredID = null;
-		if (stack != null){
+		if(stack != null) {
 			int armorType = -1;
-			if ( stack.getItem() instanceof ItemArmor) {
+			if(stack.getItem() instanceof ItemArmor) {
 				armorType = ((ItemArmor)stack.getItem()).armorType;
 			}
 
 			mc.renderEngine.bindTexture(background_bw);
-			for (ImbuementTiers tier : ImbuementTiers.values()){
+			for(ImbuementTiers tier: ImbuementTiers.values()) {
 				IArmorImbuement[] infusions = ImbuementRegistry.instance.getImbuementsForTier(tier, armorType);
-				for (IArmorImbuement infusion : infusions){
+				for(IArmorImbuement infusion: infusions) {
 					drawInfusionIconAt(drawX, drawY, infusion.getIconIndex());
 
-					if (i >= drawX && i <= drawX + spriteWidth){
-						if (j >= drawY && j <= drawY + spriteHeight){
+					if(i >= drawX && i <= drawX + spriteWidth) {
+						if(j >= drawY && j <= drawY + spriteHeight) {
 							hoverLines.add(StatCollector.translateToLocal("am2.tooltip." + infusion.getID()));
 						}
 					}
@@ -98,31 +98,35 @@ public class GuiArmorImbuer extends GuiContainer{
 
 			int highestSelectedTier = 0;
 			mc.renderEngine.bindTexture(background);
-			for (ImbuementTiers tier : ImbuementTiers.values()){
+			for(ImbuementTiers tier: ImbuementTiers.values()) {
 				IArmorImbuement[] infusions = ImbuementRegistry.instance.getImbuementsForTier(tier, armorType);
 				IArmorImbuement[] existingInfusions = ArmorHelper.getInfusionsOnArmor(stack);
 				IArmorImbuement tierInfusion = null;
 
-				for (IArmorImbuement infusion : existingInfusions){
-					if (infusion == null) continue;
-					if (infusion.getTier() == tier){
+				for(IArmorImbuement infusion: existingInfusions) {
+					if(infusion == null) {
+						continue;
+					}
+					if(infusion.getTier() == tier) {
 						tierInfusion = infusion;
-						if (tier.ordinal() >= highestSelectedTier)
+						if(tier.ordinal() >= highestSelectedTier) {
 							highestSelectedTier = tier.ordinal() + 1;
+						}
 						break;
 					}
 				}
-				for (IArmorImbuement infusion : infusions){
-					if ((tierInfusion == null && infusion.getTier().ordinal() <= highestSelectedTier)){
-						if (tileEntity.isCreativeAllowed() || ArmorHelper.getArmorLevel(stack) >= ArmorHelper.getImbueCost(tier)){
+				for(IArmorImbuement infusion: infusions) {
+					if((tierInfusion == null && infusion.getTier().ordinal() <= highestSelectedTier)) {
+						if(tileEntity.isCreativeAllowed() || ArmorHelper.getArmorLevel(stack) >= ArmorHelper.getImbueCost(tier)) {
 							drawInfusionIconAt(drawX, drawY, infusion.getIconIndex());
-							if (i >= drawX && i <= drawX + spriteWidth){
-								if (j >= drawY && j <= drawY + spriteHeight){
+							if(i >= drawX && i <= drawX + spriteWidth) {
+								if(j >= drawY && j <= drawY + spriteHeight) {
 									hoveredID = infusion.getID();
 								}
 							}
 						}
-					}else if (tierInfusion == infusion){
+					}
+					else if(tierInfusion == infusion) {
 						drawInfusionIconAt(drawX, drawY, infusion.getIconIndex());
 					}
 
@@ -136,16 +140,17 @@ public class GuiArmorImbuer extends GuiContainer{
 		mc.renderEngine.bindTexture(foreground);
 		drawTexturedModalRect(l, i1, 0, 0, xSize, ySize);
 
-		if (hoverLines.size() > 0)
-			AMGuiHelper.instance.drawHoveringText(hoverLines, i, j, fontRendererObj, width, height);
+		if(hoverLines.size() > 0) {
+			AMGuiHelper.drawHoveringText(hoverLines, i, j, fontRendererObj, width, height);
+		}
 	}
 
-	private void drawInfusionIconAt(int x, int y, int index){
+	private void drawInfusionIconAt(int x, int y, int index) {
 		drawTexturedModalRect(x, y, (index % 5) * spriteWidth, (int)Math.floor(index / 5) * spriteHeight, spriteWidth, spriteHeight);
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2){
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 
 	}
 

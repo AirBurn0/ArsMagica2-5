@@ -48,39 +48,42 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-public class AMClientEventHandler{
+public class AMClientEventHandler {
 	@SubscribeEvent
-	public void onBlockHighlight(DrawBlockHighlightEvent event){
+	public void onBlockHighlight(DrawBlockHighlightEvent event) {
 
-		if (AMCore.proxy.getLocalPlayer().getCurrentArmor(3) != null &&
+		if(AMCore.proxy.getLocalPlayer().getCurrentArmor(3) != null &&
 				(AMCore.proxy.getLocalPlayer().getCurrentArmor(3).getItem() == ItemsCommonProxy.magitechGoggles ||
-						ArmorHelper.isInfusionPreset(AMCore.proxy.getLocalPlayer().getCurrentArmor(3), GenericImbuement.magitechGoggleIntegration))
-				){
+						ArmorHelper.isInfusionPreset(AMCore.proxy.getLocalPlayer()
+																 .getCurrentArmor(3), GenericImbuement.magitechGoggleIntegration)
+				)
+		) {
 
 			TileEntity te = event.player.worldObj.getTileEntity(event.target.blockX, event.target.blockY, event.target.blockZ);
-			if (te != null && te instanceof IPowerNode){
+			if(te != null && te instanceof IPowerNode) {
 				AMCore.proxy.setTrackedLocation(new AMVector3(event.target.blockX, event.target.blockY, event.target.blockZ));
-			}else{
+			}
+			else {
 				AMCore.proxy.setTrackedLocation(AMVector3.zero());
 			}
 
-			if (AMCore.proxy.hasTrackedLocationSynced()){
+			if(AMCore.proxy.hasTrackedLocationSynced()) {
 				renderPowerFloatingText(event, te);
 			}
 
-			if (te instanceof TileEntityCrystalMarker){
+			if(te instanceof TileEntityCrystalMarker) {
 				renderPriorityText(event, (TileEntityCrystalMarker)te);
 			}
 		}
 	}
 
-	private void renderPowerFloatingText(DrawBlockHighlightEvent event, TileEntity te){
+	private void renderPowerFloatingText(DrawBlockHighlightEvent event, TileEntity te) {
 		PowerNodeEntry data = AMCore.proxy.getTrackedData();
 		Block block = event.player.worldObj.getBlock(event.target.blockX, event.target.blockY, event.target.blockZ);
 		float yOff = 0.5f;
-		if (data != null){
+		if(data != null) {
 			GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
-			for (PowerTypes type : ((IPowerNode)te).getValidPowerTypes()){
+			for(PowerTypes type: ((IPowerNode)te).getValidPowerTypes()) {
 				float pwr = data.getPower(type);
 				float pct = pwr / ((IPowerNode)te).getCapacity() * 100;
 				AMVector3 offset = new AMVector3(event.target.blockX + 0.5, event.target.blockY + 0.5, event.target.blockZ + 0.5).sub(
@@ -88,14 +91,15 @@ public class AMClientEventHandler{
 								(event.player.prevPosY - (event.player.prevPosY - event.player.posY) * event.partialTicks) + event.player.getEyeHeight(),
 								(event.player.prevPosZ - (event.player.prevPosZ - event.player.posZ) * event.partialTicks)));
 				offset = offset.normalize();
-				if (event.target.blockY <= event.player.posY - 0.5){
+				if(event.target.blockY <= event.player.posY - 0.5) {
 					RenderUtilities.drawTextInWorldAtOffset(String.format("%s%.2f (%.2f%%)", type.chatColor(), pwr, pct),
 							event.target.blockX - (event.player.prevPosX - (event.player.prevPosX - event.player.posX) * event.partialTicks) + 0.5f - offset.x,
 							event.target.blockY + yOff - (event.player.prevPosY - (event.player.prevPosY - event.player.posY) * event.partialTicks) + block.getBlockBoundsMaxY() * 0.8f,
 							event.target.blockZ - (event.player.prevPosZ - (event.player.prevPosZ - event.player.posZ) * event.partialTicks) + 0.5f - offset.z,
 							0xFFFFFF);
 					yOff += 0.12f;
-				}else{
+				}
+				else {
 					RenderUtilities.drawTextInWorldAtOffset(String.format("%s%.2f (%.2f%%)", type.chatColor(), pwr, pct),
 							event.target.blockX - (event.player.prevPosX - (event.player.prevPosX - event.player.posX) * event.partialTicks) + 0.5f - offset.x,
 							event.target.blockY - yOff - (event.player.prevPosY - (event.player.prevPosY - event.player.posY) * event.partialTicks) - block.getBlockBoundsMaxY() * 0.2f,
@@ -108,10 +112,12 @@ public class AMClientEventHandler{
 		}
 	}
 
-	private void renderPriorityText(DrawBlockHighlightEvent event, TileEntityCrystalMarker te){
+	private void renderPriorityText(DrawBlockHighlightEvent event, TileEntityCrystalMarker te) {
 		int meta = event.player.worldObj.getBlockMetadata(event.target.blockX, event.target.blockY, event.target.blockZ);
-		if (meta == BlockCrystalMarker.META_IN) //no priority for these blocks
+		if(meta == BlockCrystalMarker.META_IN) //no priority for these blocks
+		{
 			return;
+		}
 
 		Block block = event.player.worldObj.getBlock(event.target.blockX, event.target.blockY, event.target.blockZ);
 		float yOff = 0.5f;
@@ -139,7 +145,7 @@ public class AMClientEventHandler{
 				event.target.blockY + yOff - (event.player.prevPosY - (event.player.prevPosY - event.player.posY) * event.partialTicks) + block.getBlockBoundsMaxY() * 0.8f,
 				event.target.blockZ + block.getBlockBoundsMaxZ() - offset.z - (event.player.prevPosZ - (event.player.prevPosZ - event.player.posZ) * event.partialTicks)
 		);
-		if (event.target.blockY > event.player.posY - 0.5){
+		if(event.target.blockY > event.player.posY - 0.5) {
 			drawPos.y = (float)(event.target.blockY - yOff - (event.player.prevPosY - (event.player.prevPosY - event.player.posY) * event.partialTicks) - block.getBlockBoundsMaxY() * 0.2f);
 		}
 
@@ -149,43 +155,45 @@ public class AMClientEventHandler{
 	}
 
 	@SubscribeEvent
-	public void onItemTooltip(ItemTooltipEvent event){
+	public void onItemTooltip(ItemTooltipEvent event) {
 		ItemStack stack = event.itemStack;
-		if (stack != null && stack.getItem() instanceof ItemArmor){
+		if(stack != null && stack.getItem() instanceof ItemArmor) {
 			double xp = 0;
 			int armorLevel = 0;
 			String[] effects = new String[0];
 
-			if (stack.hasTagCompound()){
+			if(stack.hasTagCompound()) {
 				NBTTagCompound armorCompound = (NBTTagCompound)stack.stackTagCompound.getTag(AMArmor.NBT_KEY_AMPROPS);
-				if (armorCompound != null){
+				if(armorCompound != null) {
 					xp = armorCompound.getDouble(AMArmor.NBT_KEY_TOTALXP);
 					armorLevel = armorCompound.getInteger(AMArmor.NBT_KEY_ARMORLEVEL);
 					String effectsList = armorCompound.getString(AMArmor.NBT_KEY_EFFECTS);
-					if (effectsList != null && effectsList != ""){
+					if(effectsList != null && effectsList != "") {
 						effects = effectsList.split(AMArmor.INFUSION_DELIMITER);
 					}
 				}
 			}
 
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 				event.toolTip.add(StatCollector.translateToLocalFormatted("am2.tooltip.armorxp", String.format("%.2f", xp)));
 				event.toolTip.add(String.format(StatCollector.translateToLocal("am2.tooltip.armorlevel"), armorLevel));
-				for (String s : effects){
+				for(String s: effects) {
 					event.toolTip.add(StatCollector.translateToLocal("am2.tooltip." + s));
 				}
 
-			}else{
+			}
+			else {
 				event.toolTip.add(StatCollector.translateToLocal("am2.tooltip.shiftForDetails"));
 			}
-		}else if (stack.getItem() instanceof ItemBlock){
-			if (((ItemBlock)stack.getItem()).field_150939_a == BlocksCommonProxy.manaBattery){
-				if (stack.hasTagCompound()){
+		}
+		else if(stack.getItem() instanceof ItemBlock) {
+			if(((ItemBlock)stack.getItem()).field_150939_a == BlocksCommonProxy.manaBattery) {
+				if(stack.hasTagCompound()) {
 					NBTTagList list = stack.stackTagCompound.getTagList("Lore", Constants.NBT.TAG_COMPOUND);
-					if (list != null){
-						for (int i = 0; i < list.tagCount(); ++i){
+					if(list != null) {
+						for(int i = 0; i < list.tagCount(); ++i) {
 							NBTBase tag = list.getCompoundTagAt(i);
-							if (tag instanceof NBTTagString){
+							if(tag instanceof NBTTagString) {
 								event.toolTip.add((((NBTTagString)tag).func_150285_a_()));
 							}
 						}
@@ -197,36 +205,36 @@ public class AMClientEventHandler{
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void onMouseEvent(MouseEvent event){
+	public void onMouseEvent(MouseEvent event) {
 		event.setCanceled(AMCore.proxy.setMouseDWheel(event.dwheel));
 	}
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void onGuiRender(RenderGameOverlayEvent event){
-		if (event.type == ElementType.CROSSHAIRS || event.type == ElementType.TEXT)
+	public void onGuiRender(RenderGameOverlayEvent event) {
+		if(event.type == ElementType.CROSSHAIRS || event.type == ElementType.TEXT) {
 			AMCore.proxy.renderGameOverlay();
+		}
 	}
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void onPlayerRender(RenderPlayerEvent.Pre event){
+	public void onPlayerRender(RenderPlayerEvent.Pre event) {
 		ItemStack chestPlate = event.entityPlayer.inventory.armorInventory[2];
 
 		ModelBiped mainModel = ReflectionHelper.getPrivateValue(RenderPlayer.class, event.renderer, "field_77109_a", "modelBipedMain");
 
-		boolean holdingItem = false;
-		if (event.entityPlayer.getCurrentEquippedItem() != null)
-			holdingItem = true;
+		boolean holdingItem = event.entityPlayer.getCurrentEquippedItem() != null;
 
-		if (!AMCore.proxy.playerTracker.hasCLS(event.entityPlayer.getUniqueID().toString())){
-			if (chestPlate != null && chestPlate.getItem() == ItemsCommonProxy.earthGuardianArmor){
-				if (mainModel != null){
+		if(!AMCore.proxy.playerTracker.hasCLS(event.entityPlayer.getUniqueID().toString())) {
+			if(chestPlate != null && chestPlate.getItem() == ItemsCommonProxy.earthGuardianArmor) {
+				if(mainModel != null) {
 					mainModel.bipedLeftArm.isHidden = true;
 					mainModel.bipedRightArm.isHidden = !holdingItem;
 				}
-			}else{
-				if (mainModel != null){
+			}
+			else {
+				if(mainModel != null) {
 					mainModel.bipedLeftArm.isHidden = false;
 					mainModel.bipedRightArm.isHidden = false;
 				}
@@ -245,19 +253,21 @@ public class AMClientEventHandler{
 		double transY = dpY + (dY - dpY) * event.partialRenderTick;
 		double transZ = dpZ + (dZ - dpZ) * event.partialRenderTick;
 
-		if (ExtendedProperties.For(event.entityPlayer).getFlipRotation() > 0){
+		if(ExtendedProperties.For(event.entityPlayer).getFlipRotation() > 0) {
 			GL11.glPushMatrix();
 
 			GL11.glTranslated(-transX, -transY, -transZ);
 			GL11.glRotatef(ExtendedProperties.For(event.entityPlayer).getFlipRotation(), 0, 0, 1.0f);
 			GL11.glTranslated(transX, transY, transZ);
 
-			float offset = event.entityPlayer.height * (ExtendedProperties.For(event.entityPlayer).getFlipRotation() / 180.0f);
+			float offset = event.entityPlayer.height * (ExtendedProperties.For(event.entityPlayer)
+																		  .getFlipRotation() / 180.0f
+			);
 			GL11.glTranslatef(0, -offset, 0);
 		}
 
 		float shrink = ExtendedProperties.For(event.entityPlayer).getShrinkPct();
-		if (shrink > 0){
+		if(shrink > 0) {
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0, 0 - 0.5f * shrink, 0);
 			GL11.glScalef(1 - 0.5f * shrink, 1 - 0.5f * shrink, 1 - 0.5f * shrink);
@@ -266,10 +276,10 @@ public class AMClientEventHandler{
 	}
 
 	@SubscribeEvent
-	public void onSetArmorModel(RenderPlayerEvent.SetArmorModel event){
-		if (AMCore.proxy.playerTracker.hasCLS(event.entityPlayer.getUniqueID().toString())){
+	public void onSetArmorModel(RenderPlayerEvent.SetArmorModel event) {
+		if(AMCore.proxy.playerTracker.hasCLS(event.entityPlayer.getUniqueID().toString())) {
 			int dm = AMCore.proxy.playerTracker.getCLDM(event.entityPlayer.getUniqueID().toString());
-			if (event.slot == 1 || event.slot == 2 || ((dm & 0x1) == 0x1 && event.slot == 3)){
+			if(event.slot == 1 || event.slot == 2 || ((dm & 0x1) == 0x1 && event.slot == 3)) {
 				event.result = -2;
 			}
 		}
@@ -277,46 +287,49 @@ public class AMClientEventHandler{
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void onPlayerRender(RenderPlayerEvent.Post event){
+	public void onPlayerRender(RenderPlayerEvent.Post event) {
 		ModelBiped mainModel = ReflectionHelper.getPrivateValue(RenderPlayer.class, event.renderer, "field_77109_a", "modelBipedMain");
-		if (mainModel != null){
+		if(mainModel != null) {
 			mainModel.bipedLeftArm.isHidden = false;
 			mainModel.bipedRightArm.isHidden = false;
 		}
 
-		if (ExtendedProperties.For(event.entityPlayer).getFlipRotation() > 0){
+		if(ExtendedProperties.For(event.entityPlayer).getFlipRotation() > 0) {
 			GL11.glPopMatrix();
 		}
-		if (ExtendedProperties.For(event.entityPlayer).getShrinkPct() > 0){
+		if(ExtendedProperties.For(event.entityPlayer).getShrinkPct() > 0) {
 			GL11.glPopMatrix();
 		}
 
 		CloakUtils.renderCloakModel(event.entityPlayer, mainModel, event.partialRenderTick);
 
-		if (event.entityPlayer == AMCore.proxy.getLocalPlayer()){
-			if (AMCore.proxy.getLocalPlayer().isPotionActive(BuffList.trueSight.id)){
-				if (AMGuiHelper.instance.playerRunesAlpha < 1)
+		if(event.entityPlayer == AMCore.proxy.getLocalPlayer()) {
+			if(AMCore.proxy.getLocalPlayer().isPotionActive(BuffList.trueSight.id)) {
+				if(AMGuiHelper.instance.playerRunesAlpha < 1) {
 					AMGuiHelper.instance.playerRunesAlpha += 0.01f;
-			}else{
-				if (AMGuiHelper.instance.playerRunesAlpha > 0)
+				}
+			}
+			else {
+				if(AMGuiHelper.instance.playerRunesAlpha > 0) {
 					AMGuiHelper.instance.playerRunesAlpha -= 0.01f;
+				}
 			}
 
 
-			if (AMGuiHelper.instance.playerRunesAlpha > 0){
+			if(AMGuiHelper.instance.playerRunesAlpha > 0) {
 				int runeCombo = EntityUtilities.getRuneCombo(event.entityPlayer);
 				int numRunes = 0;
-				for (int i = 0; i <= 16; ++i){
+				for(int i = 0; i <= 16; ++i) {
 					int bit = 1 << i;
-					if ((runeCombo & bit) == bit){
+					if((runeCombo & bit) == bit) {
 						numRunes++;
 					}
 				}
 				double step = 0.25f;
 				double xOffset = -(numRunes / 2.0f) * step + ((numRunes % 2 == 0) ? step / 2f : 0);
-				for (int i = 0; i <= 16; ++i){
+				for(int i = 0; i <= 16; ++i) {
 					int bit = 1 << i;
-					if ((runeCombo & bit) == bit){
+					if((runeCombo & bit) == bit) {
 						RenderUtilities.DrawIconInWorldAtOffset(ItemsCommonProxy.rune.getIconFromDamage(i), xOffset, 0.5f, 0, 0.25f, 0.25f);
 						xOffset += step;
 					}
@@ -326,26 +339,26 @@ public class AMClientEventHandler{
 	}
 
 	@SubscribeEvent
-	public void onEntityJoinWorld(EntityJoinWorldEvent event){
-		if (event.entity instanceof EntityShadowHelper){
+	public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+		if(event.entity instanceof EntityShadowHelper) {
 			((EntityShadowHelper)event.entity).onJoinWorld(event.world);
 		}
 	}
-	
+
 	@SubscribeEvent
-	public void onPlayerInteract(PlayerInteractEvent event){
-		if(event.face == -1){
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if(event.face == -1) {
 			return;
 		}
-		
+
 		Block block = event.world.getBlock(event.x + Facing.offsetsXForSide[event.face], event.y + Facing.offsetsYForSide[event.face], event.z + Facing.offsetsZForSide[event.face]);
-		
-		if (block == BlocksCommonProxy.particleEmitter){
+
+		if(block == BlocksCommonProxy.particleEmitter) {
 			TileEntity te = event.world.getTileEntity(event.x + Facing.offsetsXForSide[event.face], event.y + Facing.offsetsYForSide[event.face], event.z + Facing.offsetsZForSide[event.face]);
-			
-			if (te != null && te instanceof TileEntityParticleEmitter && !((TileEntityParticleEmitter)te).getShow()){
+
+			if(te != null && te instanceof TileEntityParticleEmitter && !((TileEntityParticleEmitter)te).getShow()) {
 				event.setCanceled(true);
-		  }
+			}
 		}
 	}
 }

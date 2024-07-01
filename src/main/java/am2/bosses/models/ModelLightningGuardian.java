@@ -13,7 +13,7 @@ import thehippomaster.AnimationAPI.client.Animator;
 //
 //import thehippomaster.AnimationAPI.client.Animator;
 
-public class ModelLightningGuardian extends ModelBase{
+public class ModelLightningGuardian extends ModelBase {
 	//fields
 	AM2ModelRenderer ChestLower;
 	AM2ModelRenderer leftarmwristband3;
@@ -52,9 +52,9 @@ public class ModelLightningGuardian extends ModelBase{
 	ResourceLocation armor;
 	ResourceLocation lightning;
 
-	private Animator animator;
+	private final Animator animator;
 
-	public ModelLightningGuardian(ResourceLocation armor, ResourceLocation lightning){
+	public ModelLightningGuardian(ResourceLocation armor, ResourceLocation lightning) {
 		textureWidth = 256;
 		textureHeight = 256;
 
@@ -71,7 +71,7 @@ public class ModelLightningGuardian extends ModelBase{
 		animator = new Animator(this);
 	}
 
-	private void initializeParts(){
+	private void initializeParts() {
 		ChestLower = new AM2ModelRenderer(this, 49, 32);
 		leftarmwristband3 = new AM2ModelRenderer(this, 80, 12);
 		leftarmlower = new AM2ModelRenderer(this, 98, 32);
@@ -107,7 +107,7 @@ public class ModelLightningGuardian extends ModelBase{
 		ChestUpper = new AM2ModelRenderer(this, 0, 32);
 	}
 
-	private void addBoxes(){
+	private void addBoxes() {
 		ChestLower.addBox(-1F, 0F, -1.5F, 2, 6, 1);
 		leftarmlower.addBox(-1F, 0F, -1F, 2, 6, 2);
 		leftarmupper.addBox(-1F, 0F, -1F, 2, 5, 2);
@@ -144,7 +144,7 @@ public class ModelLightningGuardian extends ModelBase{
 		ChestArmor1.addBox(-3.5F, 0F, -2F, 7, 5, 0);
 	}
 
-	private void setRotationPoints(){
+	private void setRotationPoints() {
 		ChestMiddle.setRotationPoint(0F, 11F, 1F);
 		ChestUpper.setRotationPoint(0F, -4F, -1F);
 		Head.setRotationPoint(0F, -3F, 0F);
@@ -188,7 +188,7 @@ public class ModelLightningGuardian extends ModelBase{
 
 	}
 
-	private void setTextureSizes(){
+	private void setTextureSizes() {
 		ChestLower.setTextureSize(256, 256);
 		leftarmwristband3.setTextureSize(256, 256);
 		leftarmlower.setTextureSize(256, 256);
@@ -224,7 +224,7 @@ public class ModelLightningGuardian extends ModelBase{
 		ChestUpper.setTextureSize(256, 256);
 	}
 
-	private void setMirrorStates(){
+	private void setMirrorStates() {
 		ChestLower.mirror = true;
 		leftarmwristband3.mirror = true;
 		leftarmlower.mirror = true;
@@ -260,7 +260,7 @@ public class ModelLightningGuardian extends ModelBase{
 		ChestUpper.mirror = true;
 	}
 
-	private void setInitialRotations(){
+	private void setInitialRotations() {
 		setRotation(ChestLower, 0F, 0F, 0F);
 		setRotation(leftarmwristband3, 0F, 0F, 0F);
 		setRotation(leftarmlower, 0F, 0F, 0F);
@@ -330,7 +330,7 @@ public class ModelLightningGuardian extends ModelBase{
 		ChestUpper.storeRestRotations();
 	}
 
-	private void setupHierarchy(){
+	private void setupHierarchy() {
 		ChestMiddle.addChild(ChestLower);
 		ChestMiddle.addChild(ChestUpper);
 
@@ -368,8 +368,8 @@ public class ModelLightningGuardian extends ModelBase{
 		rightarmlower.addChild(rightarmwristband6);
 	}
 
-	private void setupModelForRenderPass(int pass){
-		if (pass == 0){ //lightning pass
+	private void setupModelForRenderPass(int pass) {
+		if(pass == 0) { //lightning pass
 
 			ChestArmor1.showModel = false;
 			ChestArmor2.showModel = false;
@@ -396,7 +396,8 @@ public class ModelLightningGuardian extends ModelBase{
 			rightarmwristband4.showModel = false;
 			rightarmwristband5.showModel = false;
 			rightarmwristband6.showModel = false;
-		}else{ //armor Pass
+		}
+		else { //armor Pass
 
 			ChestArmor1.showModel = true;
 			ChestArmor2.showModel = true;
@@ -427,7 +428,7 @@ public class ModelLightningGuardian extends ModelBase{
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		animate((IAnimatedEntity)entity, f, f1, f2, f3, f4, f5);
 
 		GL11.glPushMatrix();
@@ -465,7 +466,7 @@ public class ModelLightningGuardian extends ModelBase{
 		GL11.glPopMatrix();
 	}
 
-	public void animate(IAnimatedEntity entity, float f, float f1, float f2, float f3, float f4, float f5){
+	public void animate(IAnimatedEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		animator.update(entity);
 		setToRestRotations();
 
@@ -748,7 +749,7 @@ public class ModelLightningGuardian extends ModelBase{
 		}
 	}
 
-	private void setToRestRotations(){
+	private void setToRestRotations() {
 		ChestLower.resetToRestRotations();
 		leftarmwristband3.resetToRestRotations();
 		leftarmlower.resetToRestRotations();
@@ -784,7 +785,7 @@ public class ModelLightningGuardian extends ModelBase{
 		ChestUpper.resetToRestRotations();
 	}
 
-	private void setRotation(AM2ModelRenderer model, float x, float y, float z){
+	private void setRotation(AM2ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

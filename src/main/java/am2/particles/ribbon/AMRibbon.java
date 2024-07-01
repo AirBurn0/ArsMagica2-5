@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.LinkedList;
 import java.util.Vector;
 
-public class AMRibbon extends EntityFX{
+public class AMRibbon extends EntityFX {
 
 	int NUMCURVES = 5;    //number of ribbonCurves per ribbon
 	int CURVERESOLUTION = 25; //lower -> faster
@@ -34,7 +34,7 @@ public class AMRibbon extends EntityFX{
 
 	AMVector3 ribbonTarget;
 
-	public AMRibbon(World world, float pcolor, float width, double x, double y, double z){
+	public AMRibbon(World world, float pcolor, float width, double x, double y, double z) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.setPosition(x, y, z);
 		this.setVelocity(0, 0, 0);
@@ -62,7 +62,7 @@ public class AMRibbon extends EntityFX{
 	}
 
 	@Override
-	public void renderParticle(Tessellator par1Tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float sinsinpitch, float cossinpitch){
+	public void renderParticle(Tessellator par1Tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float sinsinpitch, float cossinpitch) {
 
 		par1Tessellator.draw();
 
@@ -91,41 +91,43 @@ public class AMRibbon extends EntityFX{
 	}
 
 	@Override
-	public int getFXLayer(){
+	public int getFXLayer() {
 		return 2;
 	}
 
-	void draw(){
+	void draw() {
 		ribbonTarget = new AMVector3(random(-movement, movement), random(-movement, movement), random(-movement, movement));
 		ribbonSeparation = lerp(-MAXSEPARATION, MAXSEPARATION, noise.noise1(noisePosn += NOISESTEP));
 
 		currentCurve.addSegment();
 
 		int size = curves.size();
-		if (size > NUMCURVES - 1){
+		if(size > NUMCURVES - 1) {
 			RibbonCurve c = (RibbonCurve)curves.get(0);
 			c.removeSegment();
 		}
 		stepId++;
 
-		if (stepId > CURVERESOLUTION) addRibbonCurve();
+		if(stepId > CURVERESOLUTION) {
+			addRibbonCurve();
+		}
 
 		//draw curves
-		for (int i = 0; i < size; i++){
+		for(int i = 0; i < size; i++) {
 			RibbonCurve c = (RibbonCurve)curves.get(i);
 			c.draw();
 		}
 	}
 
-	private float random(float min, float max){
+	private float random(float min, float max) {
 		return (float)((Math.random() * max) - min);
 	}
 
-	private float lerp(float start, float stop, float amount){
+	private float lerp(float start, float stop, float amount) {
 		return start + ((stop - start) * amount);
 	}
 
-	void addRibbonCurve(){
+	void addRibbonCurve() {
 		//add new point
 		pts.addElement(getRandPt());
 
@@ -153,7 +155,7 @@ public class AMRibbon extends EntityFX{
 		curves.add(currentCurve);
 
 		//remove old curves
-		if (curves.size() > NUMCURVES){
+		if(curves.size() > NUMCURVES) {
 			curves.removeFirst();
 		}
 
@@ -161,29 +163,29 @@ public class AMRibbon extends EntityFX{
 
 	}
 
-	private static AMVector3 getRelativeViewVector(AMVector3 pos){
+	private static AMVector3 getRelativeViewVector(AMVector3 pos) {
 		EntityPlayer renderentity = Minecraft.getMinecraft().thePlayer;
 		return new AMVector3((float)renderentity.posX - pos.x, (float)renderentity.posY - pos.y, (float)renderentity.posZ - pos.z);
 	}
 
-	AMVector3 getRandPt(){
+	AMVector3 getRandPt() {
 		return new AMVector3(ribbonTarget.x + random(-ribbonSeparation, ribbonSeparation),
 				ribbonTarget.y + random(-ribbonSeparation, ribbonSeparation),
 				ribbonTarget.z + random(-ribbonSeparation, ribbonSeparation));
 	}
 
 	@Override
-	public boolean isInRangeToRenderDist(double par1){
+	public boolean isInRangeToRenderDist(double par1) {
 		return true;
 	}
 
 	@Override
-	public boolean isInRangeToRender3d(double p_145770_1_, double p_145770_3_, double p_145770_5_){
+	public boolean isInRangeToRender3d(double p_145770_1_, double p_145770_3_, double p_145770_5_) {
 		return true;
 	}
 
 	@Override
-	public void onUpdate(){
+	public void onUpdate() {
 		//intentionally left blank
 		super.onUpdate();
 	}

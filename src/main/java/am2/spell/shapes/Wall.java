@@ -7,6 +7,7 @@ import am2.api.spell.enums.SpellCastResult;
 import am2.api.spell.enums.SpellModifiers;
 import am2.blocks.BlocksCommonProxy;
 import am2.entities.EntitySpellEffect;
+import am2.items.ItemOre;
 import am2.items.ItemsCommonProxy;
 import am2.spell.SpellUtils;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,12 +15,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class Wall implements ISpellShape{
+public class Wall implements ISpellShape {
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
-				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemsCommonProxy.itemOre.META_VINTEUMDUST),
+				new ItemStack(ItemsCommonProxy.itemOre, 1, ItemOre.META_VINTEUMDUST),
 				BlocksCommonProxy.magicWall,
 				Blocks.cobblestone_wall,
 				Blocks.fence,
@@ -29,13 +30,15 @@ public class Wall implements ISpellShape{
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 16;
 	}
 
 	@Override
-	public SpellCastResult beginStackStage(ItemSpellBase item, ItemStack stack, EntityLivingBase caster, EntityLivingBase target, World world, double x, double y, double z, int side, boolean giveXP, int useCount){
-		if (world.isRemote) return SpellCastResult.SUCCESS;
+	public SpellCastResult beginStackStage(ItemSpellBase item, ItemStack stack, EntityLivingBase caster, EntityLivingBase target, World world, double x, double y, double z, int side, boolean giveXP, int useCount) {
+		if(world.isRemote) {
+			return SpellCastResult.SUCCESS;
+		}
 		int radius = SpellUtils.instance.getModifiedInt_Mul(3, stack, caster, target, world, 0, SpellModifiers.RADIUS);
 		double gravity = SpellUtils.instance.getModifiedDouble_Add(0, stack, caster, target, world, 0, SpellModifiers.GRAVITY);
 		int duration = SpellUtils.instance.getModifiedInt_Mul(100, stack, caster, target, world, 0, SpellModifiers.DURATION);
@@ -52,51 +55,51 @@ public class Wall implements ISpellShape{
 	}
 
 	@Override
-	public boolean isChanneled(){
+	public boolean isChanneled() {
 		return false;
 	}
 
 	@Override
-	public float manaCostMultiplier(ItemStack spellStack){
+	public float manaCostMultiplier(ItemStack spellStack) {
 		return 2.5f;
 	}
 
 	@Override
-	public boolean isTerminusShape(){
+	public boolean isTerminusShape() {
 		return false;
 	}
 
 	@Override
-	public boolean isPrincipumShape(){
+	public boolean isPrincipumShape() {
 		return true;
 	}
 
 	@Override
-	public String getSoundForAffinity(Affinity affinity, ItemStack stack, World world){
-		switch (affinity){
-		case AIR:
-			return "arsmagica2:spell.cast.air";
-		case ARCANE:
-			return "arsmagica2:spell.cast.arcane";
-		case EARTH:
-			return "arsmagica2:spell.cast.earth";
-		case ENDER:
-			return "arsmagica2:spell.cast.ender";
-		case FIRE:
-			return "arsmagica2:spell.cast.fire";
-		case ICE:
-			return "arsmagica2:spell.cast.ice";
-		case LIFE:
-			return "arsmagica2:spell.cast.life";
-		case LIGHTNING:
-			return "arsmagica2:spell.cast.lightning";
-		case NATURE:
-			return "arsmagica2:spell.cast.nature";
-		case WATER:
-			return "arsmagica2:spell.cast.water";
-		case NONE:
-		default:
-			return "arsmagica2:spell.cast.none";
+	public String getSoundForAffinity(Affinity affinity, ItemStack stack, World world) {
+		switch(affinity) {
+			case AIR:
+				return "arsmagica2:spell.cast.air";
+			case ARCANE:
+				return "arsmagica2:spell.cast.arcane";
+			case EARTH:
+				return "arsmagica2:spell.cast.earth";
+			case ENDER:
+				return "arsmagica2:spell.cast.ender";
+			case FIRE:
+				return "arsmagica2:spell.cast.fire";
+			case ICE:
+				return "arsmagica2:spell.cast.ice";
+			case LIFE:
+				return "arsmagica2:spell.cast.life";
+			case LIGHTNING:
+				return "arsmagica2:spell.cast.lightning";
+			case NATURE:
+				return "arsmagica2:spell.cast.nature";
+			case WATER:
+				return "arsmagica2:spell.cast.water";
+			case NONE:
+			default:
+				return "arsmagica2:spell.cast.none";
 		}
 	}
 }

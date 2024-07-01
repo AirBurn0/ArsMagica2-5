@@ -21,9 +21,8 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
-public class ItemCrystalPhylactery extends ArsMagicaItem{
+public class ItemCrystalPhylactery extends ArsMagicaItem {
 
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
@@ -36,7 +35,7 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 	public static final int META_FULL = 3;
 
 
-	public ItemCrystalPhylactery(){
+	public ItemCrystalPhylactery() {
 		super();
 		spawnableEntities = new HashMap<String, Integer>();
 		setMaxDamage(0);
@@ -45,25 +44,27 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4){
-		if (par1ItemStack.hasTagCompound()){
+	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
+		if(par1ItemStack.hasTagCompound()) {
 			String className = par1ItemStack.stackTagCompound.getString("SpawnClassName");
-			if (className != null){
+			if(className != null) {
 				par3List.add(String.format(StatCollector.translateToLocal("am2.tooltip.phyEss"), StatCollector.translateToLocal("entity." + className + ".name")));
 				Float f = par1ItemStack.stackTagCompound.getFloat("PercentFilled");
 				float pct = f == null ? 0 : f.floatValue();
 				par3List.add(String.format(StatCollector.translateToLocal("am2.tooltip.pctFull"), pct));
-			}else{
+			}
+			else {
 				par3List.add(StatCollector.translateToLocal("am2.tooltip.empty"));
 			}
-		}else{
+		}
+		else {
 			par3List.add(StatCollector.translateToLocal("am2.tooltip.empty"));
 		}
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		icons = new IIcon[4];
 		icons[0] = ResourceManager.RegisterTexture("crystal_phylactery", par1IconRegister);
 		icons[1] = ResourceManager.RegisterTexture("crystal_phylactery_liquidquarter", par1IconRegister);
@@ -71,45 +72,57 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 		icons[3] = ResourceManager.RegisterTexture("crystal_phylactery_liquid", par1IconRegister);
 	}
 
-	public void addFill(ItemStack stack){
-		if (stack.hasTagCompound()){
+	public void addFill(ItemStack stack) {
+		if(stack.hasTagCompound()) {
 			String className = stack.stackTagCompound.getString("SpawnClassName");
-			if (className != null){
+			if(className != null) {
 				Float f = stack.stackTagCompound.getFloat("PercentFilled");
 				float pct = f == null ? 0 : f.floatValue();
 				pct += itemRand.nextFloat() * 5;
-				if (pct > 100) pct = 100;
+				if(pct > 100) {
+					pct = 100;
+				}
 				stack.stackTagCompound.setFloat("PercentFilled", pct);
-				if (pct == 100)
+				if(pct == 100) {
 					stack.setItemDamage(META_FULL);
-				else if (pct > 50)
+				}
+				else if(pct > 50) {
 					stack.setItemDamage(META_HALF);
-				else if (pct > 25)
+				}
+				else if(pct > 25) {
 					stack.setItemDamage(META_QUARTER);
-				else
+				}
+				else {
 					stack.setItemDamage(META_EMPTY);
+				}
 
 			}
 		}
 	}
 
-	public void addFill(ItemStack stack, float amt){
-		if (stack.hasTagCompound()){
+	public void addFill(ItemStack stack, float amt) {
+		if(stack.hasTagCompound()) {
 			String className = stack.stackTagCompound.getString("SpawnClassName");
-			if (className != null){
+			if(className != null) {
 				Float f = stack.stackTagCompound.getFloat("PercentFilled");
 				float pct = f == null ? 0 : f.floatValue();
 				pct += amt;
-				if (pct > 100) pct = 100;
+				if(pct > 100) {
+					pct = 100;
+				}
 				stack.stackTagCompound.setFloat("PercentFilled", pct);
-				if (pct == 100)
+				if(pct == 100) {
 					stack.setItemDamage(META_FULL);
-				else if (pct > 50)
+				}
+				else if(pct > 50) {
 					stack.setItemDamage(META_HALF);
-				else if (pct > 25)
+				}
+				else if(pct > 25) {
 					stack.setItemDamage(META_QUARTER);
-				else
+				}
+				else {
 					stack.setItemDamage(META_EMPTY);
+				}
 
 			}
 		}
@@ -117,27 +130,35 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean hasEffect(ItemStack par1ItemStack, int pass){
-		if (pass == 1) return false;
+	public boolean hasEffect(ItemStack par1ItemStack, int pass) {
+		if(pass == 1) {
+			return false;
+		}
 		return par1ItemStack.getItemDamage() == META_FULL;
 	}
 
-	public void setSpawnClass(ItemStack stack, Class clazz){
+	public void setSpawnClass(ItemStack stack, Class clazz) {
 
-		if (!stack.hasTagCompound())
+		if(!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
+		}
 
 		String s = (String)EntityList.classToStringMapping.get(clazz);
-		if (s != null)
+		if(s != null) {
 			stack.stackTagCompound.setString("SpawnClassName", s);
+		}
 	}
 
-	public boolean canStore(ItemStack stack, EntityLiving entity){
-		if (entity instanceof IBossDisplayData) return false;
-		if (stack.getItemDamage() == META_FULL)
+	public boolean canStore(ItemStack stack, EntityLiving entity) {
+		if(entity instanceof IBossDisplayData) {
 			return false;
-		if (!stack.hasTagCompound())
+		}
+		if(stack.getItemDamage() == META_FULL) {
+			return false;
+		}
+		if(!stack.hasTagCompound()) {
 			return true;
+		}
 
 		String e = stack.stackTagCompound.getString("SpawnClassName");
 		String s = (String)EntityList.classToStringMapping.get(entity.getClass());
@@ -145,40 +166,43 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 		return (e != null && s != null) && e.equals(s);
 	}
 
-	public boolean isFull(ItemStack stack){
+	public boolean isFull(ItemStack stack) {
 		return stack.getItemDamage() == META_FULL;
 	}
 
 	@Override
-	public boolean requiresMultipleRenderPasses(){
+	public boolean requiresMultipleRenderPasses() {
 		return true;
 	}
 
-	public String getSpawnClass(ItemStack stack){
-		if (!stack.hasTagCompound())
+	public String getSpawnClass(ItemStack stack) {
+		if(!stack.hasTagCompound()) {
 			return "";
+		}
 		return stack.stackTagCompound.getString("SpawnClassName");
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamageForRenderPass(int meta, int pass){
-		if (pass == 0){
-			if (meta < 4) return icons[meta];
+	public IIcon getIconFromDamageForRenderPass(int meta, int pass) {
+		if(pass == 0) {
+			if(meta < 4) {
+				return icons[meta];
+			}
 		}
 		return icons[0];
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getColorFromItemStack(ItemStack stack, int pass){
-		if (pass == 0){
+	public int getColorFromItemStack(ItemStack stack, int pass) {
+		if(pass == 0) {
 			int color = 0x0000FF;
-			if (stack.hasTagCompound()){
+			if(stack.hasTagCompound()) {
 				String className = stack.stackTagCompound.getString("SpawnClassName");
-				if (className != null){
+				if(className != null) {
 					Integer storedColor = spawnableEntities.get(className);
-					if (storedColor != null){
+					if(storedColor != null) {
 						color = storedColor.intValue();
 					}
 				}
@@ -188,31 +212,32 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 		return 0xFFFFFF;
 	}
 
-	public void getSpawnableEntities(World world){
-		for (Object clazz : EntityList.classToStringMapping.keySet()){
-			if (EntityCreature.class.isAssignableFrom((Class)clazz)){
-				try{
+	public void getSpawnableEntities(World world) {
+		for(Object clazz: EntityList.classToStringMapping.keySet()) {
+			if(EntityCreature.class.isAssignableFrom((Class)clazz)) {
+				try {
 					EntityCreature temp = (EntityCreature)((Class)clazz).getConstructor(World.class).newInstance(world);
-					if (EntityUtilities.isAIEnabled(temp) && !(temp instanceof IBossDisplayData)){
+					if(EntityUtilities.isAIEnabled(temp) && !(temp instanceof IBossDisplayData)) {
 						int color = 0;
 						boolean found = false;
 						//look for entity egg
-						for (Object info : EntityList.entityEggs.values()){
+						for(Object info: EntityList.entityEggs.values()) {
 							EntityEggInfo eei = (EntityEggInfo)info;
 							Class spawnClass = EntityList.getClassFromID(eei.spawnedID);
-							if (spawnClass == (Class)clazz){
+							if(spawnClass == clazz) {
 								color = eei.primaryColor;
 								found = true;
 								break;
 							}
 						}
-						if (!found){
+						if(!found) {
 							//no spawn egg...pick random color?
 							color = world.rand.nextInt();
 						}
 						spawnableEntities.put((String)EntityList.classToStringMapping.get(clazz), color);
 					}
-				}catch (Throwable e){
+				}
+				catch(Throwable e) {
 					//e.printStackTrace();
 				}
 			}
@@ -221,9 +246,9 @@ public class ItemCrystalPhylactery extends ArsMagicaItem{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List){
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this));
-		for (String s : spawnableEntities.keySet()){
+		for(String s: spawnableEntities.keySet()) {
 			ItemStack stack = new ItemStack(this, 1, META_FULL);
 			stack.stackTagCompound = new NBTTagCompound();
 			stack.stackTagCompound.setString("SpawnClassName", s);

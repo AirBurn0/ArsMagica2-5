@@ -6,7 +6,12 @@ import am2.items.ItemsCommonProxy;
 import am2.particles.AMParticle;
 import am2.particles.ParticleOrbitEntity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.ai.*;
+import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAIPanic;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAITempt;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -15,11 +20,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import java.util.Random;
+public class EntityDryad extends EntityCreature {
 
-public class EntityDryad extends EntityCreature{
-
-	public EntityDryad(World par1World){
+	public EntityDryad(World par1World) {
 		super(par1World);
 		getNavigator().setAvoidsWater(true);
 
@@ -32,41 +35,41 @@ public class EntityDryad extends EntityCreature{
 	}
 
 	@Override
-	public boolean isAIEnabled(){
+	public boolean isAIEnabled() {
 		return true;
 	}
 
 	@Override
-	public boolean canTriggerWalking(){
+	public boolean canTriggerWalking() {
 		return false;
 	}
 
 
 	@Override
-	public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound){
+	public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {
 		super.writeEntityToNBT(par1NBTTagCompound);
 	}
 
 	@Override
-	public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound){
+	public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
 		super.readEntityFromNBT(par1NBTTagCompound);
 	}
 
 	@Override
-	protected Item getDropItem(){
+	protected Item getDropItem() {
 		return null;
 	}
 
 	@Override
-	public void onUpdate(){
+	public void onUpdate() {
 		World world = this.worldObj;
 		super.onUpdate();
-		if (!world.isRemote || world == null){
+		if(!world.isRemote || world == null) {
 			return;
 		}
-		if (worldObj.rand.nextInt(100) == 3){
-			AMParticle effect = (AMParticle)AMCore.instance.proxy.particleManager.spawn(world, "hr_sparkles_1", this.posX, this.posY + 2, this.posZ);
-			if (effect != null){
+		if(worldObj.rand.nextInt(100) == 3) {
+			AMParticle effect = (AMParticle)AMCore.proxy.particleManager.spawn(world, "hr_sparkles_1", this.posX, this.posY + 2, this.posZ);
+			if(effect != null) {
 				effect.AddParticleController(new ParticleOrbitEntity(effect, this, worldObj.rand.nextDouble() * 0.2 + 0.2, 1, false));
 				effect.setIgnoreMaxAge(false);
 				effect.setRGBColorF(0.1f, 0.8f, 0.1f);
@@ -75,39 +78,39 @@ public class EntityDryad extends EntityCreature{
 	}
 
 	@Override
-	protected boolean canDespawn(){
+	protected boolean canDespawn() {
 		return AMCore.config.canDraydsDespawn();
 	}
 
 	@Override
-	protected void dropFewItems(boolean par1, int par2){
+	protected void dropFewItems(boolean par1, int par2) {
 		int i = rand.nextInt(1);
 
-		for (int j = 0; j < i; j++){
+		for(int j = 0; j < i; j++) {
 			this.entityDropItem(new ItemStack(ItemsCommonProxy.essence, 1, 5), 0.0f);
 		}
 
 		i = rand.nextInt(10);
 
-		if (i == 3){
+		if(i == 3) {
 			this.entityDropItem(new ItemStack(ItemsCommonProxy.essence, 1, 8), 0.0f);
 		}
 	}
 
 	@Override
-	public void onDeath(DamageSource par1DamageSource){
-		if (par1DamageSource.getSourceOfDamage() instanceof EntityPlayer){
+	public void onDeath(DamageSource par1DamageSource) {
+		if(par1DamageSource.getSourceOfDamage() instanceof EntityPlayer) {
 			BossSpawnHelper.instance.onDryadKilled(this);
 		}
 		super.onDeath(par1DamageSource);
 	}
 
 	@Override
-	public boolean getCanSpawnHere(){
-		if (!SpawnBlacklists.entityCanSpawnHere(this.posX, this.posZ, worldObj, this))
+	public boolean getCanSpawnHere() {
+		if(!SpawnBlacklists.entityCanSpawnHere(this.posX, this.posZ, worldObj, this)) {
 			return false;
+		}
 		return super.getCanSpawnHere();
 	}
 
-	;
 }

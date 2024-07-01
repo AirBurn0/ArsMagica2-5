@@ -10,42 +10,42 @@ import net.minecraft.util.ChatComponentText;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DumpNBT extends CommandBase{
+public class DumpNBT extends CommandBase {
 
 	@Override
-	public String getCommandName(){
+	public String getCommandName() {
 		return "nbtdump";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender){
+	public String getCommandUsage(ICommandSender icommandsender) {
 		return "/nbtdump";
 	}
 
 	@Override
-	public List getCommandAliases(){
+	public List getCommandAliases() {
 		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("dumpnbt");
 		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] astring){
+	public void processCommand(ICommandSender icommandsender, String[] astring) {
 		EntityPlayerMP player = getCommandSenderAsPlayer(icommandsender);
-		if (player.getCurrentEquippedItem() == null){
+		if(player.getCurrentEquippedItem() == null) {
 			player.addChatMessage(new ChatComponentText("This command dumps the NBT of your current equipped item...see the problem here?"));
 			return;
 		}
-		if (!player.getCurrentEquippedItem().hasTagCompound()){
+		if(!player.getCurrentEquippedItem().hasTagCompound()) {
 			player.addChatMessage(new ChatComponentText("No NBT exists on this item."));
 			return;
 		}
 
-		AMNetHandler.INSTANCE.sendPacketToClientPlayer((EntityPlayerMP)player, AMPacketIDs.NBT_DUMP, new byte[0]);
+		AMNetHandler.INSTANCE.sendPacketToClientPlayer(player, AMPacketIDs.NBT_DUMP, new byte[0]);
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender){
+	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender) {
 		return true;
 	}
 

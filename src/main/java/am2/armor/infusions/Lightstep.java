@@ -10,41 +10,43 @@ import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
-public class Lightstep implements IArmorImbuement{
+public class Lightstep implements IArmorImbuement {
 
 	@Override
-	public String getID(){
+	public String getID() {
 		return "lightstep";
 	}
 
 	@Override
-	public int getIconIndex(){
+	public int getIconIndex() {
 		return 30;
 	}
 
 	@Override
-	public ImbuementTiers getTier(){
+	public ImbuementTiers getTier() {
 		return ImbuementTiers.FOURTH;
 	}
 
 	@Override
-	public EnumSet<ImbuementApplicationTypes> getApplicationTypes(){
+	public EnumSet<ImbuementApplicationTypes> getApplicationTypes() {
 		return EnumSet.of(ImbuementApplicationTypes.ON_TICK);
 	}
 
 	@Override
-	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params){
+	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params) {
 
-		if (world.isRemote)
+		if(world.isRemote) {
 			return false;
+		}
 
-		if (player.isSneaking())
+		if(player.isSneaking()) {
 			return false;
+		}
 		int x = (int)Math.floor(player.posX);
 		int y = (int)Math.floor(player.posY) + 1;
 		int z = (int)Math.floor(player.posZ);
 		int ll = world.getBlockLightValue(x, y, z);
-		if (ll < 7 && world.isAirBlock(x, y, z)){
+		if(ll < 7 && world.isAirBlock(x, y, z)) {
 			world.setBlock(x, y, z, BlocksCommonProxy.blockMageTorch, 15, 2);
 			return true;
 		}
@@ -52,22 +54,22 @@ public class Lightstep implements IArmorImbuement{
 	}
 
 	@Override
-	public int[] getValidSlots(){
+	public int[] getValidSlots() {
 		return new int[]{ImbuementRegistry.SLOT_BOOTS};
 	}
 
 	@Override
-	public boolean canApplyOnCooldown(){
+	public boolean canApplyOnCooldown() {
 		return true;
 	}
 
 	@Override
-	public int getCooldown(){
+	public int getCooldown() {
 		return 0;
 	}
 
 	@Override
-	public int getArmorDamage(){
+	public int getArmorDamage() {
 		return 1;
 	}
 }

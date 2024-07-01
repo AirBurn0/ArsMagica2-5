@@ -8,45 +8,47 @@ import net.minecraft.util.Vec3;
 import thehippomaster.AnimationAPI.AIAnimation;
 import thehippomaster.AnimationAPI.IAnimatedEntity;
 
-public class EntityAIShadowstep extends AIAnimation{
+public class EntityAIShadowstep extends AIAnimation {
 
 	private int cooldownTicks = 0;
 
-	public EntityAIShadowstep(IAnimatedEntity entity){
+	public EntityAIShadowstep(IAnimatedEntity entity) {
 		super(entity);
 	}
 
 	@Override
-	public int getAnimID(){
+	public int getAnimID() {
 		return BossActions.SPINNING.ordinal();
 	}
 
 	@Override
-	public boolean isAutomatic(){
+	public boolean isAutomatic() {
 		return false;
 	}
 
 	@Override
-	public int getDuration(){
+	public int getDuration() {
 		return 9;
 	}
 
 	@Override
-	public boolean shouldAnimate(){
+	public boolean shouldAnimate() {
 		//accessor method in AIAnimation that gives access to the entity
 		EntityLiving living = getEntity();
 
 		//must have an attack target
-		if (living.getAttackTarget() == null) return false;
+		if(living.getAttackTarget() == null) {
+			return false;
+		}
 
 		return cooldownTicks-- <= 0;
 	}
 
 	@Override
-	public void resetTask(){
+	public void resetTask() {
 		cooldownTicks = 30;
 		EntityEnderGuardian guardian = getEntity();
-		if (guardian.getAttackTarget() != null){
+		if(guardian.getAttackTarget() != null) {
 			Vec3 facing = guardian.getAttackTarget().getLook(1.0f);
 			double x = guardian.getAttackTarget().posX - facing.xCoord * 3;
 			double y = guardian.getAttackTarget().posY;
@@ -56,15 +58,17 @@ public class EntityAIShadowstep extends AIAnimation{
 			guardian.lastTickPosX = x;
 			guardian.lastTickPosY = y;
 			guardian.lastTickPosZ = z;
-			guardian.worldObj.playSoundAtEntity(guardian, ((IArsMagicaBoss)guardian).getAttackSound(), 1.0f, (float)(0.5 + guardian.getRNG().nextDouble() * 0.5f));
+			guardian.worldObj.playSoundAtEntity(guardian, ((IArsMagicaBoss)guardian).getAttackSound(), 1.0f, (float)(0.5 + guardian.getRNG()
+																																   .nextDouble() * 0.5f
+			));
 		}
 		super.resetTask();
 	}
 
 	@Override
-	public void updateTask(){
+	public void updateTask() {
 		EntityEnderGuardian guardian = getEntity();
-		if (guardian.getAttackTarget() != null){
+		if(guardian.getAttackTarget() != null) {
 			guardian.getLookHelper().setLookPositionWithEntity(guardian.getAttackTarget(), 30, 30);
 		}
 	}

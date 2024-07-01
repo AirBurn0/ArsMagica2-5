@@ -13,29 +13,29 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class EntityMageVillager extends EntityVillager{
+public class EntityMageVillager extends EntityVillager {
 
 	private float actionSpeed;
 
 	private static final ItemStack heldItem = new ItemStack(ItemsCommonProxy.spellBook);
 
-	public EntityMageVillager(World par1World){
+	public EntityMageVillager(World par1World) {
 		super(par1World);
 		ExtendedProperties.For(this).setMagicLevelWithMana(37);
 
 		initAI();
 	}
 
-	public String getTexture(){
+	public String getTexture() {
 		return "/assets/ArsMagica/textures/mobs/light_mages/wizard_villager3.png";
 	}
 
 	@Override
-	public int getProfession(){
+	public int getProfession() {
 		return AMCore.config.getVillagerProfessionID();
 	}
 
-	private void initAI(){
+	private void initAI() {
 		this.tasks.taskEntries.clear();
 		this.setAIMoveSpeed(0.5F);
 		this.actionSpeed = 0.7f;
@@ -68,7 +68,7 @@ public class EntityMageVillager extends EntityVillager{
 	}
 
 	@Override
-	public ItemStack getHeldItem(){
+	public ItemStack getHeldItem() {
 		return null;
 	}
 }

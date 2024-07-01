@@ -2,18 +2,18 @@ package am2.particles;
 
 import net.minecraft.entity.Entity;
 
-public class ParticleFollowEntity extends ParticleController{
+public class ParticleFollowEntity extends ParticleController {
 
-	private Entity followTarget;
+	private final Entity followTarget;
 
-	public ParticleFollowEntity(AMParticle particleEffect, int priority, Entity followTarget, boolean exclusive){
+	public ParticleFollowEntity(AMParticle particleEffect, int priority, Entity followTarget, boolean exclusive) {
 		super(particleEffect, priority, exclusive);
 
 		this.followTarget = followTarget;
 	}
 
 	@Override
-	public void doUpdate(){
+	public void doUpdate() {
 		this.particle.lastTickPosX = this.particle.posX;
 		this.particle.lastTickPosY = this.particle.posY;
 		this.particle.lastTickPosZ = this.particle.posZ;
@@ -24,7 +24,7 @@ public class ParticleFollowEntity extends ParticleController{
 	}
 
 	@Override
-	public ParticleController clone(){
+	public ParticleController clone() {
 		return new ParticleFollowEntity(particle, priority, followTarget, exclusive);
 	}
 

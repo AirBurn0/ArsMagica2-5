@@ -11,8 +11,10 @@ import am2.api.power.PowerTypes;
 import am2.api.spell.component.interfaces.ISkillTreeEntry;
 import am2.api.spell.component.interfaces.ISpellModifier;
 import am2.api.spell.component.interfaces.ISpellPart;
+import am2.blocks.BlockAMOre;
 import am2.blocks.BlocksCommonProxy;
 import am2.items.ItemEssence;
+import am2.items.ItemRune;
 import am2.items.ItemsCommonProxy;
 import am2.multiblock.IMultiblockStructureController;
 import am2.network.AMDataReader;
@@ -48,7 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TileEntityCraftingAltar extends TileEntityAMPower implements IMultiblockStructureController{
+public class TileEntityCraftingAltar extends TileEntityAMPower implements IMultiblockStructureController {
 
 	private MultiblockStructureDefinition primary;
 	private MultiblockStructureDefinition secondary;
@@ -59,7 +61,7 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 
 	private final ArrayList<KeyValuePair<ISpellPart, byte[]>> spellDef;
 	private final ArrayList<ArrayList<KeyValuePair<ISpellPart, byte[]>>> shapeGroups;
-	private boolean allShapeGroupsAdded = false;
+	private final boolean allShapeGroupsAdded = false;
 
 	private int currentKey = -1;
 	private int checkCounter;
@@ -110,7 +112,7 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 
 	private String currentSpellName = "";
 
-	public TileEntityCraftingAltar(){
+	public TileEntityCraftingAltar() {
 		super(500);
 		setupMultiblock();
 		allAddedItems = new ArrayList<ItemStack>();
@@ -124,12 +126,12 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		spellDef = new ArrayList<KeyValuePair<ISpellPart, byte[]>>();
 		shapeGroups = new ArrayList<ArrayList<KeyValuePair<ISpellPart, byte[]>>>();
 
-		for (int i = 0; i < 5; ++i){
+		for(int i = 0; i < 5; ++i) {
 			shapeGroups.add(new ArrayList<KeyValuePair<ISpellPart, byte[]>>());
 		}
 	}
 
-	private void setupMultiblock(){
+	private void setupMultiblock() {
 		primary = new MultiblockStructureDefinition("craftingAltar_alt");
 
 		Block[] augMatls = new Block[]{
@@ -154,18 +156,18 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 				0, //gold
 				0, //diamond
 				0,  //emerald
-				BlocksCommonProxy.AMOres.META_MOONSTONE_BLOCK,
-				BlocksCommonProxy.AMOres.META_SUNSTONE_BLOCK
+				BlockAMOre.META_MOONSTONE_BLOCK,
+				BlockAMOre.META_SUNSTONE_BLOCK
 		};
 
 		lecternGroup_primary = new StructureGroup[4];
 
-		for (int i = 0; i < lecternGroup_primary.length; ++i){
+		for(int i = 0; i < lecternGroup_primary.length; ++i) {
 			lecternGroup_primary[i] = primary.createGroup("lectern" + i, lectern_mutex);
 		}
 
 		int count = 0;
-		for (int i = -2; i <= 2; i += 4){
+		for(int i = -2; i <= 2; i += 4) {
 			primary.addAllowedBlock(lecternGroup_primary[count], i, -3, i, BlocksCommonProxy.blockLectern);
 			primary.addAllowedBlock(lecternGroup_primary[count], i, -2, -i, Blocks.lever, (count < 2) ? 2 : 1);
 			primary.addAllowedBlock(lecternGroup_primary[count], i, -2, -i, Blocks.lever, (count < 2) ? 10 : 9);
@@ -177,19 +179,22 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		}
 
 		augMatl_primary = new StructureGroup[augMatls.length];
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			augMatl_primary[i] = primary.createGroup("augmatl" + i, augmatl_mutex);
+		}
 
 		//row 0
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			primary.addAllowedBlock(augMatl_primary[i], -1, 0, -2, augMatls[i], augMetas[i]);
+		}
 
 		primary.addAllowedBlock(-1, 0, -1, Blocks.stone_brick_stairs, 0);
 		primary.addAllowedBlock(-1, 0, 0, Blocks.stone_brick_stairs, 0);
 		primary.addAllowedBlock(-1, 0, 1, Blocks.stone_brick_stairs, 0);
 
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			primary.addAllowedBlock(augMatl_primary[i], -1, 0, 2, augMatls[i], augMetas[i]);
+		}
 
 		primary.addAllowedBlock(0, 0, -2, Blocks.stone_brick_stairs, 2);
 		primary.addAllowedBlock(0, 0, -1, Blocks.stonebrick, 0);
@@ -197,15 +202,17 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		primary.addAllowedBlock(0, 0, 1, Blocks.stonebrick, 0);
 		primary.addAllowedBlock(0, 0, 2, Blocks.stone_brick_stairs, 3);
 
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			primary.addAllowedBlock(augMatl_primary[i], 1, 0, -2, augMatls[i], augMetas[i]);
+		}
 
 		primary.addAllowedBlock(1, 0, -1, Blocks.stone_brick_stairs, 1);
 		primary.addAllowedBlock(1, 0, 0, Blocks.stone_brick_stairs, 1);
 		primary.addAllowedBlock(1, 0, 1, Blocks.stone_brick_stairs, 1);
 
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			primary.addAllowedBlock(augMatl_primary[i], 1, 0, 2, augMatls[i], augMetas[i]);
+		}
 
 		//row 1
 		primary.addAllowedBlock(1, -1, -2, Blocks.stonebrick, 0);
@@ -243,12 +250,14 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		primary.addAllowedBlock(-1, -3, 2, Blocks.stonebrick, 0);
 
 		//row 4
-		for (int i = -2; i <= 2; ++i){
-			for (int j = -2; j <= 2; ++j){
-				if (i == 0 && j == 0){
-					for (int n = 0; n < augMatls.length; ++n)
+		for(int i = -2; i <= 2; ++i) {
+			for(int j = -2; j <= 2; ++j) {
+				if(i == 0 && j == 0) {
+					for(int n = 0; n < augMatls.length; ++n) {
 						primary.addAllowedBlock(augMatl_primary[n], i, -4, j, augMatls[n], augMetas[n]);
-				}else{
+					}
+				}
+				else {
 					primary.addAllowedBlock(i, -4, j, Blocks.stonebrick, 0);
 				}
 			}
@@ -287,12 +296,12 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 
 		lecternGroup_secondary = new StructureGroup[4];
 
-		for (int i = 0; i < lecternGroup_secondary.length; ++i){
+		for(int i = 0; i < lecternGroup_secondary.length; ++i) {
 			lecternGroup_secondary[i] = secondary.createGroup("lectern" + i, lectern_mutex);
 		}
 
 		count = 0;
-		for (int i = -2; i <= 2; i += 4){
+		for(int i = -2; i <= 2; i += 4) {
 			secondary.addAllowedBlock(lecternGroup_secondary[count], i, -3, i, BlocksCommonProxy.blockLectern);
 			secondary.addAllowedBlock(lecternGroup_secondary[count], -i, -2, i, Blocks.lever, (count < 2) ? 4 : 3);
 			secondary.addAllowedBlock(lecternGroup_secondary[count], -i, -2, i, Blocks.lever, (count < 2) ? 12 : 11);
@@ -304,19 +313,22 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		}
 
 		augMatl_secondary = new StructureGroup[augMatls.length];
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			augMatl_secondary[i] = secondary.createGroup("augmatl" + i, augmatl_mutex);
+		}
 
 		//row 0
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			secondary.addAllowedBlock(augMatl_secondary[i], -2, 0, -1, augMatls[i], augMetas[i]);
+		}
 
 		secondary.addAllowedBlock(-1, 0, -1, Blocks.stone_brick_stairs, 2);
 		secondary.addAllowedBlock(0, 0, -1, Blocks.stone_brick_stairs, 2);
 		secondary.addAllowedBlock(1, 0, -1, Blocks.stone_brick_stairs, 2);
 
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			secondary.addAllowedBlock(augMatl_secondary[i], 2, 0, -1, augMatls[i], augMetas[i]);
+		}
 
 		secondary.addAllowedBlock(-2, 0, 0, Blocks.stone_brick_stairs, 0);
 		secondary.addAllowedBlock(-1, 0, 0, Blocks.stonebrick, 0);
@@ -324,15 +336,17 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		secondary.addAllowedBlock(1, 0, 0, Blocks.stonebrick, 0);
 		secondary.addAllowedBlock(2, 0, 0, Blocks.stone_brick_stairs, 1);
 
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			secondary.addAllowedBlock(augMatl_secondary[i], -2, 0, 1, augMatls[i], augMetas[i]);
+		}
 
 		secondary.addAllowedBlock(-1, 0, 1, Blocks.stone_brick_stairs, 3);
 		secondary.addAllowedBlock(0, 0, 1, Blocks.stone_brick_stairs, 3);
 		secondary.addAllowedBlock(1, 0, 1, Blocks.stone_brick_stairs, 3);
 
-		for (int i = 0; i < augMatls.length; ++i)
+		for(int i = 0; i < augMatls.length; ++i) {
 			secondary.addAllowedBlock(augMatl_secondary[i], 2, 0, 1, augMatls[i], augMetas[i]);
+		}
 
 		//row 1
 		secondary.addAllowedBlock(-2, -1, 1, Blocks.stonebrick, 0);
@@ -370,12 +384,14 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		secondary.addAllowedBlock(2, -3, -1, Blocks.stonebrick, 0);
 
 		//row 4
-		for (int i = -2; i <= 2; ++i){
-			for (int j = -2; j <= 2; ++j){
-				if (i == 0 && j == 0){
-					for (int n = 0; n < augMatls.length; ++n)
+		for(int i = -2; i <= 2; ++i) {
+			for(int j = -2; j <= 2; ++j) {
+				if(i == 0 && j == 0) {
+					for(int n = 0; n < augMatls.length; ++n) {
 						secondary.addAllowedBlock(augMatl_secondary[n], i, -4, j, augMatls[n], augMetas[n]);
-				}else{
+					}
+				}
+				else {
 					secondary.addAllowedBlock(i, -4, j, Blocks.stonebrick, 0);
 				}
 			}
@@ -412,95 +428,103 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 	}
 
 	@Override
-	public MultiblockStructureDefinition getDefinition(){
+	public MultiblockStructureDefinition getDefinition() {
 		return secondary;
 	}
 
-	public ItemStack getNextPlannedItem(){
-		if (spellGuide != null){
-			if ((this.allAddedItems.size()) * 3 < spellGuide.length){
+	public ItemStack getNextPlannedItem() {
+		if(spellGuide != null) {
+			if((this.allAddedItems.size()) * 3 < spellGuide.length) {
 				int guide_id = spellGuide[(this.allAddedItems.size()) * 3];
 				int guide_qty = spellGuide[((this.allAddedItems.size()) * 3) + 1];
 				int guide_meta = spellGuide[((this.allAddedItems.size()) * 3) + 2];
 				ItemStack stack = new ItemStack(Item.getItemById(guide_id), guide_qty, guide_meta);
 				return stack;
-			}else{
+			}
+			else {
 				return new ItemStack(ItemsCommonProxy.spellParchment);
 			}
 		}
 		return null;
 	}
 
-	private int getNumPartsInSpell(){
+	private int getNumPartsInSpell() {
 		int parts = 0;
-		if (outputCombo != null)
+		if(outputCombo != null) {
 			parts = outputCombo.length;
+		}
 
-		if (shapeGroupGuide != null){
-			for (int i = 0; i < shapeGroupGuide.length; ++i){
-				if (shapeGroupGuide[i] != null)
+		if(shapeGroupGuide != null) {
+			for(int i = 0; i < shapeGroupGuide.length; ++i) {
+				if(shapeGroupGuide[i] != null) {
 					parts += shapeGroupGuide[i].length;
+				}
 			}
 		}
 		return parts;
 	}
 
-	private boolean spellGuideIsWithinStructurePower(){
+	private boolean spellGuideIsWithinStructurePower() {
 		return getNumPartsInSpell() <= maxEffects;
 	}
 
-	private boolean currentDefinitionIsWithinStructurePower(){
+	private boolean currentDefinitionIsWithinStructurePower() {
 		int count = this.spellDef.size();
-		for (ArrayList<KeyValuePair<ISpellPart, byte[]>> part : shapeGroups)
+		for(ArrayList<KeyValuePair<ISpellPart, byte[]>> part: shapeGroups) {
 			count += part.size();
+		}
 
 		return count <= this.maxEffects;
 	}
 
-	public boolean structureValid(){
+	public boolean structureValid() {
 		return this.structureValid;
 	}
 
-	public boolean isCrafting(){
+	public boolean isCrafting() {
 		return this.isCrafting;
 	}
 
 	@Override
-	public void updateEntity(){
+	public void updateEntity() {
 		super.updateEntity();
 		this.ticksExisted++;
 
 		checkStructure();
 		checkForStartCondition();
 		updateLecternInformation();
-		if (isCrafting){
+		if(isCrafting) {
 			checkForEndCondition();
 			updatePowerRequestData();
-			if (!worldObj.isRemote && !currentDefinitionIsWithinStructurePower() && this.ticksExisted > 100){
+			if(!worldObj.isRemote && !currentDefinitionIsWithinStructurePower() && this.ticksExisted > 100) {
 				worldObj.newExplosion(null, xCoord + 0.5, yCoord - 1.5, zCoord + 0.5, 5, false, true);
 				setCrafting(false);
 				return;
 			}
-			if (worldObj.isRemote && checkCounter == 1){
+			if(worldObj.isRemote && checkCounter == 1) {
 				AMCore.proxy.particleManager.RibbonFromPointToPoint(worldObj, xCoord + 0.5, yCoord - 2, zCoord + 0.5, xCoord + 0.5, yCoord - 3, zCoord + 0.5);
 			}
 			List<EntityItem> components = lookForValidItems();
 			ItemStack stack = getNextPlannedItem();
-			for (EntityItem item : components){
-				if (item.isDead) continue;
+			for(EntityItem item: components) {
+				if(item.isDead) {
+					continue;
+				}
 				ItemStack entityItemStack = item.getEntityItem();
-				if (stack != null && compareItemStacks(stack, entityItemStack)){
-					if (!worldObj.isRemote){
+				if(stack != null && compareItemStacks(stack, entityItemStack)) {
+					if(!worldObj.isRemote) {
 						updateCurrentRecipe(item);
 						item.setDead();
-					}else{
+					}
+					else {
 						worldObj.playSound(xCoord, yCoord, zCoord, "arsmagica2:misc.craftingaltar.component_added", 1.0f, 0.4f + worldObj.rand.nextFloat() * 0.6f, false);
-						for (int i = 0; i < 5 * AMCore.config.getGFXLevel(); ++i){
+						for(int i = 0; i < 5 * AMCore.config.getGFXLevel(); ++i) {
 							AMParticle particle = (AMParticle)AMCore.proxy.particleManager.spawn(worldObj, "radiant", item.posX, item.posY, item.posZ);
-							if (particle != null){
+							if(particle != null) {
 								particle.setMaxAge(40);
 								particle.AddParticleController(new ParticleMoveOnHeading(particle, worldObj.rand.nextFloat() * 360, worldObj.rand.nextFloat() * 360, 0.01f, 1, false));
-								particle.AddParticleController(new ParticleFadeOut(particle, 1, false).setFadeSpeed(0.05f).setKillParticleOnFinish(true));
+								particle.AddParticleController(new ParticleFadeOut(particle, 1, false).setFadeSpeed(0.05f)
+																									  .setKillParticleOnFinish(true));
 								particle.setParticleScale(0.02f);
 								particle.setRGBColorF(worldObj.rand.nextFloat(), worldObj.rand.nextFloat(), worldObj.rand.nextFloat());
 							}
@@ -511,13 +535,15 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		}
 	}
 
-	private void updateLecternInformation(){
-		if (podiumLocation == null) return;
+	private void updateLecternInformation() {
+		if(podiumLocation == null) {
+			return;
+		}
 		TileEntityLectern lectern = (TileEntityLectern)worldObj.getTileEntity(xCoord + podiumLocation.getX(), yCoord + podiumLocation.getY(), zCoord + podiumLocation.getZ());
-		if (lectern != null){
-			if (lectern.hasStack()){
+		if(lectern != null) {
+			if(lectern.hasStack()) {
 				ItemStack lecternStack = lectern.getStack();
-				if (lecternStack.hasTagCompound()){
+				if(lecternStack.hasTagCompound()) {
 					spellGuide = lecternStack.getTagCompound().getIntArray("spell_combo");
 					outputCombo = lecternStack.getTagCompound().getIntArray("output_combo");
 					currentSpellName = lecternStack.getDisplayName();
@@ -525,28 +551,27 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 					int numShapeGroups = lecternStack.getTagCompound().getInteger("numShapeGroups");
 					shapeGroupGuide = new int[numShapeGroups][];
 
-					for (int i = 0; i < numShapeGroups; ++i){
+					for(int i = 0; i < numShapeGroups; ++i) {
 						shapeGroupGuide[i] = lecternStack.getTagCompound().getIntArray("shapeGroupCombo_" + i);
 					}
 				}
 
-				if (isCrafting){
-					if (spellGuide != null){
+				if(isCrafting) {
+					if(spellGuide != null) {
 						lectern.setNeedsBook(false);
 						lectern.setTooltipStack(getNextPlannedItem());
-					}else{
+					}
+					else {
 						lectern.setNeedsBook(true);
 					}
-				}else{
+				}
+				else {
 					lectern.setTooltipStack(null);
 				}
-				if (spellGuideIsWithinStructurePower()){
-					lectern.setOverpowered(false);
-				}else{
-					lectern.setOverpowered(true);
-				}
-			}else{
-				if (isCrafting){
+				lectern.setOverpowered(!spellGuideIsWithinStructurePower());
+			}
+			else {
+				if(isCrafting) {
 					lectern.setNeedsBook(true);
 				}
 				lectern.setTooltipStack(null);
@@ -554,91 +579,104 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		}
 	}
 
-	public BlockCoord getSwitchLocation(){
+	public BlockCoord getSwitchLocation() {
 		return this.switchLocation;
 	}
 
-	public boolean switchIsOn(){
-		if (switchLocation == null) return false;
+	public boolean switchIsOn() {
+		if(switchLocation == null) {
+			return false;
+		}
 		Block block = worldObj.getBlock(xCoord + switchLocation.getX(), yCoord + switchLocation.getY(), zCoord + switchLocation.getZ());
 		boolean b = false;
-		if (block == Blocks.lever){
-			for (int i = 0; i < 6; ++i){
+		if(block == Blocks.lever) {
+			for(int i = 0; i < 6; ++i) {
 				b |= (Blocks.lever.isProvidingStrongPower(worldObj, xCoord + switchLocation.getX(), yCoord + switchLocation.getY(), zCoord + switchLocation.getZ(), i) > 0);
-				if (b) break;
+				if(b) {
+					break;
+				}
 			}
 		}
 		return b;
 	}
 
-	public void flipSwitch(){
-		if (switchLocation == null) return;
+	public void flipSwitch() {
+		if(switchLocation == null) {
+			return;
+		}
 		Block block = worldObj.getBlock(xCoord + switchLocation.getX(), yCoord + switchLocation.getY(), zCoord + switchLocation.getZ());
-		if (block == Blocks.lever){
+		if(block == Blocks.lever) {
 			Blocks.lever.onBlockActivated(worldObj, xCoord + switchLocation.getX(), yCoord + switchLocation.getY(), zCoord + switchLocation.getZ(), null, 0, 0, 0, 0);
 		}
 	}
 
-	private void updatePowerRequestData(){
+	private void updatePowerRequestData() {
 		ItemStack stack = getNextPlannedItem();
-		if (stack != null && stack.getItem() instanceof ItemEssence && stack.getItemDamage() > ItemEssence.META_MAX){
-			if (switchIsOn()){
+		if(stack != null && stack.getItem() instanceof ItemEssence && stack.getItemDamage() > ItemEssence.META_MAX) {
+			if(switchIsOn()) {
 				int flags = stack.getItemDamage() - ItemEssence.META_MAX;
 				setPowerRequests();
 				pickPowerType(stack);
-				if (this.currentMainPowerTypes != PowerTypes.NONE && PowerNodeRegistry.For(this.worldObj).checkPower(this, this.currentMainPowerTypes, 100)){
-					currentConsumedPower += PowerNodeRegistry.For(worldObj).consumePower(this, this.currentMainPowerTypes, Math.min(100, stack.stackSize - currentConsumedPower));
+				if(this.currentMainPowerTypes != PowerTypes.NONE && PowerNodeRegistry.For(this.worldObj)
+																					 .checkPower(this, this.currentMainPowerTypes, 100)) {
+					currentConsumedPower += PowerNodeRegistry.For(worldObj)
+															 .consumePower(this, this.currentMainPowerTypes, Math.min(100, stack.stackSize - currentConsumedPower));
 				}
-				if (currentConsumedPower >= stack.stackSize){
+				if(currentConsumedPower >= stack.stackSize) {
 					PowerNodeRegistry.For(this.worldObj).setPower(this, this.currentMainPowerTypes, 0);
-					if (!worldObj.isRemote)
+					if(!worldObj.isRemote) {
 						addItemToRecipe(new ItemStack(ItemsCommonProxy.essence, stack.stackSize, ItemEssence.META_MAX + flags));
+					}
 					currentConsumedPower = 0;
 					currentMainPowerTypes = PowerTypes.NONE;
 					setNoPowerRequests();
 					flipSwitch();
 				}
-			}else{
+			}
+			else {
 				setNoPowerRequests();
 			}
-		}else{
+		}
+		else {
 			setNoPowerRequests();
 		}
 	}
 
 	@Override
-	protected void setNoPowerRequests(){
+	protected void setNoPowerRequests() {
 		currentConsumedPower = 0;
 		currentMainPowerTypes = PowerTypes.NONE;
 
 		super.setNoPowerRequests();
 	}
 
-	private void pickPowerType(ItemStack stack){
-		if (this.currentMainPowerTypes != PowerTypes.NONE)
+	private void pickPowerType(ItemStack stack) {
+		if(this.currentMainPowerTypes != PowerTypes.NONE) {
 			return;
+		}
 		int flags = stack.getItemDamage() - ItemEssence.META_MAX;
 		PowerTypes highestValid = PowerTypes.NONE;
 		float amt = 0;
-		for (PowerTypes type : PowerTypes.all()){
+		for(PowerTypes type: PowerTypes.all()) {
 			float tmpAmt = PowerNodeRegistry.For(worldObj).getPower(this, type);
-			if (tmpAmt > amt)
+			if(tmpAmt > amt) {
 				highestValid = type;
+			}
 		}
 
 		this.currentMainPowerTypes = highestValid;
 	}
 
-	private void updateCurrentRecipe(EntityItem item){
+	private void updateCurrentRecipe(EntityItem item) {
 		ItemStack stack = item.getEntityItem();
 		addItemToRecipe(stack);
 	}
 
-	private void addItemToRecipe(ItemStack stack){
+	private void addItemToRecipe(ItemStack stack) {
 		allAddedItems.add(stack);
 		currentAddedItems.add(stack);
 
-		if (!worldObj.isRemote){
+		if(!worldObj.isRemote) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(xCoord);
 			writer.add(yCoord);
@@ -648,135 +686,155 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 			AMNetHandler.INSTANCE.sendPacketToAllClientsNear(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 32, AMPacketIDs.CRAFTING_ALTAR_DATA, writer.generate());
 		}
 
-		if (matchCurrentRecipe()){
+		if(matchCurrentRecipe()) {
 			currentAddedItems.clear();
-			return;
 		}
 	}
 
-	private boolean matchCurrentRecipe(){
+	private boolean matchCurrentRecipe() {
 		ISpellPart part = SpellRecipeManager.instance.getPartByRecipe(currentAddedItems);
-		if (part == null) return false;
+		if(part == null) {
+			return false;
+		}
 
 		ArrayList<KeyValuePair<ISpellPart, byte[]>> currentShapeGroupList = getShapeGroupToAddTo();
 
-		if (part instanceof Summon)
+		if(part instanceof Summon) {
 			handleSummonShape();
-		if (part instanceof Binding)
+		}
+		if(part instanceof Binding) {
 			handleBindingShape();
+		}
 
 		byte[] metaData = new byte[0];
-		if (part instanceof ISpellModifier){
+		if(part instanceof ISpellModifier) {
 			metaData = ((ISpellModifier)part).getModifierMetadata(currentAddedItems.toArray(new ItemStack[currentAddedItems.size()]));
-			if (metaData == null){
+			if(metaData == null) {
 				metaData = new byte[0];
 			}
 		}
 
 		//if this is null, then we have already completed all of the shape groups that the book identifies
 		//we're now creating the body of the spell
-		if (currentShapeGroupList == null){
+		if(currentShapeGroupList == null) {
 			spellDef.add(new KeyValuePair<ISpellPart, byte[]>(part, metaData));
-		}else{
+		}
+		else {
 			currentShapeGroupList.add(new KeyValuePair<ISpellPart, byte[]>(part, metaData));
 		}
 		return true;
 	}
 
-	private ArrayList<KeyValuePair<ISpellPart, byte[]>> getShapeGroupToAddTo(){
-		for (int i = 0; i < shapeGroupGuide.length; ++i){
+	private ArrayList<KeyValuePair<ISpellPart, byte[]>> getShapeGroupToAddTo() {
+		for(int i = 0; i < shapeGroupGuide.length; ++i) {
 			int guideLength = shapeGroupGuide[i].length;
 			int addedLength = shapeGroups.get(i).size();
-			if (addedLength < guideLength)
+			if(addedLength < guideLength) {
 				return shapeGroups.get(i);
+			}
 		}
 
 		return null;
 	}
 
-	private void handleSummonShape(){
-		if (currentAddedItems.size() > 2)
+	private void handleSummonShape() {
+		if(currentAddedItems.size() > 2) {
 			addedPhylactery = currentAddedItems.get(currentAddedItems.size() - 2);
+		}
 	}
 
-	private void handleBindingShape(){
-		if (currentAddedItems.size() == 7)
+	private void handleBindingShape() {
+		if(currentAddedItems.size() == 7) {
 			addedBindingCatalyst = currentAddedItems.get(currentAddedItems.size() - 1);
+		}
 	}
 
-	private List<EntityItem> lookForValidItems(){
-		if (!isCrafting) return new ArrayList<EntityItem>();
+	private List<EntityItem> lookForValidItems() {
+		if(!isCrafting) {
+			return new ArrayList<EntityItem>();
+		}
 		double radius = worldObj.isRemote ? 2.1 : 2;
 		List<EntityItem> items = this.worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - radius, yCoord - 3, zCoord - radius, xCoord + radius, yCoord, zCoord + radius));
 		return items;
 	}
 
-	private void checkStructure(){
+	private void checkStructure() {
 
-		if ((isCrafting && checkCounter++ < 50) || (!isCrafting && checkCounter++ < 200)){
+		if((isCrafting && checkCounter++ < 50) || (!isCrafting && checkCounter++ < 200)) {
 			return;
 		}
 		checkCounter = 0;
 
 		boolean primaryvalid = primary.checkStructure(worldObj, xCoord, yCoord, zCoord);
 		boolean secondaryvalid = secondary.checkStructure(worldObj, xCoord, yCoord, zCoord);
-		if (!primaryvalid && !secondaryvalid){
-			if (isCrafting) setCrafting(false);
+		if(!primaryvalid && !secondaryvalid) {
+			if(isCrafting) {
+				setCrafting(false);
+			}
 		}
 
 		//locate lectern and lever & material groups
-		if (primaryvalid || secondaryvalid){
+		if(primaryvalid || secondaryvalid) {
 			maxEffects = 0;
 			ArrayList<StructureGroup> lecternGroups = null;
 			ArrayList<StructureGroup> augmatlGroups = null;
 			ArrayList<StructureGroup> mainmatlGroups = null;
-			if (primaryvalid){
+			if(primaryvalid) {
 				lecternGroups = primary.getMatchedGroups(lectern_mutex, worldObj, xCoord, yCoord, zCoord);
 				augmatlGroups = primary.getMatchedGroups(augmatl_mutex, worldObj, xCoord, yCoord, zCoord);
 				mainmatlGroups = primary.getMatchedGroups(MultiblockStructureDefinition.MAINGROUP_MUTEX, worldObj, xCoord, yCoord, zCoord);
-			}else if (secondaryvalid){
+			}
+			else if(secondaryvalid) {
 				lecternGroups = secondary.getMatchedGroups(lectern_mutex, worldObj, xCoord, yCoord, zCoord);
 				augmatlGroups = secondary.getMatchedGroups(augmatl_mutex, worldObj, xCoord, yCoord, zCoord);
 				mainmatlGroups = secondary.getMatchedGroups(MultiblockStructureDefinition.MAINGROUP_MUTEX, worldObj, xCoord, yCoord, zCoord);
 			}
-			if (lecternGroups != null && lecternGroups.size() > 0){
+			if(lecternGroups != null && lecternGroups.size() > 0) {
 				StructureGroup group = lecternGroups.get(0);
 				HashMap<BlockCoord, ArrayList<BlockDec>> blocks = group.getAllowedBlocks();
 
-				for (BlockCoord bc : blocks.keySet()){
+				for(BlockCoord bc: blocks.keySet()) {
 					Block block = worldObj.getBlock(xCoord + bc.getX(), yCoord + bc.getY(), zCoord + bc.getZ());
-					if (block == BlocksCommonProxy.blockLectern){
+					if(block == BlocksCommonProxy.blockLectern) {
 						podiumLocation = bc;
-					}else if (block == Blocks.lever){
+					}
+					else if(block == Blocks.lever) {
 						switchLocation = bc;
 					}
 				}
 			}
-			if (augmatlGroups != null && augmatlGroups.size() == 1){
+			if(augmatlGroups != null && augmatlGroups.size() == 1) {
 				StructureGroup group = augmatlGroups.get(0);
 				int index = -1;
-				for (StructureGroup augmatlGroup : primaryvalid ? augMatl_primary : augMatl_secondary){
+				for(StructureGroup augmatlGroup: primaryvalid ? augMatl_primary : augMatl_secondary) {
 					index++;
-					if (augmatlGroup == group){
+					if(augmatlGroup == group) {
 						break;
 					}
 				}
 				maxEffects = index + 1;
 			}
-			if (mainmatlGroups != null && mainmatlGroups.size() == 1){
+			if(mainmatlGroups != null && mainmatlGroups.size() == 1) {
 				StructureGroup group = mainmatlGroups.get(0);
-				if (group == wood_primary || group == wood_secondary)
+				if(group == wood_primary || group == wood_secondary) {
 					maxEffects += 1;
-				else if (group == cobble_primary || group == cobble_secondary || group == sandstone_primary || group == sandstone_secondary)
+				}
+				else if(group == cobble_primary || group == cobble_secondary || group == sandstone_primary || group == sandstone_secondary) {
 					maxEffects += 1;
-				else if (group == brick_primary || group == brick_secondary || group == witchwood_primary || group == witchwood_secondary)
+				}
+				else if(group == brick_primary || group == brick_secondary || group == witchwood_primary || group == witchwood_secondary) {
 					maxEffects += 2;
-				else if (group == netherbrick_primary || group == netherbrick_secondary || group == quartz_primary || group == quartz_secondary)
+				}
+				else if(group == netherbrick_primary || group == netherbrick_secondary || group == quartz_primary || group == quartz_secondary) {
 					maxEffects += 3;
+				}
 				else //default of stone brick
+				{
 					maxEffects += 2;
+				}
 			}
-		}else{
+		}
+		else {
 			podiumLocation = null;
 			switchLocation = null;
 			maxEffects = 0;
@@ -786,37 +844,45 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		setStructureValid(primaryvalid || secondaryvalid);
 	}
 
-	private void checkForStartCondition(){
-		if (this.worldObj.isRemote || !structureValid || this.isCrafting) return;
+	private void checkForStartCondition() {
+		if(this.worldObj.isRemote || !structureValid || this.isCrafting) {
+			return;
+		}
 
 		List<Entity> items = this.worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - 2, yCoord - 3, zCoord - 2, xCoord + 2, yCoord, zCoord + 2));
-		if (items.size() == 1){
+		if(items.size() == 1) {
 			EntityItem item = (EntityItem)items.get(0);
-			if (item != null && !item.isDead && item.getEntityItem().getItem() == ItemsCommonProxy.rune && item.getEntityItem().getItemDamage() == ItemsCommonProxy.rune.META_BLANK){
+			if(item != null && !item.isDead && item.getEntityItem()
+												   .getItem() == ItemsCommonProxy.rune && item.getEntityItem()
+																							  .getItemDamage() == ItemRune.META_BLANK) {
 				item.setDead();
 				setCrafting(true);
 			}
 		}
 	}
 
-	private void checkForEndCondition(){
-		if (!structureValid || !this.isCrafting || worldObj == null) return;
+	private void checkForEndCondition() {
+		if(!structureValid || !this.isCrafting || worldObj == null) {
+			return;
+		}
 
 		double radius = worldObj.isRemote ? 2.2 : 2;
 
 		List<Entity> items = this.worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - radius, yCoord - 3, zCoord - radius, xCoord + radius, yCoord, zCoord + radius));
-		if (items.size() == 1){
+		if(items.size() == 1) {
 			EntityItem item = (EntityItem)items.get(0);
-			if (item != null && !item.isDead && item.getEntityItem() != null && item.getEntityItem().getItem() == ItemsCommonProxy.spellParchment){
-				if (!worldObj.isRemote){
+			if(item != null && !item.isDead && item.getEntityItem() != null && item.getEntityItem()
+																				   .getItem() == ItemsCommonProxy.spellParchment) {
+				if(!worldObj.isRemote) {
 					item.setDead();
 					setCrafting(false);
 					EntityItem craftedItem = new EntityItem(worldObj);
 					craftedItem.setPosition(xCoord + 0.5, yCoord - 1.5, zCoord + 0.5);
 
 					ItemStack craftStack = SpellUtils.instance.createSpellStack(shapeGroups, spellDef);
-					if (!craftStack.hasTagCompound())
+					if(!craftStack.hasTagCompound()) {
 						craftStack.stackTagCompound = new NBTTagCompound();
+					}
 					AddSpecialMetadata(craftStack);
 
 					craftStack.stackTagCompound.setString("suggestedName", currentSpellName != null ? currentSpellName : "");
@@ -825,19 +891,20 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 
 					allAddedItems.clear();
 					currentAddedItems.clear();
-				}else{
+				}
+				else {
 					worldObj.playSound(xCoord, yCoord, zCoord, "arsmagica2:misc.craftingaltar.create_spell", 1.0f, 1.0f, true);
 				}
 			}
 		}
 	}
 
-	private void AddSpecialMetadata(ItemStack craftStack){
-		if (addedPhylactery != null){
+	private void AddSpecialMetadata(ItemStack craftStack) {
+		if(addedPhylactery != null) {
 			Summon summon = (Summon)SkillManager.instance.getSkill("Summon");
 			summon.setSummonType(craftStack, addedPhylactery);
 		}
-		if (addedBindingCatalyst != null){
+		if(addedBindingCatalyst != null) {
 			Binding binding = (Binding)SkillManager.instance.getSkill("Binding");
 			binding.setBindingType(craftStack, addedBindingCatalyst);
 		}
@@ -845,9 +912,9 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 
 	}
 
-	private void setCrafting(boolean crafting){
+	private void setCrafting(boolean crafting) {
 		this.isCrafting = crafting;
-		if (!worldObj.isRemote){
+		if(!worldObj.isRemote) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(xCoord);
 			writer.add(yCoord);
@@ -856,18 +923,20 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 			writer.add(crafting);
 			AMNetHandler.INSTANCE.sendPacketToAllClientsNear(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 32, AMPacketIDs.CRAFTING_ALTAR_DATA, writer.generate());
 		}
-		if (crafting){
+		if(crafting) {
 			allAddedItems.clear();
 			currentAddedItems.clear();
 
 			spellDef.clear();
-			for (ArrayList<KeyValuePair<ISpellPart, byte[]>> groups : shapeGroups)
+			for(ArrayList<KeyValuePair<ISpellPart, byte[]>> groups: shapeGroups) {
 				groups.clear();
+			}
 
 			//find otherworld auras
-			IPowerNode[] nodes = PowerNodeRegistry.For(worldObj).getAllNearbyNodes(worldObj, new AMVector3(this), PowerTypes.DARK);
-			for (IPowerNode node : nodes){
-				if (node instanceof TileEntityOtherworldAura){
+			IPowerNode[] nodes = PowerNodeRegistry.For(worldObj)
+												  .getAllNearbyNodes(worldObj, new AMVector3(this), PowerTypes.DARK);
+			for(IPowerNode node: nodes) {
+				if(node instanceof TileEntityOtherworldAura) {
 					((TileEntityOtherworldAura)node).setActive(true, this);
 					break;
 				}
@@ -875,18 +944,21 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		}
 	}
 
-	private void setStructureValid(boolean valid){
-		if (this.structureValid == valid) return;
+	private void setStructureValid(boolean valid) {
+		if(this.structureValid == valid) {
+			return;
+		}
 		this.structureValid = valid;
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
-	public void deactivate(){
-		if (!worldObj.isRemote){
+	public void deactivate() {
+		if(!worldObj.isRemote) {
 			this.setCrafting(false);
-			for (ItemStack stack : allAddedItems){
-				if (stack.getItem() == ItemsCommonProxy.essence && stack.getItemDamage() > ItemsCommonProxy.essence.META_MAX)
+			for(ItemStack stack: allAddedItems) {
+				if(stack.getItem() == ItemsCommonProxy.essence && stack.getItemDamage() > ItemEssence.META_MAX) {
 					continue;
+				}
 				EntityItem eItem = new EntityItem(worldObj);
 				eItem.setPosition(xCoord, yCoord - 1, zCoord);
 				eItem.setEntityItemStack(stack);
@@ -897,19 +969,19 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 	}
 
 	@Override
-	public boolean canProvidePower(PowerTypes type){
+	public boolean canProvidePower(PowerTypes type) {
 		return false;
 	}
 
-	private boolean compareItemStacks(ItemStack target, ItemStack input){
-		if (target.getItem() == Items.potionitem && input.getItem() == Items.potionitem){
+	private boolean compareItemStacks(ItemStack target, ItemStack input) {
+		if(target.getItem() == Items.potionitem && input.getItem() == Items.potionitem) {
 			return (target.getItemDamage() & 0xF) == (input.getItemDamage() & 0xF);
 		}
 		return target.getItem() == input.getItem() && (target.getItemDamage() == input.getItemDamage() || target.getItemDamage() == Short.MAX_VALUE) && target.stackSize == input.stackSize;
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound){
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 
 		NBTTagCompound altarCompound = new NBTTagCompound();
@@ -918,7 +990,7 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		altarCompound.setString("currentSpellName", currentSpellName);
 
 		NBTTagList allAddedItemsList = new NBTTagList();
-		for (ItemStack stack : allAddedItems){
+		for(ItemStack stack: allAddedItems) {
 			NBTTagCompound addedItem = new NBTTagCompound();
 			stack.writeToNBT(addedItem);
 			allAddedItemsList.appendTag(addedItem);
@@ -927,7 +999,7 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		altarCompound.setTag("allAddedItems", allAddedItemsList);
 
 		NBTTagList currentAddedItemsList = new NBTTagList();
-		for (ItemStack stack : currentAddedItems){
+		for(ItemStack stack: currentAddedItems) {
 			NBTTagCompound addedItem = new NBTTagCompound();
 			stack.writeToNBT(addedItem);
 			currentAddedItemsList.appendTag(addedItem);
@@ -935,20 +1007,20 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 
 		altarCompound.setTag("currentAddedItems", currentAddedItemsList);
 
-		if (addedPhylactery != null){
+		if(addedPhylactery != null) {
 			NBTTagCompound phylactery = new NBTTagCompound();
 			addedPhylactery.writeToNBT(phylactery);
 			altarCompound.setTag("phylactery", phylactery);
 		}
 
-		if (addedBindingCatalyst != null){
+		if(addedBindingCatalyst != null) {
 			NBTTagCompound catalyst = new NBTTagCompound();
 			addedBindingCatalyst.writeToNBT(catalyst);
 			altarCompound.setTag("catalyst", catalyst);
 		}
 
 		NBTTagList shapeGroupData = new NBTTagList();
-		for (ArrayList<KeyValuePair<ISpellPart, byte[]>> list : shapeGroups){
+		for(ArrayList<KeyValuePair<ISpellPart, byte[]>> list: shapeGroups) {
 			shapeGroupData.appendTag(ISpellPartListToNBT(list));
 		}
 		altarCompound.setTag("shapeGroups", shapeGroupData);
@@ -959,29 +1031,29 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		nbttagcompound.setTag("altarData", altarCompound);
 	}
 
-	private NBTTagCompound ISpellPartListToNBT(ArrayList<KeyValuePair<ISpellPart, byte[]>> list){
+	private NBTTagCompound ISpellPartListToNBT(ArrayList<KeyValuePair<ISpellPart, byte[]>> list) {
 		NBTTagCompound shapeGroupData = new NBTTagCompound();
 		int[] ids = new int[list.size()];
 		byte[][] meta = new byte[list.size()][];
-		for (int d = 0; d < list.size(); ++d){
+		for(int d = 0; d < list.size(); ++d) {
 			ids[d] = SkillManager.instance.getShiftedPartID(list.get(d).getKey());
 			meta[d] = list.get(d).getValue();
 		}
 		shapeGroupData.setIntArray("group_ids", ids);
-		for (int i = 0; i < meta.length; ++i){
+		for(int i = 0; i < meta.length; ++i) {
 			shapeGroupData.setByteArray("meta_" + i, meta[i]);
 		}
 		return shapeGroupData;
 	}
 
-	private ArrayList<KeyValuePair<ISpellPart, byte[]>> NBTToISpellPartList(NBTTagCompound compound){
+	private ArrayList<KeyValuePair<ISpellPart, byte[]>> NBTToISpellPartList(NBTTagCompound compound) {
 		int[] ids = compound.getIntArray("group_ids");
 		ArrayList<KeyValuePair<ISpellPart, byte[]>> list = new ArrayList<KeyValuePair<ISpellPart, byte[]>>();
-		for (int i = 0; i < ids.length; ++i){
+		for(int i = 0; i < ids.length; ++i) {
 			int partID = ids[i];
 			ISkillTreeEntry part = SkillManager.instance.getSkill(i);
 			byte[] partMeta = compound.getByteArray("meta_" + i);
-			if (part instanceof ISpellPart){
+			if(part instanceof ISpellPart) {
 				list.add(new KeyValuePair<ISpellPart, byte[]>((ISpellPart)part, partMeta));
 			}
 		}
@@ -989,11 +1061,12 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound){
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 
-		if (!nbttagcompound.hasKey("altarData"))
+		if(!nbttagcompound.hasKey("altarData")) {
 			return;
+		}
 
 		NBTTagCompound altarCompound = nbttagcompound.getCompoundTag("altarData");
 
@@ -1004,92 +1077,100 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 		this.currentKey = altarCompound.getInteger("currentKey");
 		this.currentSpellName = altarCompound.getString("currentSpellName");
 
-		if (altarCompound.hasKey("phylactery")){
+		if(altarCompound.hasKey("phylactery")) {
 			NBTTagCompound phylactery = altarCompound.getCompoundTag("phylactery");
-			if (phylactery != null)
+			if(phylactery != null) {
 				this.addedPhylactery = ItemStack.loadItemStackFromNBT(phylactery);
+			}
 		}
 
-		if (altarCompound.hasKey("catalyst")){
+		if(altarCompound.hasKey("catalyst")) {
 			NBTTagCompound catalyst = altarCompound.getCompoundTag("catalyst");
-			if (catalyst != null)
+			if(catalyst != null) {
 				this.addedBindingCatalyst = ItemStack.loadItemStackFromNBT(catalyst);
+			}
 		}
 
 		this.allAddedItems.clear();
-		for (int i = 0; i < allAddedItems.tagCount(); ++i){
-			NBTTagCompound addedItem = (NBTTagCompound)allAddedItems.getCompoundTagAt(i);
-			if (addedItem == null)
+		for(int i = 0; i < allAddedItems.tagCount(); ++i) {
+			NBTTagCompound addedItem = allAddedItems.getCompoundTagAt(i);
+			if(addedItem == null) {
 				continue;
+			}
 			ItemStack stack = ItemStack.loadItemStackFromNBT(addedItem);
-			if (stack == null)
+			if(stack == null) {
 				continue;
+			}
 			this.allAddedItems.add(stack);
 		}
 
 		this.currentAddedItems.clear();
-		for (int i = 0; i < currentAddedItems.tagCount(); ++i){
-			NBTTagCompound addedItem = (NBTTagCompound)currentAddedItems.getCompoundTagAt(i);
-			if (addedItem == null)
+		for(int i = 0; i < currentAddedItems.tagCount(); ++i) {
+			NBTTagCompound addedItem = currentAddedItems.getCompoundTagAt(i);
+			if(addedItem == null) {
 				continue;
+			}
 			ItemStack stack = ItemStack.loadItemStackFromNBT(addedItem);
-			if (stack == null)
+			if(stack == null) {
 				continue;
+			}
 			this.currentAddedItems.add(stack);
 		}
 
 		this.spellDef.clear();
-		for (ArrayList<KeyValuePair<ISpellPart, byte[]>> groups : shapeGroups)
+		for(ArrayList<KeyValuePair<ISpellPart, byte[]>> groups: shapeGroups) {
 			groups.clear();
+		}
 
 		NBTTagCompound currentSpellDef = altarCompound.getCompoundTag("spellDef");
 		this.spellDef.addAll(NBTToISpellPartList(currentSpellDef));
 
 		NBTTagList currentShapeGroups = altarCompound.getTagList("shapeGroups", Constants.NBT.TAG_COMPOUND);
 
-		for (int i = 0; i < currentShapeGroups.tagCount(); ++i){
-			NBTTagCompound compound = (NBTTagCompound)currentShapeGroups.getCompoundTagAt(i);
+		for(int i = 0; i < currentShapeGroups.tagCount(); ++i) {
+			NBTTagCompound compound = currentShapeGroups.getCompoundTagAt(i);
 			shapeGroups.get(i).addAll(NBTToISpellPartList(compound));
 		}
 	}
 
 	@Override
-	public int getChargeRate(){
+	public int getChargeRate() {
 		return 250;
 	}
 
 	@Override
-	public boolean canRelayPower(PowerTypes type){
+	public boolean canRelayPower(PowerTypes type) {
 		return false;
 	}
 
 
-	public void HandleUpdatePacket(byte[] remainingBytes){
+	public void HandleUpdatePacket(byte[] remainingBytes) {
 		AMDataReader rdr = new AMDataReader(remainingBytes, false);
 		byte subID = rdr.getByte();
-		switch (subID){
-		case FULL_UPDATE:
-			this.isCrafting = rdr.getBoolean();
-			this.currentKey = rdr.getInt();
+		switch(subID) {
+			case FULL_UPDATE:
+				this.isCrafting = rdr.getBoolean();
+				this.currentKey = rdr.getInt();
 
-			this.allAddedItems.clear();
-			this.currentAddedItems.clear();
+				this.allAddedItems.clear();
+				this.currentAddedItems.clear();
 
-			int itemCount = rdr.getInt();
-			for (int i = 0; i < itemCount; ++i)
+				int itemCount = rdr.getInt();
+				for(int i = 0; i < itemCount; ++i) {
+					this.allAddedItems.add(rdr.getItemStack());
+				}
+				break;
+			case CRAFTING_CHANGED:
+				this.setCrafting(rdr.getBoolean());
+				break;
+			case COMPONENT_ADDED:
 				this.allAddedItems.add(rdr.getItemStack());
-			break;
-		case CRAFTING_CHANGED:
-			this.setCrafting(rdr.getBoolean());
-			break;
-		case COMPONENT_ADDED:
-			this.allAddedItems.add(rdr.getItemStack());
-			break;
+				break;
 		}
 	}
 
 	@Override
-	public Packet getDescriptionPacket(){
+	public Packet getDescriptionPacket() {
 		NBTTagCompound compound = new NBTTagCompound();
 		this.writeToNBT(compound);
 		S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), compound);
@@ -1097,7 +1178,7 @@ public class TileEntityCraftingAltar extends TileEntityAMPower implements IMulti
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.func_148857_g());
 	}
 

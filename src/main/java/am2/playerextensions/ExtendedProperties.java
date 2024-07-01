@@ -38,18 +38,18 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ExtendedProperties implements IExtendedProperties, IExtendedEntityProperties{
+public class ExtendedProperties implements IExtendedProperties, IExtendedEntityProperties {
 	private EntityLivingBase entity;
 
 	public static final String identifier = "ArsMagicaExProps";
 	public static final int maxMagicLevel = 99;
 
-	private static float magicRegenPerLevelPerTick = 0.15f;
-	private static float entityMagicPerLevelBase = 0.20f;
-	private static int baseTicksForFullRegen = 2400;
+	private static final float magicRegenPerLevelPerTick = 0.15f;
+	private static final float entityMagicPerLevelBase = 0.20f;
+	private static final int baseTicksForFullRegen = 2400;
 	private int ticksForFullRegen = baseTicksForFullRegen;
 
-	private ArrayList<Integer> summon_ent_ids = new ArrayList<Integer>();
+	private final ArrayList<Integer> summon_ent_ids = new ArrayList<Integer>();
 
 	private double markX;
 	private double markY;
@@ -76,7 +76,7 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 	private float magicXP;
 
 	private int numSummons;
-	private ArrayList<ManaLinkEntry> manaLinks;
+	private final ArrayList<ManaLinkEntry> manaLinks;
 
 	private byte bitFlag;
 	private boolean hasDoneFullSync;
@@ -145,180 +145,189 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 	private static final int syncTickDelay = 200; //10 seconds
 	private int ticksToSync;
 
-	public ExtendedProperties(){
+	public ExtendedProperties() {
 		hasInitialized = false;
 		hasDoneFullSync = false;
 		manaLinks = new ArrayList<ManaLinkEntry>();
 	}
 
-	public static ExtendedProperties For(EntityLivingBase living){
+	public static ExtendedProperties For(EntityLivingBase living) {
 		return (ExtendedProperties)living.getExtendedProperties(identifier);
 	}
 
 	//=======================================================================================
 	// Getters
 	//=======================================================================================
-	public boolean getHasDoneFullSync(){
+	public boolean getHasDoneFullSync() {
 		return this.hasDoneFullSync;
 	}
 
 	@Override
-	public boolean getHasUnlockedAugmented(){
-		if (entity instanceof EntityPlayer){
-			return SkillData.For((EntityPlayer)entity).isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("AugmentedCasting")));
+	public boolean getHasUnlockedAugmented() {
+		if(entity instanceof EntityPlayer) {
+			return SkillData.For((EntityPlayer)entity)
+							.isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("AugmentedCasting")));
 		}
 		return true;
 	}
 
-	public int getBreathAmount(){
+	public int getBreathAmount() {
 		return this.previousBreath;
 	}
 
 	@Override
-	public int getNumSummons(){
+	public int getNumSummons() {
 		return this.numSummons;
 	}
 
 	@Override
-	public AMVector3 getMarkLocation(){
+	public AMVector3 getMarkLocation() {
 		return new AMVector3(markX, markY, markZ);
 	}
 
 	@Override
-	public boolean getMarkSet(){
+	public boolean getMarkSet() {
 		return (this.bitFlag & BIT_MARK_SET) == BIT_MARK_SET;
 	}
 
-	public int getAuraBehaviour(){
+	public int getAuraBehaviour() {
 		return AuraBehaviour;
 	}
 
-	public int getAuraIndex(){
+	public int getAuraIndex() {
 		return AuraIndex;
 	}
 
-	public float getAuraScale(){
+	public float getAuraScale() {
 		return AuraScale;
 	}
 
-	public float getAuraAlpha(){
+	public float getAuraAlpha() {
 		return AuraAlpha;
 	}
 
-	public boolean getAuraColorDefault(){
+	public boolean getAuraColorDefault() {
 		return AuraColorDefault;
 	}
 
-	public boolean getAuraColorRandomize(){
+	public boolean getAuraColorRandomize() {
 		return AuraColorRandomize;
 	}
 
-	public int getAuraColor(){
+	public int getAuraColor() {
 		return AuraColor;
 	}
 
-	public int getAuraDelay(){
+	public int getAuraDelay() {
 		return AuraDelay;
 	}
 
-	public int getAuraQuantity(){
+	public int getAuraQuantity() {
 		return AuraQuantity;
 	}
 
-	public float getAuraSpeed(){
+	public float getAuraSpeed() {
 		return AuraSpeed;
 	}
 
-	public ContingencyTypes getContingencyType(){
+	public ContingencyTypes getContingencyType() {
 		return this.contingencyType;
 	}
 
-	public ItemStack getContingencyEffect(){
+	public ItemStack getContingencyEffect() {
 		return this.contingencyStack;
 	}
 
-	public int getFallProtection(){
+	public int getFallProtection() {
 		return fallProtection;
 	}
 
 	@Override
-	public int getMarkDimension(){
+	public int getMarkDimension() {
 		return this.markDimension;
 	}
 
-	public double getMarkX(){
+	public double getMarkX() {
 		return this.markX;
 	}
 
-	public double getMarkY(){
+	public double getMarkY() {
 		return this.markY;
 	}
 
-	public double getMarkZ(){
+	public double getMarkZ() {
 		return this.markZ;
 	}
 
-	public float getCurrentFatigue(){
+	public float getCurrentFatigue() {
 		return this.currentFatigue;
 	}
 
-	public float getMaxFatigue(){
-		return (float)(this.maxFatigue + this.entity.getAttributeMap().getAttributeInstance(ArsMagicaApi.maxBurnoutBonus).getAttributeValue());
+	public float getMaxFatigue() {
+		return (float)(this.maxFatigue + this.entity.getAttributeMap()
+													.getAttributeInstance(ArsMagicaApi.maxBurnoutBonus)
+													.getAttributeValue()
+		);
 	}
 
 	@Override
-	public float getCurrentMana(){
+	public float getCurrentMana() {
 		return this.currentMana;
 	}
 
 	@Override
-	public float getMaxMana(){
+	public float getMaxMana() {
 		float max = this.maxMana;
-		if (this.entity.isPotionActive(BuffList.manaBoost))
+		if(this.entity.isPotionActive(BuffList.manaBoost)) {
 			max *= 1 + (0.25 * (this.entity.getActivePotionEffect(BuffList.manaBoost).getAmplifier() + 1));
-		return (float)(max + this.entity.getAttributeMap().getAttributeInstance(ArsMagicaApi.maxManaBonus).getAttributeValue());
+		}
+		return (float)(max + this.entity.getAttributeMap()
+										.getAttributeInstance(ArsMagicaApi.maxManaBonus)
+										.getAttributeValue()
+		);
 	}
 
-	public void setMaxMana(float maxMana){
-		if (AMCore.config.getManaCap() > 0){
+	public void setMaxMana(float maxMana) {
+		if(AMCore.config.getManaCap() > 0) {
 			this.maxMana = (float)Math.min(maxMana, AMCore.config.getManaCap());
-		}else{
+		}
+		else {
 			this.maxMana = maxMana;
 		}
 		this.setUpdateFlag(UPD_MAX_MANA_FATIGUE);
 	}
 
-	public byte[] getUpdateData(){
+	public byte[] getUpdateData() {
 		AMDataWriter writer = new AMDataWriter();
 		writer.add(this.entity.getEntityId());
 		writer.add(this.updateFlags);
 
-		if ((this.updateFlags & UPD_BITFLAG) == UPD_BITFLAG){
+		if((this.updateFlags & UPD_BITFLAG) == UPD_BITFLAG) {
 			writer.add(this.bitFlag);
 		}
-		if ((this.updateFlags & UPD_CURRENT_MANA_FATIGUE) == UPD_CURRENT_MANA_FATIGUE){
+		if((this.updateFlags & UPD_CURRENT_MANA_FATIGUE) == UPD_CURRENT_MANA_FATIGUE) {
 			writer.add(this.currentMana);
 			writer.add(this.currentFatigue);
 		}
-		if ((this.updateFlags & UPD_MAGIC_LEVEL) == UPD_MAGIC_LEVEL){
+		if((this.updateFlags & UPD_MAGIC_LEVEL) == UPD_MAGIC_LEVEL) {
 			writer.add(this.magicLevel);
 			writer.add(this.magicXP);
 		}
-		if ((this.updateFlags & UPD_MARK) == UPD_MARK){
+		if((this.updateFlags & UPD_MARK) == UPD_MARK) {
 			writer.add(this.markX);
 			writer.add(this.markY);
 			writer.add(this.markZ);
 			writer.add(this.markDimension);
 			writer.add(this.getMarkSet());
 		}
-		if ((this.updateFlags & UPD_MAX_MANA_FATIGUE) == UPD_MAX_MANA_FATIGUE){
+		if((this.updateFlags & UPD_MAX_MANA_FATIGUE) == UPD_MAX_MANA_FATIGUE) {
 			writer.add(this.maxMana);
 			writer.add(this.maxFatigue);
 		}
-		if ((this.updateFlags & UPD_NUM_SUMMONS) == UPD_NUM_SUMMONS){
+		if((this.updateFlags & UPD_NUM_SUMMONS) == UPD_NUM_SUMMONS) {
 			writer.add(this.numSummons);
 		}
-		if ((this.updateFlags & UPD_BETA_PARTICLES) == UPD_BETA_PARTICLES && entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)){
+		if((this.updateFlags & UPD_BETA_PARTICLES) == UPD_BETA_PARTICLES && entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)) {
 			writer.add(this.getAuraIndex());
 			writer.add(this.getAuraBehaviour());
 			writer.add(this.getAuraScale());
@@ -330,18 +339,19 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 			writer.add(this.getAuraQuantity());
 			writer.add(this.getAuraSpeed());
 		}
-		if ((this.updateFlags & UPD_CONTINGENCY) == UPD_CONTINGENCY){
+		if((this.updateFlags & UPD_CONTINGENCY) == UPD_CONTINGENCY) {
 			writer.add(this.contingencyType.ordinal());
-			if (this.contingencyType != ContingencyTypes.NONE){
+			if(this.contingencyType != ContingencyTypes.NONE) {
 				writer.add(this.contingencyStack);
 			}
 		}
-		if ((this.updateFlags & UPD_MANALINK) == UPD_MANALINK){
+		if((this.updateFlags & UPD_MANALINK) == UPD_MANALINK) {
 			writer.add(this.manaLinks.size());
-			for (ManaLinkEntry entry : this.manaLinks)
+			for(ManaLinkEntry entry: this.manaLinks) {
 				writer.add(entry.entityID);
+			}
 		}
-		if ((this.updateFlags & UPD_DISABLE_GRAVITY) == UPD_DISABLE_GRAVITY){
+		if((this.updateFlags & UPD_DISABLE_GRAVITY) == UPD_DISABLE_GRAVITY) {
 			writer.add(this.disableGravity);
 		}
 
@@ -351,90 +361,95 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 	}
 
 	@Override
-	public int getMagicLevel(){
+	public int getMagicLevel() {
 		return this.magicLevel;
 	}
 
-	public float getXPToNextLevel(){
+	public float getXPToNextLevel() {
 		return (float)Math.pow(magicLevel * 0.25f, 1.5f);
 	}
 
-	public float getMagicXP(){
+	public float getMagicXP() {
 		return this.magicXP;
 	}
 
-	public Entity getInanimateTarget(){
+	public Entity getInanimateTarget() {
 		return this.inanimateTarget;
 	}
 
-	public boolean getHasUpdate(){
-		if (!(this.entity instanceof EntityPlayer) && !forcingSync){
+	public boolean getHasUpdate() {
+		if(!(this.entity instanceof EntityPlayer) && !forcingSync) {
 			return false;
 		}
 		this.ticksToSync--;
-		if (this.ticksToSync <= 0) this.ticksToSync = this.syncTickDelay;
-		return this.updateFlags != 0 && this.ticksToSync == this.syncTickDelay;
+		if(this.ticksToSync <= 0) {
+			this.ticksToSync = syncTickDelay;
+		}
+		return this.updateFlags != 0 && this.ticksToSync == syncTickDelay;
 	}
 
-	public boolean getCanHaveMoreSummons(){
+	public boolean getCanHaveMoreSummons() {
 
-		if (entity instanceof EntityLifeGuardian)
+		if(entity instanceof EntityLifeGuardian) {
 			return true;
+		}
 
 		int maxSummons = 1;
-		if (entity instanceof EntityPlayer && SkillData.For((EntityPlayer)entity).isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ExtraSummon"))))
+		if(entity instanceof EntityPlayer && SkillData.For((EntityPlayer)entity)
+													  .isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ExtraSummon")))) {
 			maxSummons++;
+		}
 
 		verifySummons();
 
 		return this.numSummons < maxSummons;
 	}
 
-	public boolean getIsFlipped(){
+	public boolean getIsFlipped() {
 		return (bitFlag & BIT_FLIPPED) == BIT_FLIPPED;
 	}
 
-	public boolean getIsShrunk(){
+	public boolean getIsShrunk() {
 		return (bitFlag & BIT_SHRUNK) == BIT_SHRUNK;
 	}
 
-	public float getFlipRotation(){
+	public float getFlipRotation() {
 		return this.flipRotation;
 	}
 
-	public float getPrevFlipRotation(){
+	public float getPrevFlipRotation() {
 		return this.prevFlipRotation;
 	}
 
-	public float getShrinkPct(){
+	public float getShrinkPct() {
 		return this.shrinkPct;
 	}
 
-	public float getPrevShrinkPct(){
+	public float getPrevShrinkPct() {
 		return this.prevShrinkPct;
 	}
 
-	public void setShrinkPct(float pct){
+	public void setShrinkPct(float pct) {
 		this.prevShrinkPct = this.shrinkPct;
 		this.shrinkPct = pct;
 	}
 
-	public boolean shouldReverseInput(){
+	public boolean shouldReverseInput() {
 		return getFlipRotation() > 0 || this.entity.isPotionActive(BuffList.scrambleSynapses.id);
 	}
 
-	public AMVector2 getOriginalSize(){
+	public AMVector2 getOriginalSize() {
 		return this.originalSize;
 	}
 
-	public boolean getCanHeal(){
+	public boolean getCanHeal() {
 		return healCooldown <= 0;
 	}
 
 	//=======================================================================================
 	// Setters
 	//=======================================================================================
-	public void setMarkLocation(double x, double y, double z, int dimension){
+	public void setMarkLocation(double x, double y, double z, int dimension) {
 		setMarkX(x);
 		setMarkY(y);
 		setMarkZ(z);
@@ -443,20 +458,24 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		setUpdateFlag(UPD_MARK);
 	}
 
-	public void setNoMarkLocation(){
+	public void setNoMarkLocation() {
 		setMarkSet(false);
 		setUpdateFlag(UPD_MARK);
 	}
 
-	public void setBreathAmount(int breath){
+	public void setBreathAmount(int breath) {
 		this.previousBreath = breath;
 	}
 
 	@Override
-	public boolean setMagicLevelWithMana(int level){
+	public boolean setMagicLevelWithMana(int level) {
 
-		if (level > maxMagicLevel) level = maxMagicLevel;
-		if (level < 0) level = 0;
+		if(level > maxMagicLevel) {
+			level = maxMagicLevel;
+		}
+		if(level < 0) {
+			level = 0;
+		}
 		setMagicLevel(level);
 		setMaxMana((float)(Math.pow(level, 1.5f) * (85f * ((float)level / maxMagicLevel)) + 500f));
 		setCurrentMana(getMaxMana());
@@ -466,46 +485,60 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		return true;
 	}
 
-	public void setInanimateTarget(Entity ent){
-		if (ent instanceof EntityLivingBase)
+	public void setInanimateTarget(Entity ent) {
+		if(ent instanceof EntityLivingBase) {
 			return;
+		}
 		this.inanimateTarget = ent;
 	}
 
-	public void setMarkY(double markY){
+	public void setMarkY(double markY) {
 		this.markY = markY;
 	}
 
-	public void setMarkZ(double markZ){
+	public void setMarkZ(double markZ) {
 		this.markZ = markZ;
 	}
 
-	public void setCurrentFatigue(float currentFatigue){
-		if (currentFatigue < 0) currentFatigue = 0;
-		if (currentFatigue > getMaxFatigue()) currentFatigue = getMaxFatigue();
+	public void setCurrentFatigue(float currentFatigue) {
+		if(currentFatigue < 0) {
+			currentFatigue = 0;
+		}
+		if(currentFatigue > getMaxFatigue()) {
+			currentFatigue = getMaxFatigue();
+		}
 		this.currentFatigue = currentFatigue;
 		this.setUpdateFlag(UPD_CURRENT_MANA_FATIGUE);
 	}
 
-	public void setMaxFatigue(float maxFatigue){
+	public void setMaxFatigue(float maxFatigue) {
 		this.maxFatigue = maxFatigue;
 		this.setUpdateFlag(UPD_MAX_MANA_FATIGUE);
 	}
 
 	@Override
-	public void setCurrentMana(float currentMana){
-		if (currentMana < 0) currentMana = 0;
-		if (currentMana > getMaxMana()) currentMana = getMaxMana();
+	public void setCurrentMana(float currentMana) {
+		if(currentMana < 0) {
+			currentMana = 0;
+		}
+		if(currentMana > getMaxMana()) {
+			currentMana = getMaxMana();
+		}
 		this.currentMana = currentMana;
 		this.setUpdateFlag(UPD_CURRENT_MANA_FATIGUE);
 	}
 
-	public void setMagicLevel(int magicLevel){
-		if (magicLevel < 0) magicLevel = 0;
-		if (magicLevel > maxMagicLevel) magicLevel = maxMagicLevel;
+	public void setMagicLevel(int magicLevel) {
+		if(magicLevel < 0) {
+			magicLevel = 0;
+		}
+		if(magicLevel > maxMagicLevel) {
+			magicLevel = maxMagicLevel;
+		}
 
-		if (entity instanceof EntityPlayer)
+		if(entity instanceof EntityPlayer) {
 			MinecraftForge.EVENT_BUS.post(new PlayerMagicLevelChangeEvent(entity, magicLevel));
+		}
 
 		ticksForFullRegen = (int)Math.round(baseTicksForFullRegen * (0.75 - (0.25 * (getMagicLevel() / maxMagicLevel))));
 
@@ -513,17 +546,17 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		this.setUpdateFlag(UPD_MAGIC_LEVEL);
 	}
 
-	public void setFallProtection(int protection){
+	public void setFallProtection(int protection) {
 		this.fallProtection = protection;
 	}
 
-	public void setContingency(ContingencyTypes type, ItemStack effect){
+	public void setContingency(ContingencyTypes type, ItemStack effect) {
 		this.contingencyType = type;
 		this.contingencyStack = effect;
 		this.setUpdateFlag(UPD_CONTINGENCY);
 	}
 
-	public void setFullSync(){
+	public void setFullSync() {
 		this.ticksToSync = 0;
 		this.setUpdateFlag(UPD_CONTINGENCY);
 		this.setUpdateFlag(UPD_BITFLAG);
@@ -537,105 +570,113 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		this.forcingSync = true;
 	}
 
-	public void updateManaLink(EntityLivingBase entity){
-		if (!entity.worldObj.isRemote){
+	public void updateManaLink(EntityLivingBase entity) {
+		if(!entity.worldObj.isRemote) {
 			this.updateFlags |= UPD_MANALINK;
 		}
 		ManaLinkEntry mle = new ManaLinkEntry(entity.getEntityId(), 20);
-		if (!this.manaLinks.contains(mle))
+		if(!this.manaLinks.contains(mle)) {
 			this.manaLinks.add(mle);
-		else
+		}
+		else {
 			this.manaLinks.remove(mle);
+		}
 	}
 
-	public float getBonusCurrentMana(){
+	public float getBonusCurrentMana() {
 		float bonus = 0;
-		for (ManaLinkEntry entry : this.manaLinks){
+		for(ManaLinkEntry entry: this.manaLinks) {
 			bonus += entry.getAdditionalCurrentMana(entity.worldObj, entity);
 		}
 		return bonus;
 	}
 
-	public float getBonusMaxMana(){
+	public float getBonusMaxMana() {
 		float bonus = 0;
-		for (ManaLinkEntry entry : this.manaLinks){
+		for(ManaLinkEntry entry: this.manaLinks) {
 			bonus += entry.getAdditionalMaxMana(entity.worldObj, entity);
 		}
 		return bonus;
 	}
 
-	public void setIsFlipped(boolean flipped){
-		if (flipped)
+	public void setIsFlipped(boolean flipped) {
+		if(flipped) {
 			this.bitFlag |= BIT_FLIPPED;
-		else
+		}
+		else {
 			this.bitFlag &= ~BIT_FLIPPED;
+		}
 
-		if (!entity.worldObj.isRemote)
+		if(!entity.worldObj.isRemote) {
 			this.setUpdateFlag(UPD_BITFLAG);
+		}
 	}
 
-	public void setIsShrunk(boolean shrunk){
-		if (shrunk)
+	public void setIsShrunk(boolean shrunk) {
+		if(shrunk) {
 			this.bitFlag |= BIT_SHRUNK;
-		else
+		}
+		else {
 			this.bitFlag &= ~BIT_SHRUNK;
+		}
 
-		if (!entity.worldObj.isRemote){
+		if(!entity.worldObj.isRemote) {
 			this.setUpdateFlag(UPD_BITFLAG);
 			this.forceSync();
 		}
 	}
 
-	public void setDisableGravity(boolean disabled){
+	public void setDisableGravity(boolean disabled) {
 		this.disableGravity = disabled;
-		if (!this.entity.worldObj.isRemote){
+		if(!this.entity.worldObj.isRemote) {
 			this.setUpdateFlag(UPD_DISABLE_GRAVITY);
 			this.forceSync();
 		}
 	}
 
-	public void setOriginalSize(AMVector2 size){
+	public void setOriginalSize(AMVector2 size) {
 		this.originalSize = size;
 	}
 
-	public void setHealCooldown(int length){
+	public void setHealCooldown(int length) {
 		this.healCooldown = length;
 	}
 	//=======================================================================================
 	// Private Setters
 	//=======================================================================================
 
-	private void setMarkSet(boolean markSet){
+	private void setMarkSet(boolean markSet) {
 		byte curValue = this.bitFlag;
-		if (markSet){
+		if(markSet) {
 			curValue |= BIT_MARK_SET;
-		}else{
+		}
+		else {
 			curValue &= ~BIT_MARK_SET;
 		}
 		this.bitFlag = curValue;
 		this.setUpdateFlag(UPD_BITFLAG);
 	}
 
-	private void setMarkDimension(int markDimension){
+	private void setMarkDimension(int markDimension) {
 		this.markDimension = markDimension;
 	}
 
-	private void setMarkX(double markX){
+	private void setMarkX(double markX) {
 		this.markX = markX;
 	}
 
-	private void setNumSummons(int numSummons){
-		if (this.entity == null || this.entity.worldObj == null){
+	private void setNumSummons(int numSummons) {
+		if(this.entity == null || this.entity.worldObj == null) {
 			return;
 		}
 		this.numSummons = numSummons;
 	}
 
-	private void setUpdateFlag(int flag){
+	private void setUpdateFlag(int flag) {
 		this.updateFlags |= flag;
 	}
 
-	private void clearUpdateFlag(int flag){
+	private void clearUpdateFlag(int flag) {
 		this.updateFlags &= ~flag;
 	}
 
@@ -643,64 +684,67 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 	// Utility Methods
 	//=======================================================================================
 
-	public void setEntityReference(EntityLivingBase entity){
+	public void setEntityReference(EntityLivingBase entity) {
 		this.entity = entity;
 		setOriginalSize(new AMVector2(entity.width, entity.height));
 		hasInitialized = true;
 		isCritical = entity instanceof EntityPlayerMP;
 		yOffsetOrig = entity.yOffset;
 
-		if (isCritical)
+		if(isCritical) {
 			ticksToRegen = 5;
-		else
+		}
+		else {
 			ticksToRegen = 20;
+		}
 
-		if (isCritical){
-			if (armorProcCooldowns[3] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 3, armorProcCooldowns[3]);
+		if(isCritical) {
+			if(armorProcCooldowns[3] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 3, armorProcCooldowns[3]);
 			}
-			if (armorProcCooldowns[1] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 1, armorProcCooldowns[1]);
+			if(armorProcCooldowns[1] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 1, armorProcCooldowns[1]);
 			}
-			if (armorProcCooldowns[2] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 2, armorProcCooldowns[2]);
+			if(armorProcCooldowns[2] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 2, armorProcCooldowns[2]);
 			}
-			if (armorProcCooldowns[0] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 0, armorProcCooldowns[0]);
+			if(armorProcCooldowns[0] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 0, armorProcCooldowns[0]);
 			}
 		}
 
-		if (entity.worldObj != null && entity.worldObj.isRemote && entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)){
-			EntityLivingBase localPlayer = AMCore.instance.proxy.getLocalPlayer();
-			if (entity != localPlayer)
+		if(entity.worldObj != null && entity.worldObj.isRemote && entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)) {
+			EntityLivingBase localPlayer = AMCore.proxy.getLocalPlayer();
+			if(entity != localPlayer) {
 				AMNetHandler.INSTANCE.requestAuras((EntityPlayer)entity);
+			}
 		}
 
 	}
 
-	public void handleSpecialSyncData(){
-		if (needsArmorTickCounterSync && entity instanceof EntityPlayerMP){
+	public void handleSpecialSyncData() {
+		if(needsArmorTickCounterSync && entity instanceof EntityPlayerMP) {
 			needsArmorTickCounterSync = false;
-			if (armorProcCooldowns[3] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 3, armorProcCooldowns[3]);
+			if(armorProcCooldowns[3] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 3, armorProcCooldowns[3]);
 			}
-			if (armorProcCooldowns[1] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 1, armorProcCooldowns[1]);
+			if(armorProcCooldowns[1] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 1, armorProcCooldowns[1]);
 			}
-			if (armorProcCooldowns[2] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 2, armorProcCooldowns[2]);
+			if(armorProcCooldowns[2] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 2, armorProcCooldowns[2]);
 			}
-			if (armorProcCooldowns[0] > 0){
-				AMCore.instance.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 0, armorProcCooldowns[0]);
+			if(armorProcCooldowns[0] > 0) {
+				AMCore.proxy.blackoutArmorPiece((EntityPlayerMP)entity, 0, armorProcCooldowns[0]);
 			}
 		}
 	}
 
-	private void verifySummons(){
-		for (int i = 0; i < summon_ent_ids.size(); ++i){
+	private void verifySummons() {
+		for(int i = 0; i < summon_ent_ids.size(); ++i) {
 			int id = summon_ent_ids.get(i);
 			Entity e = entity.worldObj.getEntityByID(id);
-			if (e == null || !(e instanceof EntityLivingBase)){
+			if(e == null || !(e instanceof EntityLivingBase)) {
 				summon_ent_ids.remove(i);
 				i--;
 				removeSummon();
@@ -708,8 +752,8 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		}
 	}
 
-	public boolean addSummon(EntityLivingBase entity){
-		if (!entity.worldObj.isRemote){
+	public boolean addSummon(EntityLivingBase entity) {
+		if(!entity.worldObj.isRemote) {
 			summon_ent_ids.add(entity.getEntityId());
 			setNumSummons(getNumSummons() + 1);
 			setUpdateFlag(UPD_NUM_SUMMONS);
@@ -717,61 +761,62 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		return true;
 	}
 
-	public boolean removeSummon(){
-		if (getNumSummons() == 0){
+	public boolean removeSummon() {
+		if(getNumSummons() == 0) {
 			return false;
 		}
-		if (!entity.worldObj.isRemote){
+		if(!entity.worldObj.isRemote) {
 			setNumSummons(getNumSummons() - 1);
 			setUpdateFlag(UPD_NUM_SUMMONS);
 		}
 		return true;
 	}
 
-	public void setSyncAuras(){
-		if (entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity))
+	public void setSyncAuras() {
+		if(entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)) {
 			this.setUpdateFlag(UPD_BETA_PARTICLES);
+		}
 	}
 
-	public boolean handleDataPacket(byte[] data){
+	public boolean handleDataPacket(byte[] data) {
 		AMDataReader rdr = new AMDataReader(data, false);
 		int entID = rdr.getInt();
 
-		if (entID != this.entity.getEntityId()){
+		if(entID != this.entity.getEntityId()) {
 			return false;
 		}
 		int flags = rdr.getInt();
 
-		if ((flags & UPD_BITFLAG) == UPD_BITFLAG){
+		if((flags & UPD_BITFLAG) == UPD_BITFLAG) {
 			this.bitFlag = rdr.getByte();
 		}
-		if ((flags & UPD_CURRENT_MANA_FATIGUE) == UPD_CURRENT_MANA_FATIGUE){
+		if((flags & UPD_CURRENT_MANA_FATIGUE) == UPD_CURRENT_MANA_FATIGUE) {
 			this.currentMana = rdr.getFloat();
 			this.currentFatigue = rdr.getFloat();
 		}
-		if ((flags & UPD_MAGIC_LEVEL) == UPD_MAGIC_LEVEL){
+		if((flags & UPD_MAGIC_LEVEL) == UPD_MAGIC_LEVEL) {
 			this.magicLevel = rdr.getInt();
 			float newMagicXP = rdr.getFloat();
-			if (entity.worldObj.isRemote && newMagicXP != magicXP){
+			if(entity.worldObj.isRemote && newMagicXP != magicXP) {
 				AMGuiHelper.instance.showMagicXPBar();
 			}
 			this.magicXP = newMagicXP;
 		}
-		if ((flags & UPD_MARK) == UPD_MARK){
+		if((flags & UPD_MARK) == UPD_MARK) {
 			this.markX = rdr.getDouble();
 			this.markY = rdr.getDouble();
 			this.markZ = rdr.getDouble();
 			this.markDimension = rdr.getInt();
 			this.setMarkSet(rdr.getBoolean());
 		}
-		if ((flags & UPD_MAX_MANA_FATIGUE) == UPD_MAX_MANA_FATIGUE){
+		if((flags & UPD_MAX_MANA_FATIGUE) == UPD_MAX_MANA_FATIGUE) {
 			this.maxMana = rdr.getFloat();
 			this.maxFatigue = rdr.getFloat();
 		}
-		if ((flags & UPD_NUM_SUMMONS) == UPD_NUM_SUMMONS){
+		if((flags & UPD_NUM_SUMMONS) == UPD_NUM_SUMMONS) {
 			this.numSummons = rdr.getInt();
 		}
-		if ((flags & UPD_BETA_PARTICLES) == UPD_BETA_PARTICLES && entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)){
+		if((flags & UPD_BETA_PARTICLES) == UPD_BETA_PARTICLES && entity instanceof EntityPlayer && AMCore.proxy.playerTracker.hasAA((EntityPlayer)entity)) {
 			this.AuraIndex = rdr.getInt();
 			this.AuraBehaviour = rdr.getInt();
 			this.AuraScale = rdr.getFloat();
@@ -783,39 +828,40 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 			this.AuraQuantity = rdr.getInt();
 			this.AuraSpeed = rdr.getFloat();
 		}
-		if ((flags & UPD_CONTINGENCY) == UPD_CONTINGENCY){
+		if((flags & UPD_CONTINGENCY) == UPD_CONTINGENCY) {
 			this.contingencyType = ContingencyTypes.values()[rdr.getInt()];
-			if (this.contingencyType != ContingencyTypes.NONE){
+			if(this.contingencyType != ContingencyTypes.NONE) {
 				this.contingencyStack = rdr.getItemStack();
 			}
 		}
-		if ((flags & UPD_MANALINK) == UPD_MANALINK){
+		if((flags & UPD_MANALINK) == UPD_MANALINK) {
 			this.manaLinks.clear();
 			int numLinks = rdr.getInt();
-			for (int i = 0; i < numLinks; ++i){
+			for(int i = 0; i < numLinks; ++i) {
 				Entity e = entity.worldObj.getEntityByID(rdr.getInt());
-				if (e != null && e instanceof EntityLivingBase)
+				if(e != null && e instanceof EntityLivingBase) {
 					updateManaLink((EntityLivingBase)e);
+				}
 			}
 		}
-		if ((flags & UPD_DISABLE_GRAVITY) == UPD_DISABLE_GRAVITY){
+		if((flags & UPD_DISABLE_GRAVITY) == UPD_DISABLE_GRAVITY) {
 			this.disableGravity = rdr.getBoolean();
 		}
 
 		return true;
 	}
 
-	public void setDelayedSync(int delay){
+	public void setDelayedSync(int delay) {
 		setFullSync();
 		this.ticksToSync = delay;
 	}
 
-	public void forceSync(){
+	public void forceSync() {
 		this.ticksToSync = 0;
 		this.forcingSync = true;
 	}
 
-	public void updateAuraData(int index, int behaviour, float scale, float alpha, boolean colorRandom, boolean colorDefault, int color, int delay, int quantity, float speed){
+	public void updateAuraData(int index, int behaviour, float scale, float alpha, boolean colorRandom, boolean colorDefault, int color, int delay, int quantity, float speed) {
 		this.AuraIndex = index;
 		this.AuraBehaviour = behaviour;
 		this.AuraScale = scale;
@@ -830,7 +876,7 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		this.setUpdateFlag(UPD_BETA_PARTICLES);
 	}
 
-	public byte[] getAuraData(){
+	public byte[] getAuraData() {
 		AMDataWriter writer = new AMDataWriter();
 		writer.add(this.AuraIndex);
 		writer.add(this.AuraBehaviour);
@@ -846,7 +892,7 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		return writer.generate();
 	}
 
-	public void readAuraData(byte[] data){
+	public void readAuraData(byte[] data) {
 		AMDataReader rdr = new AMDataReader(data, false);
 		this.AuraIndex = rdr.getInt();
 		this.AuraBehaviour = rdr.getInt();
@@ -860,20 +906,20 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		this.AuraSpeed = rdr.getFloat();
 	}
 
-	public void handleWaterMovement(){
-		if (this.entity.isPotionActive(BuffList.swiftSwim.id)){
+	public void handleWaterMovement() {
+		if(this.entity.isPotionActive(BuffList.swiftSwim.id)) {
 			this.entity.motionX *= 0.96;
 			this.entity.motionY *= 0.96;
 			this.entity.motionZ *= 0.96;
 		}
 	}
 
-	public boolean detectPossibleDesync(){
+	public boolean detectPossibleDesync() {
 		return false;
 	}
 
 	@Override
-	public void saveNBTData(NBTTagCompound compound){
+	public void saveNBTData(NBTTagCompound compound) {
 		compound.setFloat("curMana", getCurrentMana());
 		compound.setFloat("curFatigue", getCurrentFatigue());
 		compound.setShort("magicLevel", (short)getMagicLevel());
@@ -887,14 +933,14 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 
 		compound.setFloat("magicXP", magicXP);
 
-		if (contingencyType != ContingencyTypes.NONE){
+		if(contingencyType != ContingencyTypes.NONE) {
 			compound.setInteger("contingency_type", contingencyType.ordinal());
 			NBTTagCompound effectSave = contingencyStack.writeToNBT(new NBTTagCompound());
 			compound.setTag("contingency_effect", effectSave);
 		}
 
 		//mark location
-		if (getMarkSet()){
+		if(getMarkSet()) {
 			compound.setDouble("marklocationx", this.getMarkX());
 			compound.setDouble("marklocationy", this.getMarkY());
 			compound.setDouble("marklocationz", this.getMarkZ());
@@ -903,20 +949,19 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 	}
 
 	@Override
-	public void loadNBTData(NBTTagCompound compound){
+	public void loadNBTData(NBTTagCompound compound) {
 		setMagicLevelWithMana(compound.getShort("magicLevel"));
 		setCurrentMana(compound.getFloat("curMana"));
 		setCurrentFatigue(compound.getFloat("curFatigue"));
 
 		armorProcCooldowns = compound.getIntArray("armorCooldowns");
-		if (armorProcCooldowns == null)
+		if(armorProcCooldowns == null) {
 			armorProcCooldowns = new int[4];
-		else if (armorProcCooldowns.length != 4){
+		}
+		else if(armorProcCooldowns.length != 4) {
 			int[] tmp = armorProcCooldowns;
 			armorProcCooldowns = new int[4];
-			for (int i = 0; i < Math.min(tmp.length, 4); ++i){
-				armorProcCooldowns[i] = tmp[i];
-			}
+			System.arraycopy(tmp, 0, armorProcCooldowns, 0, Math.min(tmp.length, 4));
 		}
 
 		//setIsFlipped(compound.getBoolean("isFlipped"));
@@ -927,14 +972,14 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 
 		magicXP = compound.getFloat("magicXP");
 
-		for (int i = 0; i < 4; ++i){
-			if (armorProcCooldowns[i] > 0){
+		for(int i = 0; i < 4; ++i) {
+			if(armorProcCooldowns[i] > 0) {
 				needsArmorTickCounterSync = true;
 				break;
 			}
 		}
 
-		if (compound.hasKey("marklocationx")){
+		if(compound.hasKey("marklocationx")) {
 			setMarkX(compound.getDouble("marklocationx"));
 			setMarkY(compound.getDouble("marklocationy"));
 			setMarkZ(compound.getDouble("marklocationz"));
@@ -942,25 +987,28 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 			this.setMarkSet(true);
 		}
 
-		if (compound.hasKey("contingency_type")){
+		if(compound.hasKey("contingency_type")) {
 			this.contingencyType = ContingencyTypes.values()[compound.getInteger("contingency_type")];
 			this.contingencyStack = ItemStack.loadItemStackFromNBT((NBTTagCompound)compound.getTag("contingency_effect"));
 		}
 	}
 
 	@Override
-	public void init(Entity entity, World world){
-		if (world == null || entity == null || !(entity instanceof EntityLivingBase)) return;
+	public void init(Entity entity, World world) {
+		if(world == null || entity == null || !(entity instanceof EntityLivingBase)) {
+			return;
+		}
 
 		setEntityReference((EntityLivingBase)entity);
 
-		if (entity instanceof EntityPlayer){
+		if(entity instanceof EntityPlayer) {
 			maxMana = 0;
 			currentMana = 0;
 			magicLevel = 0;
 			maxFatigue = 1;
 			currentFatigue = 0;
-		}else{
+		}
+		else {
 			maxMana = 100;
 			currentMana = 100;
 			magicLevel = 1;
@@ -982,35 +1030,33 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		hasInitialized = true;
 	}
 
-	public void deductMana(float manaCost){
+	public void deductMana(float manaCost) {
 		float leftOver = manaCost - currentMana;
 		this.setCurrentMana(currentMana - manaCost);
-		if (leftOver > 0){
-			for (ManaLinkEntry entry : this.manaLinks){
+		if(leftOver > 0) {
+			for(ManaLinkEntry entry: this.manaLinks) {
 				leftOver -= entry.deductMana(entity.worldObj, entity, leftOver);
-				if (leftOver <= 0)
+				if(leftOver <= 0) {
 					break;
+				}
 			}
 		}
 	}
 
-	public void toggleFlipped(){
-		if (entity.worldObj.isRemote){
-			AMNetHandler.INSTANCE.sendExPropCommandToServer(this.BIT_FLIPPED);
+	public void toggleFlipped() {
+		if(entity.worldObj.isRemote) {
+			AMNetHandler.INSTANCE.sendExPropCommandToServer(BIT_FLIPPED);
 		}
-		if (this.getIsFlipped())
-			this.setIsFlipped(false);
-		else
-			this.setIsFlipped(true);
+		this.setIsFlipped(!this.getIsFlipped());
 	}
 
-	public void spawnManaLinkParticles(){
-		if (entity.worldObj != null && entity.worldObj.isRemote){
-			for (ManaLinkEntry entry : this.manaLinks){
+	public void spawnManaLinkParticles() {
+		if(entity.worldObj != null && entity.worldObj.isRemote) {
+			for(ManaLinkEntry entry: this.manaLinks) {
 				Entity e = entity.worldObj.getEntityByID(entry.entityID);
-				if (e != null && e.getDistanceSqToEntity(entity) < entry.range && e.ticksExisted % 90 == 0){
+				if(e != null && e.getDistanceSqToEntity(entity) < entry.range && e.ticksExisted % 90 == 0) {
 					AMLineArc arc = (AMLineArc)AMCore.proxy.particleManager.spawn(entity.worldObj, "textures/blocks/oreblockbluetopaz.png", e, entity);
-					if (arc != null){
+					if(arc != null) {
 						arc.setIgnoreAge(false);
 						arc.setRBGColorF(0.17f, 0.88f, 0.88f);
 					}
@@ -1019,62 +1065,70 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		}
 	}
 
-	public void addBurnout(float burnout){
-		if (entity.isPotionActive(BuffList.burnoutReduction))
+	public void addBurnout(float burnout) {
+		if(entity.isPotionActive(BuffList.burnoutReduction)) {
 			burnout *= 0.75f;
+		}
 		this.setCurrentFatigue(currentFatigue + burnout);
 	}
-	
+
 	@Override
 	public String toString() {
 		try {
 			return hashCode() + " " + entity;
-		} catch(Exception exception) {
+		}
+		catch(Exception exception) {
 			return hashCode() + " (error)";
 		}
 	}
-	
-	public void handleExtendedPropertySync(){
-		if (!entity.worldObj.isRemote && !this.getHasDoneFullSync()) {
+
+	public void handleExtendedPropertySync() {
+		if(!entity.worldObj.isRemote && !this.getHasDoneFullSync()) {
 			this.setFullSync();
 		}
 
-		if (!entity.worldObj.isRemote && this.getHasUpdate()){
+		if(!entity.worldObj.isRemote && this.getHasUpdate()) {
 			byte[] data = this.getUpdateData();
 			AMNetHandler.INSTANCE.sendPacketToAllClientsNear(entity.dimension, entity.posX, entity.posY, entity.posZ, 32, AMPacketIDs.SYNC_EXTENDED_PROPS, data);
 		}
 
-		if (entity.worldObj.isRemote){
-			if (this.detectPossibleDesync()){
-				AMNetHandler.INSTANCE.sendPacketToServer(AMPacketIDs.POSSIBLE_CLIENT_EXPROP_DESYNC, new AMDataWriter().add(entity.getEntityId()).generate());
+		if(entity.worldObj.isRemote) {
+			if(this.detectPossibleDesync()) {
+				AMNetHandler.INSTANCE.sendPacketToServer(AMPacketIDs.POSSIBLE_CLIENT_EXPROP_DESYNC, new AMDataWriter().add(entity.getEntityId())
+																													  .generate());
 			}
 		}
 	}
 
-	public void syncTKDistance(){
+	public void syncTKDistance() {
 		AMDataWriter writer = new AMDataWriter();
 		writer.add(this.TK_Distance);
 		AMNetHandler.INSTANCE.sendPacketToServer(AMPacketIDs.TK_DISTANCE_SYNC, writer.generate());
 	}
 
-	public void addMagicXP(float amt){
-		if (magicLevel == maxMagicLevel || !(this.entity instanceof EntityPlayer)) return;
+	public void addMagicXP(float amt) {
+		if(magicLevel == maxMagicLevel || !(this.entity instanceof EntityPlayer)) {
+			return;
+		}
 
 		this.magicXP += amt;
 		float xpToLevel = getXPToNextLevel();
-		if (magicXP >= xpToLevel){
+		if(magicXP >= xpToLevel) {
 			magicXP = 0;
 
 			setMagicLevelWithMana(magicLevel + 1);
 
-			if (this.entity instanceof EntityPlayer && magicLevel % 2 == 0){
+			if(this.entity instanceof EntityPlayer && magicLevel % 2 == 0) {
 				EntityPlayer ent = (EntityPlayer)this.entity;
-				if (magicLevel <= 20)
+				if(magicLevel <= 20) {
 					SkillData.For(ent).incrementSpellPoints(SkillPointTypes.BLUE);
-				else if (magicLevel <= 40)
+				}
+				else if(magicLevel <= 40) {
 					SkillData.For(ent).incrementSpellPoints(SkillPointTypes.GREEN);
-				else if (magicLevel <= 50)
+				}
+				else if(magicLevel <= 50) {
 					SkillData.For(ent).incrementSpellPoints(SkillPointTypes.RED);
+				}
 
 			}
 			this.entity.worldObj.playSoundAtEntity(entity, "arsmagica2:misc.event.magic_level_up", 1, 1);
@@ -1083,7 +1137,7 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		forceSync();
 	}
 
-	public void procContingency(){
+	public void procContingency() {
 		SpellHelper.instance.applyStackStage(contingencyStack, entity, entity, entity.posX, entity.posY, entity.posZ, 0, entity.worldObj, false, false, 0);
 		AMNetHandler.INSTANCE.sendSpellApplyEffectToAllAround(entity, entity, entity.posX, entity.posY, entity.posZ, entity.worldObj, contingencyStack);
 
@@ -1091,59 +1145,70 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		this.forceSync();
 	}
 
-	public void manaBurnoutTick(){
+	public void manaBurnoutTick() {
 		ticksSinceLastRegen++;
 		healCooldown--;
 
-		if (disableGravity){
+		if(disableGravity) {
 			this.entity.motionY = 0;
 		}
 
-		if (ticksSinceLastRegen >= ticksToRegen){
+		if(ticksSinceLastRegen >= ticksToRegen) {
 			//mana regeneration
 			float actualMaxMana = getMaxMana();
-			if (getCurrentMana() < actualMaxMana){
-				if (entity instanceof EntityPlayer && ((EntityPlayer)entity).capabilities.isCreativeMode){
+			if(getCurrentMana() < actualMaxMana) {
+				if(entity instanceof EntityPlayer && ((EntityPlayer)entity).capabilities.isCreativeMode) {
 					setCurrentMana(actualMaxMana);
-				}else{
-					if (getCurrentMana() < 0){
+				}
+				else {
+					if(getCurrentMana() < 0) {
 						setCurrentMana(0);
 					}
 
-					int regenTicks = (int)Math.ceil(ticksForFullRegen * entity.getAttributeMap().getAttributeInstance(ArsMagicaApi.manaRegenTimeModifier).getAttributeValue());
+					int regenTicks = (int)Math.ceil(ticksForFullRegen * entity.getAttributeMap()
+																			  .getAttributeInstance(ArsMagicaApi.manaRegenTimeModifier)
+																			  .getAttributeValue());
 
 					//mana regen buff
-					if (entity.isPotionActive(BuffList.manaRegen.id)){
+					if(entity.isPotionActive(BuffList.manaRegen.id)) {
 						PotionEffect pe = entity.getActivePotionEffect(BuffList.manaRegen);
 						regenTicks *= (1.0f - Math.max(0.9f, (0.25 * (pe.getAmplifier() + 1))));
 					}
 
 					//mana scepter handling - 10% boost to mana regen
-					if (entity instanceof EntityPlayer){
+					if(entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer)entity;
 						int armorSet = ArmorHelper.getFullArsMagicaArmorSet(player);
-						if (armorSet == ArsMagicaArmorMaterial.MAGE.getMaterialID()){
+						if(armorSet == ArsMagicaArmorMaterial.MAGE.getMaterialID()) {
 							regenTicks *= 0.8;
-						}else if (armorSet == ArsMagicaArmorMaterial.BATTLEMAGE.getMaterialID()){
+						}
+						else if(armorSet == ArsMagicaArmorMaterial.BATTLEMAGE.getMaterialID()) {
 							regenTicks *= 0.95;
-						}else if (armorSet == ArsMagicaArmorMaterial.ARCHMAGE.getMaterialID()){
+						}
+						else if(armorSet == ArsMagicaArmorMaterial.ARCHMAGE.getMaterialID()) {
 							regenTicks *= 0.5;
 						}
 
-						if (SkillData.For(player).isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ManaRegenIII")))){
+						if(SkillData.For(player)
+									.isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ManaRegenIII")))) {
 							regenTicks *= 0.7f;
-						}else if (SkillData.For(player).isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ManaRegenII")))){
+						}
+						else if(SkillData.For(player)
+										 .isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ManaRegenII")))) {
 							regenTicks *= 0.85f;
-						}else if (SkillData.For(player).isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ManaRegenI")))){
+						}
+						else if(SkillData.For(player)
+										 .isEntryKnown(SkillTreeManager.instance.getSkillTreeEntry(SkillManager.instance.getSkill("ManaRegenI")))) {
 							regenTicks *= 0.95f;
 						}
 
 						//armor infusions
 						int numArmorPieces = 0;
-						for (int i = 0; i < 4; ++i){
+						for(int i = 0; i < 4; ++i) {
 							ItemStack stack = player.inventory.armorItemInSlot(i);
-							if (ImbuementRegistry.instance.isImbuementPresent(stack, GenericImbuement.manaRegen))
+							if(ImbuementRegistry.instance.isImbuementPresent(stack, GenericImbuement.manaRegen)) {
 								numArmorPieces++;
+							}
 						}
 						regenTicks *= 1.0f - (0.15f * numArmorPieces);
 					}
@@ -1155,21 +1220,25 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 				}
 			}
 			//fatigue decrease
-			if (getCurrentFatigue() > 0){
+			if(getCurrentFatigue() > 0) {
 				int numArmorPieces = 0;
-				if (entity instanceof EntityPlayer){
+				if(entity instanceof EntityPlayer) {
 					EntityPlayer player = (EntityPlayer)entity;
-					for (int i = 0; i < 4; ++i){
+					for(int i = 0; i < 4; ++i) {
 						ItemStack stack = player.inventory.armorItemInSlot(i);
-						if (ImbuementRegistry.instance.isImbuementPresent(stack, GenericImbuement.burnoutReduction))
+						if(ImbuementRegistry.instance.isImbuementPresent(stack, GenericImbuement.burnoutReduction)) {
 							numArmorPieces++;
+						}
 					}
 				}
-				float factor = (float)((0.01f + (0.015f * numArmorPieces)) * entity.getAttributeMap().getAttributeInstance(ArsMagicaApi.burnoutReductionRate).getAttributeValue());
+				float factor = (float)((0.01f + (0.015f * numArmorPieces)) * entity.getAttributeMap()
+																				   .getAttributeInstance(ArsMagicaApi.burnoutReductionRate)
+																				   .getAttributeValue()
+				);
 				float decreaseamt = (factor * getMagicLevel()) * ticksSinceLastRegen;
 				//actual fatigue decrease
 				setCurrentFatigue(getCurrentFatigue() - decreaseamt);
-				if (getCurrentFatigue() < 0){
+				if(getCurrentFatigue() < 0) {
 					setCurrentFatigue(0);
 				}
 			}
@@ -1178,100 +1247,110 @@ public class ExtendedProperties implements IExtendedProperties, IExtendedEntityP
 		}
 	}
 
-	public void flipTick(){
+	public void flipTick() {
 		boolean flipped = getIsFlipped();
 
 		ItemStack boots = ((EntityPlayer)entity).inventory.armorInventory[0];
-		if (boots == null || boots.getItem() != ItemsCommonProxy.enderBoots)
+		if(boots == null || boots.getItem() != ItemsCommonProxy.enderBoots) {
 			setIsFlipped(false);
+		}
 
 		prevFlipRotation = flipRotation;
-		if (flipped && flipRotation < 180)
+		if(flipped && flipRotation < 180) {
 			flipRotation += 15;
-		else if (!flipped && flipRotation > 0)
+		}
+		else if(!flipped && flipRotation > 0) {
 			flipRotation -= 15;
-	}
-
-	public void cleanupManaLinks(){
-		Iterator<ManaLinkEntry> it = this.manaLinks.iterator();
-		while (it.hasNext()){
-			ManaLinkEntry entry = it.next();
-			Entity e = this.entity.worldObj.getEntityByID(entry.entityID);
-			if (e == null)
-				it.remove();
 		}
 	}
 
-	public boolean isManaLinkedTo(EntityLivingBase entity){
-		for (ManaLinkEntry entry : manaLinks){
-			if (entry.entityID == entity.getEntityId())
+	public void cleanupManaLinks() {
+		Iterator<ManaLinkEntry> it = this.manaLinks.iterator();
+		while(it.hasNext()) {
+			ManaLinkEntry entry = it.next();
+			Entity e = this.entity.worldObj.getEntityByID(entry.entityID);
+			if(e == null) {
+				it.remove();
+			}
+		}
+	}
+
+	public boolean isManaLinkedTo(EntityLivingBase entity) {
+		for(ManaLinkEntry entry: manaLinks) {
+			if(entry.entityID == entity.getEntityId()) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-	private class ManaLinkEntry{
+	private class ManaLinkEntry {
 		private final int entityID;
 		private final int range;
 
-		public ManaLinkEntry(int entityID, int range){
+		public ManaLinkEntry(int entityID, int range) {
 			this.entityID = entityID;
 			this.range = range * range;
 		}
 
-		private EntityLivingBase getEntity(World world){
+		private EntityLivingBase getEntity(World world) {
 			Entity e = world.getEntityByID(entityID);
-			if (e == null || !(e instanceof EntityLivingBase))
+			if(e == null || !(e instanceof EntityLivingBase)) {
 				return null;
+			}
 			return (EntityLivingBase)e;
 		}
 
-		public float getAdditionalCurrentMana(World world, EntityLivingBase host){
+		public float getAdditionalCurrentMana(World world, EntityLivingBase host) {
 			EntityLivingBase e = getEntity(world);
-			if (e == null || e.getDistanceSqToEntity(host) > range)
+			if(e == null || e.getDistanceSqToEntity(host) > range) {
 				return 0;
+			}
 			return For(e).getCurrentMana();
 		}
 
-		public float getAdditionalMaxMana(World world, EntityLivingBase host){
+		public float getAdditionalMaxMana(World world, EntityLivingBase host) {
 			EntityLivingBase e = getEntity(world);
-			if (e == null || e.getDistanceSqToEntity(host) > range)
+			if(e == null || e.getDistanceSqToEntity(host) > range) {
 				return 0;
+			}
 			return For(e).getMaxMana();
 		}
 
-		public float deductMana(World world, EntityLivingBase host, float amt){
+		public float deductMana(World world, EntityLivingBase host, float amt) {
 			EntityLivingBase e = getEntity(world);
-			if (e == null || e.getDistanceSqToEntity(host) > range)
+			if(e == null || e.getDistanceSqToEntity(host) > range) {
 				return 0;
+			}
 			amt = Math.min(For(e).getCurrentMana(), amt);
 			For(e).deductMana(amt);
-			if (!world.isRemote)
+			if(!world.isRemote) {
 				For(e).forceSync();
+			}
 			return amt;
 		}
 
 		@Override
-		public int hashCode(){
+		public int hashCode() {
 			return entityID;
 		}
 
 		@Override
-		public boolean equals(Object obj){
-			if (obj instanceof ManaLinkEntry)
+		public boolean equals(Object obj) {
+			if(obj instanceof ManaLinkEntry) {
 				return ((ManaLinkEntry)obj).entityID == this.entityID;
+			}
 			return false;
 		}
 	}
 
-	public void performRemoteOp(int mask){
-		if (entity.worldObj.isRemote)
+	public void performRemoteOp(int mask) {
+		if(entity.worldObj.isRemote) {
 			return;
-		switch (mask){
-		case BIT_FLIPPED:
+		}
+		if(mask == BIT_FLIPPED) {
 			toggleFlipped();
 			forceSync();
-			break;
 		}
 	}
 }

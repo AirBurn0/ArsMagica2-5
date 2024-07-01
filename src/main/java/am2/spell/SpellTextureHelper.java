@@ -22,81 +22,100 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @SideOnly(Side.CLIENT)
-public class SpellTextureHelper{
+public class SpellTextureHelper {
 	public static final SpellTextureHelper instance = new SpellTextureHelper();
 
 	private IIcon[] icons;
 	private static final String iconsPath = "/assets/arsmagica2/textures/items/spells/icons/";
 	private static final String iconsPrefix = "/spells/icons/";
 
-	private SpellTextureHelper(){
+	private SpellTextureHelper() {
 	}
 
-	public void loadAllIcons(IIconRegister register){
+	public void loadAllIcons(IIconRegister register) {
 		List<String> resources;
-		try{
+		try {
 			resources = getResourceListing();
-			if (resources.size() == 0){
+			if(resources.size() == 0) {
 				LogHelper.error("No spell IIcons found?!?");
-			}else{
+			}
+			else {
 				LogHelper.info("Located %d spell IIcons", resources.size());
 			}
 			icons = new IIcon[resources.size()];
 			int count = 0;
-			for (String s : resources){
+			for(String s: resources) {
 				icons[count++] = ResourceManager.RegisterTexture(s, register);
 			}
-		}catch (Throwable e){
-			if (icons == null)
+		}
+		catch(Throwable e) {
+			if(icons == null) {
 				icons = new IIcon[0];
+			}
 			e.printStackTrace();
 		}
 
 	}
 
-	public static List<String> getResourceListing() throws IOException, URISyntaxException{
+	public static List<String> getResourceListing() throws IOException, URISyntaxException {
 		CodeSource src = AMCore.class.getProtectionDomain().getCodeSource();
 		ArrayList<String> toReturn = new ArrayList<String>();
-		if (src != null){
+		if(src != null) {
 			URL jar = src.getLocation();
-			if (jar.getProtocol() == "jar"){
-				String path = jar.toString().replace("jar:", "").replace("file:", "").replace("!/am2/AMCore.class", "").replace('/', File.separatorChar);
+			if(jar.getProtocol() == "jar") {
+				String path = jar.toString()
+								 .replace("jar:", "")
+								 .replace("file:", "")
+								 .replace("!/am2/AMCore.class", "")
+								 .replace('/', File.separatorChar);
 				path = URLDecoder.decode(path, "UTF-8");
 				LogHelper.debug(path);
 				JarFile jarFile = new JarFile(path);
 				Enumeration<JarEntry> entries = jarFile.entries();
-				while (entries.hasMoreElements()){
+				while(entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
-					if (entry.getName().startsWith("assets/arsmagica2/textures/items/spells/icons/")){
+					if(entry.getName().startsWith("assets/arsmagica2/textures/items/spells/icons/")) {
 						String name = entry.getName().replace("assets/arsmagica2/textures/items/spells/icons/", "");
-						if (name.equals("")) continue;
+						if(name.equals("")) {
+							continue;
+						}
 						toReturn.add("spells/icons/" + name.replace(".png", ""));
 					}
 				}
 				jarFile.close();
-			}else if (jar.getProtocol() == "file"){
-				String path = jar.toURI().toString().replace("/am2/AMCore.class", iconsPath).replace("file:/", "").replace("%20", " ").replace("/", "\\");
+			}
+			else if(jar.getProtocol() == "file") {
+				String path = jar.toURI()
+								 .toString()
+								 .replace("/am2/AMCore.class", iconsPath)
+								 .replace("file:/", "")
+								 .replace("%20", " ")
+								 .replace("/", "\\");
 				File file = new File(path);
-				if (file.exists() && file.isDirectory()){
-					for (File sub : file.listFiles()){
+				if(file.exists() && file.isDirectory()) {
+					for(File sub: file.listFiles()) {
 						toReturn.add(iconsPrefix + sub.getName().replace(".png", ""));
 					}
 				}
 			}
 			return toReturn;
-		}else{
+		}
+		else {
 			return toReturn;
 		}
 	}
 
-	public IIcon getIcon(int index){
-		if (icons.length == 0)
+	public IIcon getIcon(int index) {
+		if(icons.length == 0) {
 			return Items.diamond_sword.getIconFromDamage(0);
-		if (index < 0 || index >= icons.length) index = 0;
+		}
+		if(index < 0 || index >= icons.length) {
+			index = 0;
+		}
 		return icons[index];
 	}
 
-	public IIcon[] getAllIcons(){
+	public IIcon[] getAllIcons() {
 		return icons;
 	}
 }

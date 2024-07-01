@@ -10,58 +10,60 @@ import net.minecraft.world.chunk.Chunk;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PowerNodePathfinder extends AStar<AMVector3>{
+public class PowerNodePathfinder extends AStar<AMVector3> {
 
-	private World world;
-	private AMVector3 start;
-	private AMVector3 end;
-	private PowerTypes powerType;
+	private final World world;
+	private final AMVector3 start;
+	private final AMVector3 end;
+	private final PowerTypes powerType;
 
-	PowerNodePathfinder(World world, AMVector3 start, AMVector3 end, PowerTypes type){
+	PowerNodePathfinder(World world, AMVector3 start, AMVector3 end, PowerTypes type) {
 		this.world = world;
 		this.start = start;
 		this.end = end;
 		this.powerType = type;
 	}
 
-	private IPowerNode getPowerNode(World world, AMVector3 location){
-		if (world.checkChunksExist((int)location.x, (int)location.y, (int)location.z, (int)location.x, (int)location.y, (int)location.z)){
+	private IPowerNode getPowerNode(World world, AMVector3 location) {
+		if(world.checkChunksExist((int)location.x, (int)location.y, (int)location.z, (int)location.x, (int)location.y, (int)location.z)) {
 			Chunk chunk = world.getChunkFromBlockCoords((int)location.x, (int)location.z);
-			if (chunk.isChunkLoaded){
+			if(chunk.isChunkLoaded) {
 				TileEntity te = world.getTileEntity((int)location.x, (int)location.y, (int)location.z);
-				if (te instanceof IPowerNode)
+				if(te instanceof IPowerNode) {
 					return (IPowerNode)te;
+				}
 			}
 		}
 		return null;
 	}
 
 	@Override
-	protected boolean isGoal(AMVector3 node){
+	protected boolean isGoal(AMVector3 node) {
 		return node.equals(end);
 	}
 
 	@Override
-	protected Double g(AMVector3 from, AMVector3 to){
+	protected Double g(AMVector3 from, AMVector3 to) {
 		return from.distanceSqTo(to);
 	}
 
 	@Override
-	protected Double h(AMVector3 from, AMVector3 to){
+	protected Double h(AMVector3 from, AMVector3 to) {
 		return from.distanceSqTo(to);
 	}
 
 	@Override
-	protected List<AMVector3> generateSuccessors(AMVector3 node){
+	protected List<AMVector3> generateSuccessors(AMVector3 node) {
 		IPowerNode powerNode = getPowerNode(world, node);
-		if (powerNode == null)
+		if(powerNode == null) {
 			return new ArrayList<AMVector3>();
+		}
 
 		IPowerNode[] candidates = PowerNodeRegistry.For(world).getAllNearbyNodes(world, node, powerType);
 
 		ArrayList<AMVector3> prunedCandidates = new ArrayList<AMVector3>();
-		for (IPowerNode candidate : candidates){
-			if (verifyCandidate(candidate)){
+		for(IPowerNode candidate: candidates) {
+			if(verifyCandidate(candidate)) {
 				prunedCandidates.add(new AMVector3((TileEntity)candidate));
 			}
 		}
@@ -69,11 +71,13 @@ public class PowerNodePathfinder extends AStar<AMVector3>{
 		return prunedCandidates;
 	}
 
-	private boolean verifyCandidate(IPowerNode powerNode){
-		if (new AMVector3((TileEntity)powerNode).equals(end)){
-			for (PowerTypes type : powerNode.getValidPowerTypes())
-				if (type == powerType)
+	private boolean verifyCandidate(IPowerNode powerNode) {
+		if(new AMVector3((TileEntity)powerNode).equals(end)) {
+			for(PowerTypes type: powerNode.getValidPowerTypes()) {
+				if(type == powerType) {
 					return true;
+				}
+			}
 		}
 		return powerNode.canRelayPower(powerType);
 	}

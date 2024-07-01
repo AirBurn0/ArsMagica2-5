@@ -6,24 +6,27 @@ import net.minecraft.world.World;
 import java.util.Map;
 
 /**
- * Base class for all ill effects.
- *
- * @author Mithion
- */
-public abstract class IllEffectBase implements IIllEffect{
+ Base class for all ill effects.
+
+ @author Mithion */
+public abstract class IllEffectBase implements IIllEffect {
 
 	@Override
-	public final int compareTo(Object o){
-		if (!(o instanceof IIllEffect)) return 0;
+	public final int compareTo(Object o) {
+		if(!(o instanceof IIllEffect)) {
+			return 0;
+		}
 		IIllEffect right = (IIllEffect)o;
 		int myOrdinal = this.GetSeverity().ordinal();
 		int theirOrdinal = right.GetSeverity().ordinal();
 
-		if (myOrdinal == theirOrdinal){
+		if(myOrdinal == theirOrdinal) {
 			return 0;
-		}else if (myOrdinal < theirOrdinal){
+		}
+		else if(myOrdinal < theirOrdinal) {
 			return -1;
-		}else{
+		}
+		else {
 			return 1;
 		}
 	}

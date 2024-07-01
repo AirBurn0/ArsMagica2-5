@@ -3,7 +3,7 @@ package am2.api;
 import am2.api.spell.component.interfaces.ISkillTreeEntry;
 import am2.api.spell.enums.SkillTrees;
 
-public class SkillTreeEntry{
+public class SkillTreeEntry {
 	public final int x;
 	public final int y;
 	public final SkillTrees tree;
@@ -12,7 +12,7 @@ public class SkillTreeEntry{
 	public final int tier;
 	public boolean enabled;
 
-	public SkillTreeEntry(int x, int y, SkillTrees tree, SkillTreeEntry[] prerequisites, ISkillTreeEntry registeredItem, boolean enabled){
+	public SkillTreeEntry(int x, int y, SkillTrees tree, SkillTreeEntry[] prerequisites, ISkillTreeEntry registeredItem, boolean enabled) {
 		this.x = x;
 		this.y = y;
 		this.tree = tree;
@@ -21,8 +21,8 @@ public class SkillTreeEntry{
 		this.enabled = enabled;
 
 		int highestTier = 0;
-		for (SkillTreeEntry entry : prerequisites){
-			if (entry.tier >= highestTier){
+		for(SkillTreeEntry entry: prerequisites) {
+			if(entry.tier >= highestTier) {
 				highestTier = entry.tier + 1;
 			}
 		}

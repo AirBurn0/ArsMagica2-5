@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BuffList implements IBuffHelper{
+public class BuffList implements IBuffHelper {
 	//buff "potions"
 	public static ArsMagicaPotion waterBreathing;
 	public static ArsMagicaPotion flight;
@@ -66,24 +66,24 @@ public class BuffList implements IBuffHelper{
 	private static final HashMap<Integer, BuffEffect> utilityBuffs = new HashMap<Integer, BuffEffect>();
 	private static final ArrayList<ArsMagicaPotion> arsMagicaPotions = new ArrayList<ArsMagicaPotion>();
 	private static ArrayList<Integer> dispelBlacklist;
-	
+
 
 	public static final BuffList instance = new BuffList();
 
 	private static HashMap<Integer, Potion> ourInitialPotionAllocations;
 
-	private BuffList(){
+	private BuffList() {
 
 	}
 
-	private static ArsMagicaPotion createAMPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, Class buffEffectClass){
+	private static ArsMagicaPotion createAMPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, Class buffEffectClass) {
 
 		String configID = name.replace(" ", "").toLowerCase().trim();
 		index = AMCore.config.getConfigurablePotionID(configID, index);
 
 		LogHelper.info("Potion %s is ID %d", name, index);
-		
-		if (Potion.potionTypes[index] != null){
+
+		if(Potion.potionTypes[index] != null) {
 			LogHelper.error("Warning: Potion index %d is already occupied by potion %s. Check your config files for clashes.", index, Potion.potionTypes[index].getName());
 		}
 
@@ -93,69 +93,72 @@ public class BuffList implements IBuffHelper{
 		classesForBuffID.put(index, buffEffectClass);
 		arsMagicaPotions.add(potion);
 		ourInitialPotionAllocations.put(index, potion);
-		
+
 		return potion;
 	}
 
-	private static ManaPotion createManaPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, int colour){
+	private static ManaPotion createManaPotion(int index, String name, int IIconRow, int iconCol, boolean isBadEffect, int colour) {
 		String configID = name.replace(" ", "").toLowerCase().trim();
 		index = AMCore.config.getConfigurablePotionID(configID, index);
-		
+
 		LogHelper.info("Potion %s is ID %d", name, index);
-		
-		if (Potion.potionTypes[index] != null){
+
+		if(Potion.potionTypes[index] != null) {
 			LogHelper.warn("Warning: Potion index %d is already occupied by potion %s. Check your config files for clashes.", index, Potion.potionTypes[index].getName());
 		}
-		
+
 		ManaPotion potion = new ManaPotion(index, isBadEffect, colour);
 		potion.setPotionName(name);
 		potion._setIconIndex(iconCol, IIconRow);
 		ourInitialPotionAllocations.put(index, potion);
-		
+
 		return potion;
 	}
 
-	private static void createDummyBuff(Class buffEffectClass, int potionID){
-		try{
+	private static void createDummyBuff(Class buffEffectClass, int potionID) {
+		try {
 			Constructor ctor = buffEffectClass.getConstructor(Integer.TYPE, Integer.TYPE);
 			BuffEffect utilityBuff = (BuffEffect)ctor.newInstance(0, 0);
 			utilityBuffs.put(potionID, utilityBuff);
-		}catch (Throwable e){
+		}
+		catch(Throwable e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void Init(){
+	public static void Init() {
 		dispelBlacklist = new ArrayList<Integer>();
 		particlesForBuffID = new HashMap<Integer, Integer>();
 		classesForBuffID = new HashMap<Integer, Class>();
 		ourInitialPotionAllocations = new HashMap<Integer, Potion>();
 
-		try{
+		try {
 			extendPotionsArray();
 
 			int numBuffs = Potion.potionTypes.length;
 
-			for (int i = 0; i < numBuffs; ++i){
+			for(int i = 0; i < numBuffs; ++i) {
 				particlesForBuffID.put(i, 0);
 			}
-		}catch (Throwable t){
+		}
+		catch(Throwable t) {
 			LogHelper.error("Buffs failed to initialize!  This will make the game very unstable!");
 			t.printStackTrace();
 		}
 	}
 
-	public static void postInit(){
+	public static void postInit() {
 		// potion clash detection
-		for (Map.Entry<Integer, Potion> entry : ourInitialPotionAllocations.entrySet()){
-			if (Potion.potionTypes[entry.getKey()] != entry.getValue()){
-				LogHelper.warn("My potion, %s, at index %d has been over-written by another potion, %s. You have a conflict in your configuration files.", entry.getValue().getName(), entry.getKey(), Potion.potionTypes[entry.getKey()].getName());
+		for(Map.Entry<Integer, Potion> entry: ourInitialPotionAllocations.entrySet()) {
+			if(Potion.potionTypes[entry.getKey()] != entry.getValue()) {
+				LogHelper.warn("My potion, %s, at index %d has been over-written by another potion, %s. You have a conflict in your configuration files.", entry.getValue()
+																																								.getName(), entry.getKey(), Potion.potionTypes[entry.getKey()].getName());
 			}
 		}
 	}
 
-	public static void Instantiate(){
-		waterBreathing = createAMPotion(potionDefaultOffset + 0, "Water Breathing", 0, 0, false, BuffEffectWaterBreathing.class);
+	public static void Instantiate() {
+		waterBreathing = createAMPotion(potionDefaultOffset, "Water Breathing", 0, 0, false, BuffEffectWaterBreathing.class);
 		flight = createAMPotion(potionDefaultOffset + 1, "Flight", 0, 1, false, BuffEffectFlight.class);
 		slowfall = createAMPotion(potionDefaultOffset + 2, "Feather Fall", 0, 2, false, BuffEffectSlowfall.class);
 		haste = createAMPotion(potionDefaultOffset + 3, "Haste", 0, 3, false, BuffEffectHaste.class);
@@ -179,7 +182,7 @@ public class BuffList implements IBuffHelper{
 		fury = createAMPotion(potionDefaultOffset + 21, "Fury", 1, 6, false, BuffEffectFury.class);
 		scrambleSynapses = createAMPotion(potionDefaultOffset + 22, "Scramble Synapses", 1, 7, true, BuffEffectScrambleSynapses.class);
 		illumination = createAMPotion(potionDefaultOffset + 23, "Illuminated", 1, 0, false, BuffEffectIllumination.class);
-		
+
 		greaterManaPotion = createManaPotion(potionDefaultOffset + 24, "Greater Mana Restoration", 0, 1, false, 0x40c6be);
 		// greaterManaPotion = new ManaPotion(potionDefaultOffset + 24, false, 0x40c6be);
 		// greaterManaPotion.setPotionName("Greater Mana Restoration");
@@ -202,12 +205,12 @@ public class BuffList implements IBuffHelper{
 		shrink = createAMPotion(potionDefaultOffset + 30, "Shrunken", 0, 5, false, BuffEffectShrink.class);
 		burnoutReduction = createAMPotion(potionDefaultOffset + 31, "Burnout Redux", 1, 1, false, BuffEffectBurnoutReduction.class);
 
-		for (int i : classesForBuffID.keySet()){
+		for(int i: classesForBuffID.keySet()) {
 			createDummyBuff(classesForBuffID.get(i), i);
 		}
 	}
 
-	public static void setupTextureOverrides(){
+	public static void setupTextureOverrides() {
 		waterBreathing.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
 		flight.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
 		slowfall.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
@@ -221,7 +224,6 @@ public class BuffList implements IBuffHelper{
 		manaRegen.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
 		entangled.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
 		wateryGrave.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
-		;
 		spellReflect.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
 		silence.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
 		swiftSwim.setTextureSheet(ResourceManager.GetGuiTexturePath("buffs_1.png"));
@@ -246,7 +248,7 @@ public class BuffList implements IBuffHelper{
 	 * The only reason I did was to remove the need to edit base classes.  You can REALLY mess up a program with this if not used properly...
 	 * Technically, you could change false to true.  I'm not even kidding.  The actual keyword would have a different value.  BE CAREFUL!
 	 */
-	private static void setFinalStatic(Field field, Object newValue) throws Exception{
+	private static void setFinalStatic(Field field, Object newValue) throws Exception {
 		field.setAccessible(true);
 
 		Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -256,24 +258,23 @@ public class BuffList implements IBuffHelper{
 		field.set(null, newValue);
 	}
 
-	private static void extendPotionsArray() throws Exception{
+	private static void extendPotionsArray() throws Exception {
 		LogHelper.info("Extending potions array");
 		LogHelper.info("Injecting potions starting from index " + Potion.potionTypes.length);
 		potionDefaultOffset = Potion.potionTypes.length;
 		setPotionArrayLength(255);
 	}
 
-	private static void setPotionArrayLength(int length) throws Exception{
-		if (length <= Potion.potionTypes.length)
+	private static void setPotionArrayLength(int length) throws Exception {
+		if(length <= Potion.potionTypes.length) {
 			return;
-		Potion[] potions = new Potion[length];
-		for (int i = 0; i < Potion.potionTypes.length; ++i){
-			potions[i] = Potion.potionTypes[i];
 		}
+		Potion[] potions = new Potion[length];
+		System.arraycopy(Potion.potionTypes, 0, potions, 0, Potion.potionTypes.length);
 		Field field = null;
 		Field[] fields = Potion.class.getDeclaredFields();
-		for (Field f : fields){
-			if (f.getType().equals(Potion[].class)){
+		for(Field f: fields) {
+			if(f.getType().equals(Potion[].class)) {
 				field = f;
 				break;
 			}
@@ -281,17 +282,17 @@ public class BuffList implements IBuffHelper{
 		setFinalStatic(field, potions);
 	}
 
-	public static boolean IDIsAMBuff(int potionID){
-		for (ArsMagicaPotion i : arsMagicaPotions){
-			if (i.id == potionID){
+	public static boolean IDIsAMBuff(int potionID) {
+		for(ArsMagicaPotion i: arsMagicaPotions) {
+			if(i.id == potionID) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static boolean addParticleToBuff(AMParticle particle, EntityLiving ent, int priority, boolean exclusive, int buffID){
-		if (particlesForBuffID.get(buffID) >= maxParticlesPerBuff){
+	public static boolean addParticleToBuff(AMParticle particle, EntityLiving ent, int priority, boolean exclusive, int buffID) {
+		if(particlesForBuffID.get(buffID) >= maxParticlesPerBuff) {
 			return false;
 		}
 		int count = particlesForBuffID.get(buffID);
@@ -301,40 +302,48 @@ public class BuffList implements IBuffHelper{
 		return true;
 	}
 
-	public static BuffEffect buffEffectFromPotionID(int potionID, int duration, int amplifier){
+	public static BuffEffect buffEffectFromPotionID(int potionID, int duration, int amplifier) {
 		Class _class = classesForBuffID.get(potionID);
-		if (_class == null) return null;
+		if(_class == null) {
+			return null;
+		}
 
 		Constructor buffMaker = _class.getDeclaredConstructors()[0];
-		try{
+		try {
 			buffMaker.setAccessible(true);
 			BuffEffect p = (BuffEffect)buffMaker.newInstance(duration, amplifier);
 			return p;
-		}catch (InstantiationException e){
+		}
+		catch(InstantiationException e) {
 			LogHelper.error("Could not create potion: " + e.getMessage());
-		}catch (IllegalAccessException e){
+		}
+		catch(IllegalAccessException e) {
 			LogHelper.error("Could not create potion: " + e.getMessage());
-		}catch (IllegalArgumentException e){
+		}
+		catch(IllegalArgumentException e) {
 			LogHelper.error("Could not create potion: " + e.getMessage());
-		}catch (InvocationTargetException e){
+		}
+		catch(InvocationTargetException e) {
 			LogHelper.error("Could not create potion: " + e.getMessage());
 		}
 		return null;
 	}
 
-	public static void buffEnding(int buffID){
+	public static void buffEnding(int buffID) {
 		particlesForBuffID.put(buffID, 0);
 	}
 
 	@Override
-	public int getPotionID(String name){
+	public int getPotionID(String name) {
 		Field potionField = ReflectionHelper.findField(BuffList.class, name);
-		if (potionField != null && potionField.getType() == ArsMagicaPotion.class){
-			try{
+		if(potionField != null && potionField.getType() == ArsMagicaPotion.class) {
+			try {
 				return ((ArsMagicaPotion)potionField.get(null)).getId();
-			}catch (IllegalArgumentException e){
+			}
+			catch(IllegalArgumentException e) {
 				e.printStackTrace();
-			}catch (IllegalAccessException e){
+			}
+			catch(IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
@@ -342,16 +351,17 @@ public class BuffList implements IBuffHelper{
 	}
 
 	@Override
-	public void addDispelExclusion(int id){
-		if (dispelBlacklist.contains(id)){
+	public void addDispelExclusion(int id) {
+		if(dispelBlacklist.contains(id)) {
 			LogHelper.info("Id %d was already on the dispel blacklist; skipping.", id);
-		}else{
+		}
+		else {
 			LogHelper.info("Added %d to the dispel blacklist.", id);
 			dispelBlacklist.add(id);
 		}
 	}
 
-	public static boolean isDispelBlacklisted(int id){
+	public static boolean isDispelBlacklisted(int id) {
 		return dispelBlacklist.contains(id);
 	}
 }

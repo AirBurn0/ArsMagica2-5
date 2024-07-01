@@ -7,21 +7,21 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockFlickerLure extends PoweredBlock{
+public class BlockFlickerLure extends PoweredBlock {
 
-	public BlockFlickerLure(){
+	public BlockFlickerLure() {
 		super(Material.rock);
 		setHardness(2.0f);
 		setResistance(2.0f);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i){
+	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntityFlickerLure();
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		this.blockIcon = ResourceManager.RegisterTexture("flicker_lure", par1IconRegister);
 	}
 }

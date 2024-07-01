@@ -26,13 +26,11 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements IInventory, IMultiblockStructureController, IKeystoneLockable{
+public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements IInventory, IMultiblockStructureController, IKeystoneLockable {
 
 	private boolean isActive;
 	private long key;
@@ -46,14 +44,14 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 
 	private ItemStack[] inventory;
 
-	public TileEntityKeystoneRecepticle(){
+	public TileEntityKeystoneRecepticle() {
 		super(250000);
 		this.isActive = false;
 		inventory = new ItemStack[getSizeInventory()];
 		initMultiblock();
 	}
 
-	public void initMultiblock(){
+	public void initMultiblock() {
 		//primary
 		//row 0
 		primary.addAllowedBlock(0, 0, 0, BlocksCommonProxy.keystoneRecepticle, 0);
@@ -115,75 +113,78 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 		secondary.addAllowedBlock(2, -4, 0, Blocks.stonebrick, 0);
 	}
 
-	public void onPlaced(){
-		if (!worldObj.isRemote){
+	public void onPlaced() {
+		if(!worldObj.isRemote) {
 			AMChunkLoader.INSTANCE.requestStaticChunkLoad(this.getClass(), this.xCoord, this.yCoord, this.zCoord, this.worldObj);
 		}
 	}
 
 	@Override
-	public void invalidate(){
-		AMCore.instance.proxy.blocks.removeKeystonePortal(xCoord, yCoord, zCoord, worldObj.provider.dimensionId);
+	public void invalidate() {
+		AMCore.proxy.blocks.removeKeystonePortal(xCoord, yCoord, zCoord, worldObj.provider.dimensionId);
 
-		if (!worldObj.isRemote){
+		if(!worldObj.isRemote) {
 			AMChunkLoader.INSTANCE.releaseStaticChunkLoad(this.getClass(), this.xCoord, this.yCoord, this.zCoord, this.worldObj);
 		}
 
 		super.invalidate();
 	}
 
-	public void setActive(long key){
+	public void setActive(long key) {
 		this.isActive = true;
 		this.key = key;
 		int myMeta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 
-		if (PowerNodeRegistry.For(worldObj).getHighestPowerType(this) == PowerTypes.DARK){
+		if(PowerNodeRegistry.For(worldObj).getHighestPowerType(this) == PowerTypes.DARK) {
 			myMeta |= 8;
-		}else if (PowerNodeRegistry.For(worldObj).getHighestPowerType(this) == PowerTypes.LIGHT){
+		}
+		else if(PowerNodeRegistry.For(worldObj).getHighestPowerType(this) == PowerTypes.LIGHT) {
 			myMeta |= 4;
 		}
 
-		if (!this.worldObj.isRemote){
-			for (Object player : this.worldObj.playerEntities){
-				if (player instanceof EntityPlayerMP && new AMVector3((EntityPlayerMP)player).distanceSqTo(new AMVector3(this)) <= 4096){
+		if(!this.worldObj.isRemote) {
+			for(Object player: this.worldObj.playerEntities) {
+				if(player instanceof EntityPlayerMP && new AMVector3((EntityPlayerMP)player).distanceSqTo(new AMVector3(this)) <= 4096) {
 					((EntityPlayerMP)player).playerNetServerHandler.sendPacket(getDescriptionPacket());
 				}
 			}
-		}else{
+		}
+		else {
 			worldObj.playSound(xCoord, yCoord, zCoord, "arsmagica2:misc.gateway.open", 1.0f, 1.0f, true);
 		}
 	}
 
-	public boolean isActive(){
+	public boolean isActive() {
 		return this.isActive;
 	}
 
 	@Override
-	public void updateEntity(){
+	public void updateEntity() {
 		super.updateEntity();
 
 		AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(xCoord + 0.3, yCoord - 3, zCoord + 0.3, xCoord + 0.7, yCoord, zCoord + 0.7);
 		ArrayList<Entity> entities = (ArrayList<Entity>)worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
 
-		if (this.isActive){
+		if(this.isActive) {
 			surroundingCheckTicks--;
-			if (surroundingCheckTicks <= 0){
+			if(surroundingCheckTicks <= 0) {
 				surroundingCheckTicks = 20;
 				checkSurroundings();
 			}
-			if (entities.size() == 1){
+			if(entities.size() == 1) {
 				doTeleport(entities.get(0));
 			}
-		}else{
-			if (entities.size() == 1 && worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord)){
+		}
+		else {
+			if(entities.size() == 1 && worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord)) {
 				Entity entity = entities.get(0);
-				if (entity instanceof EntityPlayer){
+				if(entity instanceof EntityPlayer) {
 					EntityPlayer player = (EntityPlayer)entity;
-					if (player.isPotionActive(BuffList.haste) && player.isPotionActive(Potion.moveSpeed.id) && player.isSprinting()){
+					if(player.isPotionActive(BuffList.haste) && player.isPotionActive(Potion.moveSpeed.id) && player.isSprinting()) {
 						//if (worldObj.isRemote)
 						//player.addStat(AMCore.achievements.EightyEightMilesPerHour, 1);
 						this.key = 0;
-						if (!worldObj.isRemote){
+						if(!worldObj.isRemote) {
 							EntityLightningBolt elb = new EntityLightningBolt(worldObj, xCoord, yCoord, zCoord);
 							worldObj.spawnEntityInWorld(elb);
 						}
@@ -195,7 +196,7 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 		}
 	}
 
-	public boolean canActivate(){
+	public boolean canActivate() {
 		boolean allGood = true;
 		allGood &= worldObj.isAirBlock(xCoord, yCoord - 1, zCoord);
 		allGood &= worldObj.isAirBlock(xCoord, yCoord - 2, zCoord);
@@ -206,40 +207,40 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 		return allGood;
 	}
 
-	private void checkSurroundings(){
-		if (!checkStructure()){
+	private void checkSurroundings() {
+		if(!checkStructure()) {
 			deactivate();
 		}
 	}
 
-	private boolean checkStructure(){
+	private boolean checkStructure() {
 		int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord) & 0x3;
 		boolean remainActive = true;
 
-		switch (meta){
-		case 0:
-		case 2:
-			remainActive &= primary.checkStructure(worldObj, xCoord, yCoord, zCoord);
-			break;
-		case 1:
-		default:
-			remainActive &= secondary.checkStructure(worldObj, xCoord, yCoord, zCoord);
-			break;
+		switch(meta) {
+			case 0:
+			case 2:
+				remainActive &= primary.checkStructure(worldObj, xCoord, yCoord, zCoord);
+				break;
+			case 1:
+			default:
+				remainActive &= secondary.checkStructure(worldObj, xCoord, yCoord, zCoord);
+				break;
 		}
 		return remainActive;
 	}
 
-	public void deactivate(){
+	public void deactivate() {
 		this.isActive = false;
-		if (!this.worldObj.isRemote){
+		if(!this.worldObj.isRemote) {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 	}
 
-	private void doTeleport(Entity entity){
+	private void doTeleport(Entity entity) {
 		deactivate();
 
-		AMVector3 newLocation = AMCore.instance.proxy.blocks.getNextKeystonePortalLocation(this.worldObj, xCoord, yCoord, zCoord, false, this.key);
+		AMVector3 newLocation = AMCore.proxy.blocks.getNextKeystonePortalLocation(this.worldObj, xCoord, yCoord, zCoord, false, this.key);
 		AMVector3 myLocation = new AMVector3(xCoord, yCoord, zCoord);
 
 		double distance = myLocation.distanceTo(newLocation);
@@ -247,10 +248,10 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 
 		int meta = worldObj.getBlockMetadata((int)newLocation.x, (int)newLocation.y, (int)newLocation.z);
 
-		if (AMCore.config.getHazardousGateways()){
+		if(AMCore.config.getHazardousGateways()) {
 			//uh-oh!  Not enough power!  The teleporter will still send you though, but I wonder where...
 			float charge = PowerNodeRegistry.For(this.worldObj).getHighestPower(this);
-			if (charge < essenceCost){
+			if(charge < essenceCost) {
 				essenceCost = charge;
 				//get the distance that our charge *will* take us towards the next point
 				double distanceWeCanGo = MathHelper.sqrt_double(charge / 0.00175);
@@ -263,48 +264,51 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 				double newZ = myLocation.z + (Math.sin(angleH) * distanceWeCanGo);
 				double newY = myLocation.y;
 
-				while (worldObj.isAirBlock((int)newX, (int)newY, (int)newZ)){
+				while(worldObj.isAirBlock((int)newX, (int)newY, (int)newZ)) {
 					newY++;
 				}
 
 				newLocation = new AMVector3(newX, newY, newZ);
 			}
-		}else{
+		}
+		else {
 			this.worldObj.playSoundEffect(newLocation.x, newLocation.y, newLocation.z, "mob.endermen.portal", 1.0F, 1.0F);
 			return;
 		}
 
 
 		float newRotation = 0;
-		switch (meta){
-		case 0:
-			newRotation = 270;
-			break;
-		case 1:
-			newRotation = 180;
-			break;
-		case 2:
-			newRotation = 90;
-			break;
-		case 3:
-			newRotation = 0;
-			break;
+		switch(meta) {
+			case 0:
+				newRotation = 270;
+				break;
+			case 1:
+				newRotation = 180;
+				break;
+			case 2:
+				newRotation = 90;
+				break;
+			case 3:
+				newRotation = 0;
+				break;
 		}
 		entity.setPositionAndRotation(newLocation.x + 0.5, newLocation.y - entity.height, newLocation.z + 0.5, newRotation, entity.rotationPitch);
 
-		PowerNodeRegistry.For(this.worldObj).consumePower(this, PowerNodeRegistry.For(this.worldObj).getHighestPowerType(this), essenceCost);
+		PowerNodeRegistry.For(this.worldObj)
+						 .consumePower(this, PowerNodeRegistry.For(this.worldObj)
+															  .getHighestPowerType(this), essenceCost);
 
 		this.worldObj.playSoundEffect(myLocation.x, myLocation.y, myLocation.z, "mob.endermen.portal", 1.0F, 1.0F);
 		this.worldObj.playSoundEffect(newLocation.x, newLocation.y, newLocation.z, "mob.endermen.portal", 1.0F, 1.0F);
 	}
 
 	@Override
-	public int getSizeInventory(){
+	public int getSizeInventory() {
 		return 3;
 	}
 
 	@Override
-	public ItemStack[] getRunesInKey(){
+	public ItemStack[] getRunesInKey() {
 		ItemStack[] runes = new ItemStack[3];
 		runes[0] = inventory[0];
 		runes[1] = inventory[1];
@@ -313,109 +317,112 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 	}
 
 	@Override
-	public boolean keystoneMustBeHeld(){
+	public boolean keystoneMustBeHeld() {
 		return false;
 	}
 
 	@Override
-	public boolean keystoneMustBeInActionBar(){
+	public boolean keystoneMustBeInActionBar() {
 		return false;
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot){
-		if (slot >= inventory.length)
+	public ItemStack getStackInSlot(int slot) {
+		if(slot >= inventory.length) {
 			return null;
+		}
 		return inventory[slot];
 	}
 
 	@Override
-	public ItemStack decrStackSize(int i, int j){
-		if (inventory[i] != null){
-			if (inventory[i].stackSize <= j){
+	public ItemStack decrStackSize(int i, int j) {
+		if(inventory[i] != null) {
+			if(inventory[i].stackSize <= j) {
 				ItemStack itemstack = inventory[i];
 				inventory[i] = null;
 				return itemstack;
 			}
 			ItemStack itemstack1 = inventory[i].splitStack(j);
-			if (inventory[i].stackSize == 0){
+			if(inventory[i].stackSize == 0) {
 				inventory[i] = null;
 			}
 			return itemstack1;
-		}else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int i){
-		if (inventory[i] != null){
+	public ItemStack getStackInSlotOnClosing(int i) {
+		if(inventory[i] != null) {
 			ItemStack itemstack = inventory[i];
 			inventory[i] = null;
 			return itemstack;
-		}else{
+		}
+		else {
 			return null;
 		}
 	}
 
 	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack){
+	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		inventory[i] = itemstack;
-		if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()){
+		if(itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
 			itemstack.stackSize = getInventoryStackLimit();
 		}
 	}
 
 	@Override
-	public String getInventoryName(){
+	public String getInventoryName() {
 		return "Keystone Recepticle";
 	}
 
 	@Override
-	public int getInventoryStackLimit(){
+	public int getInventoryStackLimit() {
 		return 1;
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer){
-		if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this){
+	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+		if(worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
 		return entityplayer.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) <= 64D;
 	}
 
 	@Override
-	public void openInventory(){
+	public void openInventory() {
 	}
 
 	@Override
-	public void closeInventory(){
+	public void closeInventory() {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound){
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		NBTTagList nbttaglist = nbttagcompound.getTagList("KeystoneRecepticleInventory", Constants.NBT.TAG_COMPOUND);
 		inventory = new ItemStack[getSizeInventory()];
-		for (int i = 0; i < nbttaglist.tagCount(); i++){
+		for(int i = 0; i < nbttaglist.tagCount(); i++) {
 			String tag = String.format("ArrayIndex", i);
-			NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.getCompoundTagAt(i);
+			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
 			byte byte0 = nbttagcompound1.getByte(tag);
-			if (byte0 >= 0 && byte0 < inventory.length){
+			if(byte0 >= 0 && byte0 < inventory.length) {
 				inventory[byte0] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
 			}
 		}
-		AMCore.instance.proxy.blocks.registerKeystonePortal(xCoord, yCoord, zCoord, nbttagcompound.getInteger("keystone_receptacle_dimension_id"));
+		AMCore.proxy.blocks.registerKeystonePortal(xCoord, yCoord, zCoord, nbttagcompound.getInteger("keystone_receptacle_dimension_id"));
 
 		this.isActive = nbttagcompound.getBoolean("isActive");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound){
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		NBTTagList nbttaglist = new NBTTagList();
-		for (int i = 0; i < inventory.length; i++){
-			if (inventory[i] != null){
+		for(int i = 0; i < inventory.length; i++) {
+			if(inventory[i] != null) {
 				String tag = String.format("ArrayIndex", i);
 				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 				nbttagcompound1.setByte(tag, (byte)i);
@@ -430,12 +437,12 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 	}
 
 	@Override
-	public boolean canProvidePower(PowerTypes type){
+	public boolean canProvidePower(PowerTypes type) {
 		return false;
 	}
 
 	@Override
-	public Packet getDescriptionPacket(){
+	public Packet getDescriptionPacket() {
 		NBTTagCompound compound = new NBTTagCompound();
 		this.writeToNBT(compound);
 		S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), compound);
@@ -443,42 +450,42 @@ public class TileEntityKeystoneRecepticle extends TileEntityAMPower implements I
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt){
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.func_148857_g());
 	}
 
 	@Override
-	public boolean hasCustomInventoryName(){
+	public boolean hasCustomInventoryName() {
 		return false;
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack){
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		return false;
 	}
 
 	@Override
-	public MultiblockStructureDefinition getDefinition(){
+	public MultiblockStructureDefinition getDefinition() {
 		return secondary;
 	}
 
 	@Override
-	public AxisAlignedBB getRenderBoundingBox(){
+	public AxisAlignedBB getRenderBoundingBox() {
 		return AxisAlignedBB.getBoundingBox(xCoord - 3, yCoord - 3, zCoord - 3, xCoord + 3, yCoord + 3, zCoord + 3);
 	}
 
 	@Override
-	public int getChargeRate(){
+	public int getChargeRate() {
 		return 5;
 	}
 
 	@Override
-	public int getRequestInterval(){
+	public int getRequestInterval() {
 		return 0;
 	}
 
 	@Override
-	public boolean canRelayPower(PowerTypes type){
+	public boolean canRelayPower(PowerTypes type) {
 		return false;
 	}
 }

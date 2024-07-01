@@ -8,52 +8,58 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class KeystoneChestRenderer extends TileEntitySpecialRenderer{
+public class KeystoneChestRenderer extends TileEntitySpecialRenderer {
 
-	private ModelChest model;
+	private final ModelChest model;
 
-	private ResourceLocation rLoc;
+	private final ResourceLocation rLoc;
 
-	public KeystoneChestRenderer(){
+	public KeystoneChestRenderer() {
 		model = new ModelChest();
 		rLoc = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("keystoneChest.png"));
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float var8){
-		if (tileentity instanceof TileEntityKeystoneChest){
+	public void renderTileEntityAt(TileEntity tileentity, double d, double d1, double d2, float var8) {
+		if(tileentity instanceof TileEntityKeystoneChest) {
 			renderKeystoneChestAt((TileEntityKeystoneChest)tileentity, d, d1, d2, var8);
 		}
 	}
 
-	private void renderKeystoneChestAt(TileEntityKeystoneChest chest, double d, double d1, double d2, float var8){
+	private void renderKeystoneChestAt(TileEntityKeystoneChest chest, double d, double d1, double d2, float var8) {
 		int i = 0;
 
-		if (chest.getWorldObj() != null){
+		if(chest.getWorldObj() != null) {
 			i = chest.getBlockMetadata() & 3;
 		}
 		int j = 0;
 
-		if (i == 0){
+		if(i == 0) {
 			j = 90;
-		}else if (i == 1){
+		}
+		else if(i == 1) {
 			j = 180;
-		}else if (i == 2){
+		}
+		else if(i == 2) {
 			j = 270;
-		}else if (i == 3){
+		}
+		else if(i == 3) {
 			j = 0;
 		}
 
 		bindTexture(rLoc);
 		GL11.glPushMatrix(); //start
 
-		if (i == 1){
+		if(i == 1) {
 			GL11.glTranslatef((float)d + 1f, (float)d1 + 1f, (float)d2); //size
-		}else if (i == 2){
+		}
+		else if(i == 2) {
 			GL11.glTranslatef((float)d, (float)d1 + 1f, (float)d2); //size
-		}else if (i == 3){
+		}
+		else if(i == 3) {
 			GL11.glTranslatef((float)d, (float)d1 + 1f, (float)d2 + 1f); //size
-		}else{
+		}
+		else {
 			GL11.glTranslatef((float)d + 1f, (float)d1 + 1f, (float)d2 + 1f); //size
 		}
 		GL11.glRotatef(j, 0.0F, 1.0F, 0.0F); //rotate based on metadata

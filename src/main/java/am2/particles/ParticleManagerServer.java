@@ -10,9 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-import java.util.Random;
-
-public class ParticleManagerServer{
+public class ParticleManagerServer {
 	public static final byte PKT_BOLT_ENT_ENT = 64;
 	public static final byte PKT_BOLT_PT_PT = 63;
 	public static final byte PKT_BEAM_ENT_ENT = 62;
@@ -24,12 +22,12 @@ public class ParticleManagerServer{
 	public static final byte PKT_ARC_PT_ENT = 57;
 	public static final byte PKT_ARC_ENT_ENT = 56;
 
-	public Object spawn(World world, String name, double x, double y, double z){
+	public Object spawn(World world, String name, double x, double y, double z) {
 		return null;
 	}
 
-	public Object spawn(World world, String name, double x, double y, double z, double targetX, double targetY, double targetZ){
-		if (!world.isRemote){
+	public Object spawn(World world, String name, double x, double y, double z, double targetX, double targetY, double targetZ) {
+		if(!world.isRemote) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_ARC_PT_PT);
 			writer.add(name);
@@ -44,8 +42,8 @@ public class ParticleManagerServer{
 		return null;
 	}
 
-	public Object spawn(World world, String name, double x, double y, double z, Entity target){
-		if (!world.isRemote){
+	public Object spawn(World world, String name, double x, double y, double z, Entity target) {
+		if(!world.isRemote) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_ARC_PT_ENT);
 			writer.add(name);
@@ -58,8 +56,8 @@ public class ParticleManagerServer{
 		return null;
 	}
 
-	public Object spawn(World world, String name, Entity source, Entity target){
-		if (!world.isRemote){
+	public Object spawn(World world, String name, Entity source, Entity target) {
+		if(!world.isRemote) {
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_ARC_ENT_ENT);
 			writer.add(name);
@@ -70,8 +68,8 @@ public class ParticleManagerServer{
 		return null;
 	}
 
-	public void BoltFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage, int type, int color){
-		if (!world.isRemote){
+	public void BoltFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage, int type, int color) {
+		if(!world.isRemote) {
 			//send a packet to all clients telling them to spawn this lightning bolt!
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_BOLT_ENT_ENT); //what kind of bolt are we doing?
@@ -85,24 +83,24 @@ public class ParticleManagerServer{
 		}
 	}
 
-	public void BoltFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ){
+	public void BoltFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ) {
 		BoltFromPointToPoint(world, startX, startY, startZ, endX, endY, endZ, 1, -1);
 	}
 
-	public void BoltFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ){
+	public void BoltFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ) {
 		BoltFromEntityToPoint(world, source, endX, endY, endZ, 0, -1);
 	}
 
-	public void BoltFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ, int type, int color){
+	public void BoltFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ, int type, int color) {
 		BoltFromPointToPoint(world, source.posX, source.posY + source.getEyeHeight(), source.posZ, endX, endY, endZ, type, color);
 	}
 
-	public void BoltFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage){
+	public void BoltFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage) {
 		BoltFromEntityToEntity(world, caster, source, target, damage, 1, -1);
 	}
 
-	public void BoltFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ, int type, int color){
-		if (!world.isRemote){
+	public void BoltFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ, int type, int color) {
+		if(!world.isRemote) {
 			//send a packet to all clients telling them to spawn this lightning bolt!
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_BOLT_PT_PT); //what kind of bolt are we doing?
@@ -118,8 +116,8 @@ public class ParticleManagerServer{
 		}
 	}
 
-	public Object BeamFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage, int color){
-		if (!world.isRemote){
+	public Object BeamFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage, int color) {
+		if(!world.isRemote) {
 			//send a packet to all clients telling them to spawn this beam!
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_BEAM_ENT_ENT); //what kind of beam are we doing?
@@ -133,8 +131,8 @@ public class ParticleManagerServer{
 		return null;
 	}
 
-	public Object BeamFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ, int color){
-		if (!world.isRemote){
+	public Object BeamFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ, int color) {
+		if(!world.isRemote) {
 			//send a packet to all clients telling them to spawn this beam!
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_BEAM_PT_PT); //what kind of beam are we doing?
@@ -150,28 +148,29 @@ public class ParticleManagerServer{
 		return null;
 	}
 
-	public Object BeamFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ){
+	public Object BeamFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ) {
 		return BeamFromPointToPoint(world, startX, startY, startZ, endX, endY, endZ, 0xFFFFFF);
 	}
 
-	public Object BeamFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ){
+	public Object BeamFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ) {
 		return BeamFromEntityToPoint(world, source, endX, endY, endZ, 0xFFFFFF);
 	}
 
-	public Object BeamFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ, int color){
-		if (!(source instanceof EntityPlayer) || source == AMCore.instance.proxy.getLocalPlayer()){
+	public Object BeamFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ, int color) {
+		if(!(source instanceof EntityPlayer) || source == AMCore.proxy.getLocalPlayer()) {
 			return BeamFromPointToPoint(world, source.posX, source.posY, source.posZ, endX, endY, endZ, color);
-		}else{
+		}
+		else {
 			return BeamFromPointToPoint(world, source.posX, source.posY + source.getEyeHeight() - 0.2f, source.posZ, endX, endY, endZ, color);
 		}
 	}
 
-	public Object BeamFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage){
+	public Object BeamFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage) {
 		return BeamFromEntityToEntity(world, caster, source, target, damage, 0xFFFFFF);
 	}
 
-	public void RibbonFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage, int type){
-		if (!world.isRemote){
+	public void RibbonFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage, int type) {
+		if(!world.isRemote) {
 			//send a packet to all clients telling them to spawn this lightning bolt!
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_RIBBON_ENT_ENT); //what kind of bolt are we doing?
@@ -184,24 +183,24 @@ public class ParticleManagerServer{
 		}
 	}
 
-	public void RibbonFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ){
+	public void RibbonFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ) {
 		RibbonFromPointToPoint(world, startX, startY, startZ, endX, endY, endZ, 1);
 	}
 
-	public void RibbonFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ){
+	public void RibbonFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ) {
 		RibbonFromEntityToPoint(world, source, endX, endY, endZ, 0);
 	}
 
-	public void RibbonFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ, int type){
+	public void RibbonFromEntityToPoint(World world, Entity source, double endX, double endY, double endZ, int type) {
 		RibbonFromPointToPoint(world, source.posX, source.posY, source.posZ, endX, endY, endZ, 0);
 	}
 
-	public void RibbonFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage){
+	public void RibbonFromEntityToEntity(World world, Entity caster, Entity source, Entity target, int damage) {
 		RibbonFromEntityToEntity(world, caster, source, target, damage, 1);
 	}
 
-	public void RibbonFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ, int type){
-		if (!world.isRemote){
+	public void RibbonFromPointToPoint(World world, double startX, double startY, double startZ, double endX, double endY, double endZ, int type) {
+		if(!world.isRemote) {
 			//send a packet to all clients telling them to spawn this lightning bolt!
 			AMDataWriter writer = new AMDataWriter();
 			writer.add(PKT_RIBBON_PT_PT); //what kind of bolt are we doing?
@@ -216,21 +215,21 @@ public class ParticleManagerServer{
 		}
 	}
 
-	public void handleClientPacketData(World world, byte[] data){
+	public void handleClientPacketData(World world, byte[] data) {
 
 	}
 
-	public void spawnAuraParticles(EntityLivingBase ent){
+	public void spawnAuraParticles(EntityLivingBase ent) {
 	}
 
-	public void spawnBuffParticles(EntityLivingBase entityliving){
+	public void spawnBuffParticles(EntityLivingBase entityliving) {
 	}
 
-	public ParticleController createDefaultParticleController(int type, Object effect, EntityLivingBase ent){
+	public ParticleController createDefaultParticleController(int type, Object effect, EntityLivingBase ent) {
 		return null;
 	}
 
-	public ParticleController createDefaultParticleController(int type, Object effect, AMVector3 location, float modifier, int meta){
+	public ParticleController createDefaultParticleController(int type, Object effect, AMVector3 location, float modifier, int meta) {
 		return null;
 	}
 }

@@ -9,7 +9,7 @@ import net.minecraft.util.DamageSource;
 
 import java.util.List;
 
-public class EntityAISpinAttack<T> extends EntityAIBase{
+public class EntityAISpinAttack<T> extends EntityAIBase {
 
 	private final EntityLiving host;
 	private final float moveSpeed;
@@ -17,7 +17,7 @@ public class EntityAISpinAttack<T> extends EntityAIBase{
 	private int cooldownTicks = 0;
 	private final float damage;
 
-	public EntityAISpinAttack(IArsMagicaBoss host, float moveSpeed, float damage){
+	public EntityAISpinAttack(IArsMagicaBoss host, float moveSpeed, float damage) {
 		this.host = ((EntityLiving)host);
 		this.moveSpeed = moveSpeed;
 		this.setMutexBits(1);
@@ -25,20 +25,23 @@ public class EntityAISpinAttack<T> extends EntityAIBase{
 	}
 
 	@Override
-	public boolean shouldExecute(){
-		if (cooldownTicks-- > 0 || ((IArsMagicaBoss)host).getCurrentAction() != BossActions.IDLE || !((IArsMagicaBoss)host).isActionValid(BossActions.SPINNING))
+	public boolean shouldExecute() {
+		if(cooldownTicks-- > 0 || ((IArsMagicaBoss)host).getCurrentAction() != BossActions.IDLE || !((IArsMagicaBoss)host).isActionValid(BossActions.SPINNING)) {
 			return false;
+		}
 		EntityLivingBase AITarget = host.getAttackTarget();
-		if (AITarget == null || AITarget.isDead || AITarget.getDistanceSqToEntity(host) > 25) return false;
+		if(AITarget == null || AITarget.isDead || AITarget.getDistanceSqToEntity(host) > 25) {
+			return false;
+		}
 		this.target = AITarget;
 		((IArsMagicaBoss)host).setCurrentAction(BossActions.SPINNING);
 		return true;
 	}
 
 	@Override
-	public boolean continueExecuting(){
+	public boolean continueExecuting() {
 		EntityLivingBase AITarget = host.getAttackTarget();
-		if (AITarget == null || AITarget.isDead || ((IArsMagicaBoss)host).getTicksInCurrentAction() > BossActions.SPINNING.getMaxActionTime()){
+		if(AITarget == null || AITarget.isDead || ((IArsMagicaBoss)host).getTicksInCurrentAction() > BossActions.SPINNING.getMaxActionTime()) {
 			resetTask();
 			return false;
 		}
@@ -46,7 +49,7 @@ public class EntityAISpinAttack<T> extends EntityAIBase{
 	}
 
 	@Override
-	public void resetTask(){
+	public void resetTask() {
 		((IArsMagicaBoss)host).setCurrentAction(BossActions.IDLE);
 		cooldownTicks = 150;
 		
@@ -57,18 +60,21 @@ public class EntityAISpinAttack<T> extends EntityAIBase{
 	}
 
 	@Override
-	public void updateTask(){
+	public void updateTask() {
 		host.getLookHelper().setLookPositionWithEntity(target, 30, 30);
 		host.getNavigator().tryMoveToEntityLiving(target, moveSpeed);
 		List<EntityLivingBase> nearbyEntities = host.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, host.boundingBox.expand(2, 2, 2));
-		for (EntityLivingBase ent : nearbyEntities){
-			if (ent == host) continue;
+		for(EntityLivingBase ent: nearbyEntities) {
+			if(ent == host) {
+				continue;
+			}
 			ent.attackEntityFrom(DamageSource.causeMobDamage(host), damage);
 		}
 
-		if (((IArsMagicaBoss)host).getTicksInCurrentAction() % 50 == 0){
-			if (!host.worldObj.isRemote)
+		if(((IArsMagicaBoss)host).getTicksInCurrentAction() % 50 == 0) {
+			if(!host.worldObj.isRemote) {
 				host.worldObj.playSoundAtEntity(host, "arsmagica2:mob.natureguardian.whirlloop", 1.0f, 1.0f);
+			}
 		}
 	}
 }

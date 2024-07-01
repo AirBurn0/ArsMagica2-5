@@ -9,35 +9,35 @@ import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
-public class MissingModifier implements ISpellModifier{
+public class MissingModifier implements ISpellModifier {
 
 	@Override
-	public EnumSet<SpellModifiers> getAspectsModified(){
+	public EnumSet<SpellModifiers> getAspectsModified() {
 		return EnumSet.noneOf(SpellModifiers.class);
 	}
 
 	@Override
-	public float getModifier(SpellModifiers type, EntityLivingBase caster, Entity target, World world, byte[] metadata){
+	public float getModifier(SpellModifiers type, EntityLivingBase caster, Entity target, World world, byte[] metadata) {
 		return 0;
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return -1;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return null;
 	}
 
 	@Override
-	public float getManaCostMultiplier(ItemStack spellStack, int stage, int quantity){
+	public float getManaCostMultiplier(ItemStack spellStack, int stage, int quantity) {
 		return 1;
 	}
 
 	@Override
-	public byte[] getModifierMetadata(ItemStack[] matchedRecipe){
+	public byte[] getModifierMetadata(ItemStack[] matchedRecipe) {
 		return null;
 	}
 }

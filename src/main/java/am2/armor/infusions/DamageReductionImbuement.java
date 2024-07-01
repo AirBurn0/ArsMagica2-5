@@ -10,22 +10,22 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.EnumSet;
 
-public class DamageReductionImbuement implements IArmorImbuement{
+public class DamageReductionImbuement implements IArmorImbuement {
 
 	private String id = "";
 	private String dmgType = "";
 	private int iconIndex = 0;
-	private ImbuementTiers tier;
+	private final ImbuementTiers tier;
 	int[] allArmor = new int[]{ImbuementRegistry.SLOT_BOOTS, ImbuementRegistry.SLOT_LEGS, ImbuementRegistry.SLOT_CHEST, ImbuementRegistry.SLOT_HELM};
 
-	private DamageReductionImbuement(String id, String dmgType, int IIconIndex, ImbuementTiers tier){
+	private DamageReductionImbuement(String id, String dmgType, int IIconIndex, ImbuementTiers tier) {
 		this.id = id;
 		this.dmgType = dmgType;
 		this.iconIndex = IIconIndex;
 		this.tier = tier;
 	}
 
-	public static void registerAll(){
+	public static void registerAll() {
 
 		ImbuementRegistry.instance.registerImbuement(new DamageReductionImbuement("dr_phy", "generic", 4, ImbuementTiers.SECOND));
 		ImbuementRegistry.instance.registerImbuement(new DamageReductionImbuement("dr_drn", "drown", 5, ImbuementTiers.SECOND));
@@ -39,33 +39,33 @@ public class DamageReductionImbuement implements IArmorImbuement{
 	}
 
 	@Override
-	public String getID(){
+	public String getID() {
 		return id;
 	}
 
 	@Override
-	public int getIconIndex(){
+	public int getIconIndex() {
 		return iconIndex;
 	}
 
 	@Override
-	public ImbuementTiers getTier(){
+	public ImbuementTiers getTier() {
 		return tier;
 	}
 
 	@Override
-	public EnumSet<ImbuementApplicationTypes> getApplicationTypes(){
+	public EnumSet<ImbuementApplicationTypes> getApplicationTypes() {
 		return EnumSet.of(ImbuementApplicationTypes.ON_HIT);
 	}
 
 	@Override
-	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params){
+	public boolean applyEffect(EntityPlayer player, World world, ItemStack stack, ImbuementApplicationTypes matchedType, Object... params) {
 		LivingHurtEvent event = (LivingHurtEvent)params[0];
-		if (event.source.damageType.equals(dmgType) ||
+		if(event.source.damageType.equals(dmgType) ||
 				(dmgType.equals("fire") && event.source.isFireDamage()) ||
 				(dmgType.equals("magic") && event.source.isMagicDamage()) ||
 				(dmgType.equals("explosion") && event.source.isExplosion())
-				){
+		) {
 			event.ammount *= 0.85f;
 			return true;
 		}
@@ -73,23 +73,23 @@ public class DamageReductionImbuement implements IArmorImbuement{
 	}
 
 	@Override
-	public int[] getValidSlots(){
+	public int[] getValidSlots() {
 		return allArmor;
 	}
 
 	@Override
-	public boolean canApplyOnCooldown(){
+	public boolean canApplyOnCooldown() {
 		return true;
 	}
 
 	@Override
-	public int getCooldown(){
+	public int getCooldown() {
 		return 0;
 	}
 
 
 	@Override
-	public int getArmorDamage(){
+	public int getArmorDamage() {
 		return 0;
 	}
 }

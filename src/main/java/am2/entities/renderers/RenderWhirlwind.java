@@ -11,20 +11,20 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class RenderWhirlwind extends RenderLiving{
+public class RenderWhirlwind extends RenderLiving {
 
 	private static final ResourceLocation rLoc = new ResourceLocation("textures/atlas/items.png");
 
-	public RenderWhirlwind(){
+	public RenderWhirlwind() {
 		super(null, 0.5f);
 	}
 
 	@Override
-	public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9){
+	public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
 		renderWhirlwind((EntityWhirlwind)par1Entity, par2, par4, par6, par8, par9);
 	}
 
-	private void renderWhirlwind(EntityWhirlwind whirlwind, double x, double y, double z, float f, float f1){
+	private void renderWhirlwind(EntityWhirlwind whirlwind, double x, double y, double z, float f, float f1) {
 		GL11.glPushMatrix();
 
 		Minecraft.getMinecraft().renderEngine.bindTexture(rLoc);
@@ -57,7 +57,7 @@ public class RenderWhirlwind extends RenderLiving{
 	}
 
 	@Override
-	protected ResourceLocation getEntityTexture(Entity entity){
+	protected ResourceLocation getEntityTexture(Entity entity) {
 		return rLoc;
 	}
 

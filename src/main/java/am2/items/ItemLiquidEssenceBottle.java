@@ -12,40 +12,41 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class ItemLiquidEssenceBottle extends ArsMagicaItem{
+public class ItemLiquidEssenceBottle extends ArsMagicaItem {
 
-	public ItemLiquidEssenceBottle(){
+	public ItemLiquidEssenceBottle() {
 		super();
 		this.setMaxStackSize(1);
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer){
-		if (!par3EntityPlayer.isPotionActive(BuffList.manaBoost))
+	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
+		if(!par3EntityPlayer.isPotionActive(BuffList.manaBoost)) {
 			par3EntityPlayer.setItemInUse(par1ItemStack, getMaxItemUseDuration(par1ItemStack));
+		}
 		return par1ItemStack;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister){
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = ResourceManager.RegisterTexture("liquid_essence_bottle", par1IconRegister);
 	}
 
 	@Override
-	public EnumAction getItemUseAction(ItemStack par1ItemStack){
+	public EnumAction getItemUseAction(ItemStack par1ItemStack) {
 		return EnumAction.drink;
 	}
 
 	@Override
-	public ItemStack onEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer){
+	public ItemStack onEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
 		par1ItemStack = new ItemStack(Items.glass_bottle);
 		par3EntityPlayer.addPotionEffect(new BuffMaxManaIncrease(6000, 1)); //5 mins
 		return par1ItemStack;
 	}
 
 	@Override
-	public int getMaxItemUseDuration(ItemStack par1ItemStack){
+	public int getMaxItemUseDuration(ItemStack par1ItemStack) {
 		return 32;
 	}
 }

@@ -12,7 +12,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SkillTreeManager implements ISkillTreeManager{
+public class SkillTreeManager implements ISkillTreeManager {
 
 	private final ArrayList<SkillTreeEntry> offenseTree = new ArrayList<SkillTreeEntry>();
 	private final ArrayList<SkillTreeEntry> defenseTree = new ArrayList<SkillTreeEntry>();
@@ -24,45 +24,47 @@ public class SkillTreeManager implements ISkillTreeManager{
 
 	public static final SkillTreeManager instance = new SkillTreeManager();
 
-	private SkillTreeManager(){
+	private SkillTreeManager() {
 		skillPointTypeList = new HashMap<Integer, SkillPointTypes>();
 	}
 
-	public SkillPointTypes getSkillPointTypeForPart(ISkillTreeEntry part){
+	public SkillPointTypes getSkillPointTypeForPart(ISkillTreeEntry part) {
 		int id = SkillManager.instance.getShiftedPartID(part);
 		return getSkillPointTypeForPart(id);
 	}
 
-	public SkillPointTypes getSkillPointTypeForPart(int id){
+	public SkillPointTypes getSkillPointTypeForPart(int id) {
 		return skillPointTypeList.get(id);
 	}
 
 	@Override
-	public void RegisterPart(ISkillTreeEntry item, int x, int y, SkillTrees tree, SkillPointTypes requiredPoint, ISkillTreeEntry... prerequisites){
+	public void RegisterPart(ISkillTreeEntry item, int x, int y, SkillTrees tree, SkillPointTypes requiredPoint, ISkillTreeEntry... prerequisites) {
 
 		//get appropriate skill tree
 		ArrayList<SkillTreeEntry> treeListing = tree == SkillTrees.Defense ? defenseTree : tree == SkillTrees.Offense ? offenseTree : tree == SkillTrees.Utility ? utilityTree : talentTree;
 
 		//check for prereq
 		ArrayList<SkillTreeEntry> locatedPrerequisites = new ArrayList<SkillTreeEntry>();
-		if (prerequisites != null && prerequisites.length > 0){
-			for (Object prerequisite : prerequisites){
-				for (SkillTreeEntry entry : treeListing){
-					if (entry.registeredItem == prerequisite){
+		if(prerequisites != null && prerequisites.length > 0) {
+			for(Object prerequisite: prerequisites) {
+				for(SkillTreeEntry entry: treeListing) {
+					if(entry.registeredItem == prerequisite) {
 						locatedPrerequisites.add(entry);
 						break;
 					}
 				}
 			}
 
-			if (locatedPrerequisites.size() == 0)
+			if(locatedPrerequisites.size() == 0) {
 				throw new InvalidParameterException(String.format("Unable to locate one or more prerequisite items in the specified tree (%s).", tree.toString()));
+			}
 		}
 
 		boolean enabled = true;
-		if (item == null){
+		if(item == null) {
 			item = SkillManager.instance.missingComponent;
-		}else{
+		}
+		else {
 			enabled = AMCore.skillConfig.isSkillEnabled(SkillManager.instance.getSkillName(item));
 		}
 
@@ -73,51 +75,51 @@ public class SkillTreeManager implements ISkillTreeManager{
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	public ArrayList<SkillTreeEntry> getTree(SkillTrees tree){
+	public ArrayList<SkillTreeEntry> getTree(SkillTrees tree) {
 		ArrayList<SkillTreeEntry> safeCopy = new ArrayList<SkillTreeEntry>();
-		switch (tree){
-		case Defense:
-			safeCopy.addAll(defenseTree);
-			break;
-		case Offense:
-			safeCopy.addAll(offenseTree);
-			break;
-		case Utility:
-			safeCopy.addAll(utilityTree);
-			break;
-		case Talents:
-			safeCopy.addAll(talentTree);
+		switch(tree) {
+			case Defense:
+				safeCopy.addAll(defenseTree);
+				break;
+			case Offense:
+				safeCopy.addAll(offenseTree);
+				break;
+			case Utility:
+				safeCopy.addAll(utilityTree);
+				break;
+			case Talents:
+				safeCopy.addAll(talentTree);
 		}
 
 		return safeCopy;
 	}
 
-	public SkillTreeEntry getSkillTreeEntry(ISkillTreeEntry part){
+	public SkillTreeEntry getSkillTreeEntry(ISkillTreeEntry part) {
 		ArrayList<SkillTreeEntry> treeEntries = SkillTreeManager.instance.getTree(SkillTrees.Offense);
-		for (SkillTreeEntry st_entry : treeEntries){
+		for(SkillTreeEntry st_entry: treeEntries) {
 			ISkillTreeEntry item = st_entry.registeredItem;
-			if (item != null && item == part){
+			if(item != null && item == part) {
 				return st_entry;
 			}
 		}
 		treeEntries = SkillTreeManager.instance.getTree(SkillTrees.Defense);
-		for (SkillTreeEntry st_entry : treeEntries){
+		for(SkillTreeEntry st_entry: treeEntries) {
 			ISkillTreeEntry item = st_entry.registeredItem;
-			if (item != null && item == part){
+			if(item != null && item == part) {
 				return st_entry;
 			}
 		}
 		treeEntries = SkillTreeManager.instance.getTree(SkillTrees.Utility);
-		for (SkillTreeEntry st_entry : treeEntries){
+		for(SkillTreeEntry st_entry: treeEntries) {
 			ISkillTreeEntry item = st_entry.registeredItem;
-			if (item != null && item == part){
+			if(item != null && item == part) {
 				return st_entry;
 			}
 		}
 		treeEntries = SkillTreeManager.instance.getTree(SkillTrees.Talents);
-		for (SkillTreeEntry st_entry : treeEntries){
+		for(SkillTreeEntry st_entry: treeEntries) {
 			ISkillTreeEntry item = st_entry.registeredItem;
-			if (item != null && item == part){
+			if(item != null && item == part) {
 				return st_entry;
 			}
 		}
@@ -125,7 +127,7 @@ public class SkillTreeManager implements ISkillTreeManager{
 		return null;
 	}
 
-	public void init(){
+	public void init() {
 
 		//offense tree
 		offenseTree.clear();
@@ -316,40 +318,49 @@ public class SkillTreeManager implements ISkillTreeManager{
 		AMCore.skillConfig.save();
 	}
 
-	public int[] getDisabledSkillIDs(){
+	public int[] getDisabledSkillIDs() {
 		ArrayList<Integer> disableds = new ArrayList<Integer>();
-		for (SkillTreeEntry entry : offenseTree)
-			if (!entry.enabled)
+		for(SkillTreeEntry entry: offenseTree) {
+			if(!entry.enabled) {
 				disableds.add(SkillManager.instance.getShiftedPartID(entry.registeredItem));
-		for (SkillTreeEntry entry : defenseTree)
-			if (!entry.enabled)
+			}
+		}
+		for(SkillTreeEntry entry: defenseTree) {
+			if(!entry.enabled) {
 				disableds.add(SkillManager.instance.getShiftedPartID(entry.registeredItem));
-		for (SkillTreeEntry entry : utilityTree)
-			if (!entry.enabled)
+			}
+		}
+		for(SkillTreeEntry entry: utilityTree) {
+			if(!entry.enabled) {
 				disableds.add(SkillManager.instance.getShiftedPartID(entry.registeredItem));
-		for (SkillTreeEntry entry : talentTree)
-			if (!entry.enabled)
+			}
+		}
+		for(SkillTreeEntry entry: talentTree) {
+			if(!entry.enabled) {
 				disableds.add(SkillManager.instance.getShiftedPartID(entry.registeredItem));
+			}
+		}
 
 		int[] toReturn = new int[disableds.size()];
 
-		for (int i = 0; i < disableds.size(); ++i)
+		for(int i = 0; i < disableds.size(); ++i) {
 			toReturn[i] = disableds.get(i);
+		}
 
 		return toReturn;
 
 	}
 
-	private void checkAllPartIDs(ArrayList<Integer> partIDs){
-		for (Integer i : partIDs){
+	private void checkAllPartIDs(ArrayList<Integer> partIDs) {
+		for(Integer i: partIDs) {
 			ISkillTreeEntry part = SkillManager.instance.getSkill(i);
-			if (getSkillTreeEntry(part) == null){
+			if(getSkillTreeEntry(part) == null) {
 				LogHelper.warn("Unregistered spell part in skill trees: " + part.toString());
 			}
 		}
 	}
 
-	private void calculateHighestOverallTier(){
+	private void calculateHighestOverallTier() {
 		int offense = calculateHighestTier(offenseTree);
 		int defense = calculateHighestTier(defenseTree);
 		int utility = calculateHighestTier(utilityTree);
@@ -357,46 +368,54 @@ public class SkillTreeManager implements ISkillTreeManager{
 		highestSkillDepth = Math.max(offense, Math.max(defense, utility));
 	}
 
-	private int calculateHighestTier(ArrayList<SkillTreeEntry> tree){
+	private int calculateHighestTier(ArrayList<SkillTreeEntry> tree) {
 		int highest = 0;
-		for (SkillTreeEntry entry : tree)
-			if (entry.tier > highest)
+		for(SkillTreeEntry entry: tree) {
+			if(entry.tier > highest) {
 				highest = entry.tier;
+			}
+		}
 
 		return highest;
 	}
 
-	public int getHighestTier(){
+	public int getHighestTier() {
 		return this.highestSkillDepth;
 	}
 
 
-	public void disableAllSkillsIn(int[] disabledSkills){
+	public void disableAllSkillsIn(int[] disabledSkills) {
 		//enable all skills
-		for (SkillTreeEntry entry : offenseTree)
+		for(SkillTreeEntry entry: offenseTree) {
 			entry.enabled = true;
-		for (SkillTreeEntry entry : defenseTree)
+		}
+		for(SkillTreeEntry entry: defenseTree) {
 			entry.enabled = true;
-		for (SkillTreeEntry entry : utilityTree)
+		}
+		for(SkillTreeEntry entry: utilityTree) {
 			entry.enabled = true;
-		for (SkillTreeEntry entry : talentTree)
+		}
+		for(SkillTreeEntry entry: talentTree) {
 			entry.enabled = true;
+		}
 		//disable all server-disabled skills
-		for (int i : disabledSkills){
+		for(int i: disabledSkills) {
 			SkillTreeEntry entry = getSkillTreeEntry(SkillManager.instance.getSkill(i));
-			if (entry != null){
+			if(entry != null) {
 				entry.enabled = false;
 				LogHelper.info("Disabling %s as per server configs", SkillManager.instance.getSkillName(entry.registeredItem));
-			}else{
+			}
+			else {
 				LogHelper.warn("Could not disable skill ID %d as per server configs!");
 			}
 		}
 	}
 
-	public boolean isSkillDisabled(ISkillTreeEntry component){
+	public boolean isSkillDisabled(ISkillTreeEntry component) {
 		SkillTreeEntry entry = getSkillTreeEntry(component);
-		if (entry == null)
+		if(entry == null) {
 			return false;
+		}
 		return !entry.enabled;
 	}
 }

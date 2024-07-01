@@ -11,77 +11,81 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetMagicLevelCommand extends CommandBase{
+public class SetMagicLevelCommand extends CommandBase {
 
 	@Override
-	public int compareTo(Object arg0){
+	public int compareTo(Object arg0) {
 		return 0;
 	}
 
 	@Override
-	public int getRequiredPermissionLevel(){
+	public int getRequiredPermissionLevel() {
 		return 2;
 	}
 
 	@Override
-	public String getCommandName(){
+	public String getCommandName() {
 		return "setmagiclevel";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender var1){
+	public String getCommandUsage(ICommandSender var1) {
 		return "/setmagiclevel [<player>] <level>";
 	}
 
 	@Override
-	public List getCommandAliases(){
+	public List getCommandAliases() {
 		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("setmagelevel");
 		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender var1, String[] var2){
-		if (var2.length != 2 && var2.length != 1){
-			throw new WrongUsageException(this.getCommandUsage(var1), new Object[0]);
+	public void processCommand(ICommandSender var1, String[] var2) {
+		if(var2.length != 2 && var2.length != 1) {
+			throw new WrongUsageException(this.getCommandUsage(var1));
 		}
 		EntityPlayer player = null;
 		int targetLevel = 0;
 
-		if (var2.length == 2){
-			if (var2[0].equals("@a")){
+		if(var2.length == 2) {
+			if(var2[0].equals("@a")) {
 				EntityPlayerMP[] players = PlayerSelector.matchPlayers(var1, var2[0]);
-				if (players != null){
-					for (EntityPlayerMP p : players){
+				if(players != null) {
+					for(EntityPlayerMP p: players) {
 						doMagicLevelSet(var1, p, targetLevel);
 					}
 				}
-			}else{
+			}
+			else {
 				player = getPlayer(var1, var2[0]);
 			}
 			targetLevel = parseIntBounded(var1, var2[1], 0, ExtendedProperties.maxMagicLevel);
-		}else{
+		}
+		else {
 			player = getCommandSenderAsPlayer(var1);
 			targetLevel = parseIntBounded(var1, var2[0], 0, ExtendedProperties.maxMagicLevel);
 		}
 		doMagicLevelSet(var1, player, targetLevel);
 	}
 
-	private void doMagicLevelSet(ICommandSender sender, EntityPlayer player, int magicLevel){
-		if (player == null) return;
+	private void doMagicLevelSet(ICommandSender sender, EntityPlayer player, int magicLevel) {
+		if(player == null) {
+			return;
+		}
 
 		ExtendedProperties.For(player).setMagicLevelWithMana(magicLevel);
 		ExtendedProperties.For(player).forceSync();
 
-		func_152373_a(sender, this, "Setting " + player.getCommandSenderName() + "'s magic level to " + magicLevel, new Object[0]);
+		func_152373_a(sender, this, "Setting " + player.getCommandSenderName() + "'s magic level to " + magicLevel);
 	}
 
 	@Override
-	public List addTabCompletionOptions(ICommandSender var1, String[] var2){
-		if (var2.length == 1){
+	public List addTabCompletionOptions(ICommandSender var1, String[] var2) {
+		if(var2.length == 1) {
 			ArrayList<String> completions = new ArrayList<String>();
 			EntityPlayer player = getCommandSenderAsPlayer(var1);
-			for (Object o : player.worldObj.playerEntities){
+			for(Object o: player.worldObj.playerEntities) {
 				EntityPlayer p = (EntityPlayer)o;
 				completions.add(p.getCommandSenderName());
 			}

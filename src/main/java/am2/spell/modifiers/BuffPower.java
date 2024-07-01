@@ -10,24 +10,24 @@ import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
-public class BuffPower implements ISpellModifier{
+public class BuffPower implements ISpellModifier {
 	@Override
-	public EnumSet<SpellModifiers> getAspectsModified(){
+	public EnumSet<SpellModifiers> getAspectsModified() {
 		return EnumSet.of(SpellModifiers.BUFF_POWER);
 	}
 
 	@Override
-	public float getModifier(SpellModifiers type, EntityLivingBase caster, Entity target, World world, byte[] metadata){
+	public float getModifier(SpellModifiers type, EntityLivingBase caster, Entity target, World world, byte[] metadata) {
 		return 1;
 	}
 
 	@Override
-	public int getID(){
+	public int getID() {
 		return 17;
 	}
 
 	@Override
-	public Object[] getRecipeItems(){
+	public Object[] getRecipeItems() {
 		return new Object[]{
 				Items.glass_bottle,
 				Items.redstone,
@@ -41,12 +41,12 @@ public class BuffPower implements ISpellModifier{
 	}
 
 	@Override
-	public float getManaCostMultiplier(ItemStack spellStack, int stage, int quantity){
+	public float getManaCostMultiplier(ItemStack spellStack, int stage, int quantity) {
 		return 1.25f * quantity;
 	}
 
 	@Override
-	public byte[] getModifierMetadata(ItemStack[] matchedRecipe){
+	public byte[] getModifierMetadata(ItemStack[] matchedRecipe) {
 		return null;
 	}
 }

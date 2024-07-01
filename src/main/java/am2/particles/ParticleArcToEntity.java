@@ -5,18 +5,18 @@ import am2.api.math.AMVector3;
 import am2.utility.MathUtilities;
 import net.minecraft.entity.Entity;
 
-public class ParticleArcToEntity extends ParticleController{
+public class ParticleArcToEntity extends ParticleController {
 
-	private AMVector3 start;
-	private Entity target;
+	private final AMVector3 start;
+	private final Entity target;
 	private AMVector3 firstControl;
 	private AMVector3 secondControl;
 	private float percent;
 	private float speed;
-	private float offsetFactor;
-	private float halfOffsetFactor;
+	private final float offsetFactor;
+	private final float halfOffsetFactor;
 
-	public ParticleArcToEntity(AMParticle particleEffect, int priority, double startX, double startY, double startZ, Entity target, boolean exclusive){
+	public ParticleArcToEntity(AMParticle particleEffect, int priority, double startX, double startY, double startZ, Entity target, boolean exclusive) {
 		super(particleEffect, priority, exclusive);
 		start = new AMVector3(startX, startY, startZ);
 		percent = 0.0f;
@@ -28,11 +28,11 @@ public class ParticleArcToEntity extends ParticleController{
 		generateControlPoints();
 	}
 
-	public ParticleArcToEntity(AMParticle particleEffect, int priority, Entity target, boolean exclusive){
+	public ParticleArcToEntity(AMParticle particleEffect, int priority, Entity target, boolean exclusive) {
 		this(particleEffect, priority, particleEffect.posX, particleEffect.posY, particleEffect.posZ, target, exclusive);
 	}
 
-	public ParticleArcToEntity generateControlPoints(){
+	public ParticleArcToEntity generateControlPoints() {
 		firstControl = new AMVector3(
 				start.x + ((target.posX - start.x) / 3),
 				start.y + ((target.posY - start.y) / 3),
@@ -59,9 +59,9 @@ public class ParticleArcToEntity extends ParticleController{
 		return this;
 	}
 
-	private void addParticleAtPoint(AMVector3 point){
-		AMParticle p = (AMParticle)AMCore.instance.proxy.particleManager.spawn(particle.worldObj, "hr_smoke", point.x, point.y, point.z);
-		if (p != null){
+	private void addParticleAtPoint(AMVector3 point) {
+		AMParticle p = (AMParticle)AMCore.proxy.particleManager.spawn(particle.worldObj, "hr_smoke", point.x, point.y, point.z);
+		if(p != null) {
 			p.setIgnoreMaxAge(false);
 			p.setMaxAge(200);
 			p.setParticleScale(1.5f);
@@ -69,21 +69,21 @@ public class ParticleArcToEntity extends ParticleController{
 		}
 	}
 
-	public ParticleArcToEntity specifyControlPoints(AMVector3 first, AMVector3 second){
+	public ParticleArcToEntity specifyControlPoints(AMVector3 first, AMVector3 second) {
 		this.firstControl = first;
 		this.secondControl = second;
 		return this;
 	}
 
-	public ParticleArcToEntity SetSpeed(float speed){
+	public ParticleArcToEntity SetSpeed(float speed) {
 		this.speed = speed;
 		return this;
 	}
 
 	@Override
-	public void doUpdate(){
+	public void doUpdate() {
 		percent += speed;
-		if (percent >= 1.0f){
+		if(percent >= 1.0f) {
 			this.finish();
 			return;
 		}
@@ -92,8 +92,9 @@ public class ParticleArcToEntity extends ParticleController{
 	}
 
 	@Override
-	public ParticleController clone(){
-		return new ParticleArcToEntity(particle, priority, target, exclusive).SetSpeed(speed).specifyControlPoints(firstControl, secondControl);
+	public ParticleController clone() {
+		return new ParticleArcToEntity(particle, priority, target, exclusive).SetSpeed(speed)
+																			 .specifyControlPoints(firstControl, secondControl);
 	}
 
 }

@@ -12,7 +12,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
-public class BlockLiquidEssence extends BlockFluidClassic{
+public class BlockLiquidEssence extends BlockFluidClassic {
 
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
@@ -20,17 +20,17 @@ public class BlockLiquidEssence extends BlockFluidClassic{
 	public static final Fluid liquidEssenceFluid = new FluidEssence();
 	public static final Material liquidEssenceMaterial = new MaterialLiquid(MapColor.iceColor);
 
-	public BlockLiquidEssence(){
+	public BlockLiquidEssence() {
 		super(liquidEssenceFluid, liquidEssenceMaterial);
 	}
 
 	@Override
-	public int getLightValue(IBlockAccess world, int x, int y, int z){
+	public int getLightValue(IBlockAccess world, int x, int y, int z) {
 		return 9;
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister){
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		icons = new IIcon[2];
 
 		icons[0] = ResourceManager.RegisterTexture("liquidEssenceStill", par1IconRegister);
@@ -41,11 +41,13 @@ public class BlockLiquidEssence extends BlockFluidClassic{
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int side, int meta){
-		if (side <= 1)
+	public IIcon getIcon(int side, int meta) {
+		if(side <= 1) {
 			return icons[0]; //still
-		else
+		}
+		else {
 			return icons[1]; //flowing
+		}
 	}
 
 }

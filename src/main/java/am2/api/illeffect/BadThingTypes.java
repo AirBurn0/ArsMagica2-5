@@ -1,6 +1,6 @@
 package am2.api.illeffect;
 
-public enum BadThingTypes{
+public enum BadThingTypes {
 	ALL,
 	DARKNEXUS
 }

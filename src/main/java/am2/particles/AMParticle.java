@@ -10,10 +10,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-public class AMParticle extends EntityFX{
+public class AMParticle extends EntityFX {
 
 	private boolean ignoreMaxAge;
 	private final List<ParticleController> controllers;
@@ -40,18 +44,18 @@ public class AMParticle extends EntityFX{
 
 	private boolean doRender;
 	private boolean isRadiant = false;
-	private boolean isBreak = false;
+	private final boolean isBreak = false;
 	private boolean isAffectedByGravity = false;
 	private boolean ignoreNoControllers = false;
 	private boolean doVelocityUpdates = true;
 
 	public static String[] particleTypes;
 
-	public void setParticleAge(int age){
+	public void setParticleAge(int age) {
 		this.particleAge = age;
 	}
 
-	public AMParticle(World par1World, double par2, double par4, double par6){
+	public AMParticle(World par1World, double par2, double par4, double par6) {
 		super(par1World, 0, 0, 0, 0, 0, 0);
 		motionX = 0;
 		motionY = 0;
@@ -75,22 +79,22 @@ public class AMParticle extends EntityFX{
 		this.setRandomScale(0.1f, 0.3f);
 	}
 
-	public void setDoRender(boolean doRender){
+	public void setDoRender(boolean doRender) {
 		this.doRender = doRender;
 	}
 
-	public AMParticle setAffectedByGravity(){
+	public AMParticle setAffectedByGravity() {
 		this.isAffectedByGravity = true;
 		return this;
 	}
 
-	public AMParticle setDontRequireControllers(){
+	public AMParticle setDontRequireControllers() {
 		this.ignoreNoControllers = true;
 		return this;
 	}
 
 	@Override
-	public boolean isBurning(){
+	public boolean isBurning() {
 		return false;
 	}
 
@@ -99,18 +103,18 @@ public class AMParticle extends EntityFX{
 		return false;
 	}
 
-	public void setNoVelocityUpdates(){
+	public void setNoVelocityUpdates() {
 		this.doVelocityUpdates = false;
 	}
 
 	@Override
-	public boolean canAttackWithItem(){
+	public boolean canAttackWithItem() {
 		return false;
 	}
 
-	public void SetParticleTextureByName(String name){
+	public void SetParticleTextureByName(String name) {
 		this.particleName = name;
-		if (name.startsWith("break_")){
+		if(name.startsWith("break_")) {
 			//TODO:
 			/*String[] split = name.replace("break_", "").split("_");
 			int bid = Integer.parseInt(split[0]);
@@ -121,22 +125,24 @@ public class AMParticle extends EntityFX{
 				this.particleIcon = block.getIcon(rand.nextInt(6), meta);
 				isBreak = true;
 			}*/
-		}else{
+		}
+		else {
 			this.particleIcon = AMParticleIcons.instance.getIconByName(name);
 		}
-		if (name.equals("radiant"))
+		if(name.equals("radiant")) {
 			isRadiant = true;
+		}
 	}
 
-	public boolean isRadiant(){
+	public boolean isRadiant() {
 		return isRadiant;
 	}
 
-	public boolean isBlockTexture(){
+	public boolean isBlockTexture() {
 		return isBreak;
 	}
 
-	public void addRandomOffset(double maxX, double maxY, double maxZ){
+	public void addRandomOffset(double maxX, double maxY, double maxZ) {
 		double newX = this.posX + (rand.nextDouble() * maxX) - (maxX / 2);
 		double newY = this.posY + (rand.nextDouble() * maxY) - (maxY / 2);
 		double newZ = this.posZ + (rand.nextDouble() * maxZ) - (maxZ / 2);
@@ -144,106 +150,106 @@ public class AMParticle extends EntityFX{
 		this.setPosition(newX, newY, newZ);
 	}
 
-	public float getParticleScaleX(){
+	public float getParticleScaleX() {
 		return this.particleScaleX;
 	}
 
-	public float getParticleScaleY(){
+	public float getParticleScaleY() {
 		return this.particleScaleY;
 	}
 
-	public float getParticleScaleZ(){
+	public float getParticleScaleZ() {
 		return this.particleScaleZ;
 	}
 
-	public AMParticle setRandomScale(float min, float max){
+	public AMParticle setRandomScale(float min, float max) {
 		this.setParticleScale((rand.nextFloat() * (max - min)) + min);
 		return this;
 	}
 
-	public void setParticleScale(float scale){
+	public void setParticleScale(float scale) {
 		this.particleScaleX = scale;
 		this.particleScaleY = scale;
 		this.particleScaleZ = scale;
 	}
 
-	public void setParticleScale(float scaleX, float scaleY, float scaleZ){
+	public void setParticleScale(float scaleX, float scaleY, float scaleZ) {
 		this.particleScaleX = scaleX;
 		this.particleScaleY = scaleY;
 		this.particleScaleZ = scaleZ;
 	}
 
-	public int GetParticleAge(){
+	public int GetParticleAge() {
 		return this.particleAge;
 	}
 
-	public int GetParticleMaxAge(){
+	public int GetParticleMaxAge() {
 		return this.particleMaxAge;
 	}
 
-	public void setMaxAge(int age){
+	public void setMaxAge(int age) {
 		this.particleMaxAge = age;
 	}
 
-	public void setIgnoreMaxAge(boolean ignore){
+	public void setIgnoreMaxAge(boolean ignore) {
 		this.ignoreMaxAge = ignore;
 		this.particleAge = 0;
 	}
 
-	public void setRGBColorF(float r, float g, float b){
+	public void setRGBColorF(float r, float g, float b) {
 		this.particleRed = r;
 		this.particleGreen = g;
 		this.particleBlue = b;
 	}
 
-	public void setRGBColorI(int color){
+	public void setRGBColorI(int color) {
 		this.particleRed = ((color >> 16) & 0xFF) / 255.0f;
 		this.particleGreen = ((color >> 8) & 0xFF) / 255.0f;
 		this.particleBlue = (color & 0xFF) / 255.0f;
 	}
 
-	public void SetParticleAlpha(float alpha){
+	public void SetParticleAlpha(float alpha) {
 		this.particleAlpha = alpha;
 	}
 
-	public float GetParticleRed(){
+	public float GetParticleRed() {
 		return this.particleRed;
 	}
 
-	public float GetParticleGreen(){
+	public float GetParticleGreen() {
 		return this.particleGreen;
 	}
 
-	public float GetParticleBlue(){
+	public float GetParticleBlue() {
 		return this.particleBlue;
 	}
 
-	public float GetParticleAlpha(){
+	public float GetParticleAlpha() {
 		return this.particleAlpha;
 	}
 
-	public void AddParticleController(ParticleController controller){
+	public void AddParticleController(ParticleController controller) {
 		controllers.add(controller);
 		Collections.sort(controllers, comparer);
 	}
 
-	public void RemoveParticleController(ParticleController controller){
+	public void RemoveParticleController(ParticleController controller) {
 		this.controllers.remove(controller);
 	}
 
-	public void ClearParticleControllers(){
+	public void ClearParticleControllers() {
 		this.controllers.clear();
 	}
 
 	@Override
-	public int getBrightnessForRender(float par1){
+	public int getBrightnessForRender(float par1) {
 		float f = (particleAge + par1) / particleMaxAge;
 
-		if (f < 0.0F){
+		if(f < 0.0F) {
 			f = 0.0F;
 		}
 
-		if (f > 1.0F){
+		if(f > 1.0F) {
 			f = 1.0F;
 		}
 
@@ -252,7 +258,7 @@ public class AMParticle extends EntityFX{
 		int k = i >> 16 & 0xff;
 		j += (int)(f * 15F * 16F);
 
-		if (j > 240){
+		if(j > 240) {
 			j = 240;
 		}
 
@@ -260,17 +266,17 @@ public class AMParticle extends EntityFX{
 	}
 
 	/**
-	 * Gets how bright this entity is.
+	 Gets how bright this entity is.
 	 */
 	@Override
-	public float getBrightness(float par1){
+	public float getBrightness(float par1) {
 		float f = (particleAge + par1) / particleMaxAge;
 
-		if (f < 0.0F){
+		if(f < 0.0F) {
 			f = 0.0F;
 		}
 
-		if (f > 1.0F){
+		if(f > 1.0F) {
 			f = 1.0F;
 		}
 
@@ -279,10 +285,10 @@ public class AMParticle extends EntityFX{
 	}
 
 	/**
-	 * Called to update the entity's position/logic.
+	 Called to update the entity's position/logic.
 	 */
 	@Override
-	public void onUpdate(){
+	public void onUpdate() {
 		++this.ticksExisted;
 		this.prevDistanceWalkedModified = this.distanceWalkedModified;
 		this.prevPosX = this.posX;
@@ -291,60 +297,62 @@ public class AMParticle extends EntityFX{
 		this.prevRotationPitch = this.rotationPitch;
 		this.prevRotationYaw = this.rotationYaw;
 
-		if (isAffectedByGravity)
+		if(isAffectedByGravity) {
 			this.motionY -= 0.04D * this.particleGravity;
-		if (doVelocityUpdates)
+		}
+		if(doVelocityUpdates) {
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
+		}
 
 		List<ParticleController> remove = new ArrayList<ParticleController>();
 
-		for (ParticleController pmc : controllers){
-			if (pmc.getFinished()){
+		for(ParticleController pmc: controllers) {
+			if(pmc.getFinished()) {
 				remove.add(pmc);
 				continue;
 			}
 			pmc.onUpdate(this.worldObj);
-			if (pmc.getExclusive()){
+			if(pmc.getExclusive()) {
 				break;
 			}
 		}
 
-		for (ParticleController pmc : remove){
+		for(ParticleController pmc: remove) {
 			controllers.remove(pmc);
 		}
 
-		if ((particleAge++ > particleMaxAge && !this.ignoreMaxAge) || (!ignoreNoControllers && controllers.size() == 0)){
+		if((particleAge++ > particleMaxAge && !this.ignoreMaxAge) || (!ignoreNoControllers && controllers.size() == 0)) {
 			setDead();
 		}
 	}
 
-	public class ControllerComparator implements Comparator<ParticleController>{
+	public class ControllerComparator implements Comparator<ParticleController> {
 		@Override
-		public int compare(ParticleController o1, ParticleController o2){
+		public int compare(ParticleController o1, ParticleController o2) {
 			return (o1.getPriority() > o2.getPriority() ? 1 : (o1 == o2 ? 0 : -1));
 		}
 	}
 
 	@Override
-	protected void entityInit(){
+	protected void entityInit() {
 	}
 
 	@Override
-	public void readEntityFromNBT(NBTTagCompound var1){
+	public void readEntityFromNBT(NBTTagCompound var1) {
 	}
 
 	@Override
-	public void writeEntityToNBT(NBTTagCompound var1){
+	public void writeEntityToNBT(NBTTagCompound var1) {
 	}
 
 	@Override
-	public int getFXLayer(){
+	public int getFXLayer() {
 		return 2;
 	}
 
 	@Override
-	public void renderParticle(Tessellator tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float sinsinpitch, float cossinpitch){
-		if (!this.worldObj.isRemote){
+	public void renderParticle(Tessellator tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float sinsinpitch, float cossinpitch) {
+		if(!this.worldObj.isRemote) {
 			return;
 		}
 
@@ -352,10 +360,11 @@ public class AMParticle extends EntityFX{
 		float f12 = (float)(this.prevPosY + (this.posY - this.prevPosY) * partialframe - interpPosY);
 		float f13 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * partialframe - interpPosZ);
 
-		if (this.isRadiant){
+		if(this.isRadiant) {
 			renderRadiant(Tessellator.instance, partialframe);
-		}else{
-			if (this.particleIcon == null){ //|| this.renderManager.renderEngine == null){
+		}
+		else {
+			if(this.particleIcon == null) { //|| this.renderManager.renderEngine == null){
 				return;
 			}
 			tessellator.setBrightness(0x0F0000F0);
@@ -377,12 +386,12 @@ public class AMParticle extends EntityFX{
 		}
 	}
 
-	private void renderRadiant(Tessellator tessellator, float partialFrame){
+	private void renderRadiant(Tessellator tessellator, float partialFrame) {
 		RenderHelper.disableStandardItemLighting();
 		float var4 = (this.GetParticleAge() + partialFrame) / this.GetParticleMaxAge();
 		float var5 = 0.0F;
 
-		if (var4 > 0.8F){
+		if(var4 > 0.8F) {
 			var5 = (var4 - 0.8F) / 0.2F;
 		}
 
@@ -395,7 +404,7 @@ public class AMParticle extends EntityFX{
 		GL11.glTranslatef(f11, f12, f13);
 		GL11.glScalef(getParticleScaleX(), getParticleScaleY(), getParticleScaleZ());
 
-		for (int var7 = 0; var7 < 50.0F; ++var7){
+		for(int var7 = 0; var7 < 50.0F; ++var7) {
 			GL11.glRotatef(var6.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(var6.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(var6.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
@@ -411,7 +420,7 @@ public class AMParticle extends EntityFX{
 			tessellator.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, 0);
 			tessellator.addVertex(-0.866D * var9, var8, -0.5F * var9);
 			tessellator.addVertex(0.866D * var9, var8, -0.5F * var9);
-			tessellator.addVertex(0.0D, var8, 1.0F * var9);
+			tessellator.addVertex(0.0D, var8, var9);
 			tessellator.addVertex(-0.866D * var9, var8, -0.5F * var9);
 			tessellator.draw();
 		}

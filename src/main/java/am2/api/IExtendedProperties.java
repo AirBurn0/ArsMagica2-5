@@ -3,28 +3,27 @@ package am2.api;
 import am2.api.math.AMVector3;
 
 /**
- * Extended properties on EntityLiving used in Ars Magica.
- *
- * @author Mithion
- */
-public interface IExtendedProperties{
-	public float getCurrentMana();
+ Extended properties on EntityLiving used in Ars Magica.
 
-	public float getMaxMana();
+ @author Mithion */
+public interface IExtendedProperties {
+	float getCurrentMana();
 
-	public int getMarkDimension();
+	float getMaxMana();
 
-	public int getMagicLevel();
+	int getMarkDimension();
 
-	public int getNumSummons();
+	int getMagicLevel();
 
-	public AMVector3 getMarkLocation();
+	int getNumSummons();
 
-	public boolean getHasUnlockedAugmented();
+	AMVector3 getMarkLocation();
 
-	public boolean getMarkSet();
+	boolean getHasUnlockedAugmented();
 
-	public boolean setMagicLevelWithMana(int magicLevel);
+	boolean getMarkSet();
 
-	public void setCurrentMana(float currentMana);
+	boolean setMagicLevelWithMana(int magicLevel);
+
+	void setCurrentMana(float currentMana);
 }

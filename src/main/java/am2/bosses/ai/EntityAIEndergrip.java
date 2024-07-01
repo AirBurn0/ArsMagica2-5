@@ -1,6 +1,6 @@
 package am2.bosses.ai;
 
-public class EntityAIEndergrip{ /*extends AIAnimation{
+public class EntityAIEndergrip { /*extends AIAnimation{
 
 	private int cooldownTicks = 0;
 

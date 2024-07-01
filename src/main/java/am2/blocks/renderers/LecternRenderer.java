@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
-public class LecternRenderer extends TileEntitySpecialRenderer{
+public class LecternRenderer extends TileEntitySpecialRenderer {
 
 	private final ResourceLocation rLoc;
 	private final ResourceLocation book;
@@ -30,14 +30,14 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 
 
 	@Override
-	public void renderTileEntityAt(TileEntity var1, double var2, double var4, double var6, float var8){
+	public void renderTileEntityAt(TileEntity var1, double var2, double var4, double var6, float var8) {
 		renderTileEntityArchmagePodiumAt((TileEntityLectern)var1, var2, var4, var6, var8);
 	}
 
 	private final ModelArchmagePodium archmagePodium = new ModelArchmagePodium();
 	private final ModelBook enchantmentBook = new ModelBook();
 
-	public LecternRenderer(){
+	public LecternRenderer() {
 		rLoc = new ResourceLocation("arsmagica2", ResourceManager.getCustomBlockTexturePath("archmagePodium.png"));
 		book = new ResourceLocation("textures/entity/enchanting_table_book.png");
 		item_atlas = new ResourceLocation("textures/atlas/items.png");
@@ -46,14 +46,15 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		renderItem = (RenderItem)RenderManager.instance.entityRenderMap.get(EntityItem.class);
 	}
 
-	public void renderTileEntityArchmagePodiumAt(TileEntityLectern podium, double d, double d1, double d2, float f1){
+	public void renderTileEntityArchmagePodiumAt(TileEntityLectern podium, double d, double d1, double d2, float f1) {
 		int meta = 0;
-		if (podium.getWorldObj() != null)
+		if(podium.getWorldObj() != null) {
 			meta = podium.getWorldObj().getBlockMetadata(podium.xCoord, podium.yCoord, podium.zCoord) - 1;
+		}
 
 		int i = 0;
 
-		if (podium.getWorldObj() != null){
+		if(podium.getWorldObj() != null) {
 			i = podium.getBlockMetadata();
 		}
 		int j = i * 90;
@@ -67,13 +68,16 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		archmagePodium.renderModel(0.0625F); //renders and yes 0.0625 is a random number
 		GL11.glPopMatrix(); //end
 
-		if (podium.hasStack()){
-			if (podium.getOverpowered())
+		if(podium.hasStack()) {
+			if(podium.getOverpowered()) {
 				GL11.glColor4f(0.7f, 0.2f, 0.2f, 1.0f);
-			else
+			}
+			else {
 				GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			}
 			RenderBook(podium, d, d1, d2, f1, meta);
-		}else if (podium.getNeedsBook()){
+		}
+		else if(podium.getNeedsBook()) {
 			GL11.glColor4f(0.7f, 0.2f, 0.2f, 0.2f);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -84,8 +88,8 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		renderHelperIcon(podium, d, d1, d2, f1);
 	}
 
-	private void renderHelperIcon(TileEntityLectern podium, double d, double d1, double d2, float f){
-		if (podium.getTooltipStack() == null){
+	private void renderHelperIcon(TileEntityLectern podium, double d, double d1, double d2, float f) {
+		if(podium.getTooltipStack() == null) {
 			podium.resetParticleAge();
 			return;
 		}
@@ -103,12 +107,12 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		GL11.glPopMatrix();
 	}
 
-	private void renderRadiant(Tessellator tessellator, float partialFrame, TileEntityLectern podium){
+	private void renderRadiant(Tessellator tessellator, float partialFrame, TileEntityLectern podium) {
 		RenderHelper.disableStandardItemLighting();
 		float var4 = (podium.particleAge + partialFrame) / podium.particleMaxAge;
 		float var5 = 0.0F;
 
-		if (var4 > 0.8F){
+		if(var4 > 0.8F) {
 			var5 = (var4 - 0.8F) / 0.2F;
 		}
 
@@ -122,7 +126,7 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		GL11.glDepthMask(false);
 		GL11.glPushMatrix();
 
-		for (int var7 = 0; var7 < 20.0F; ++var7){
+		for(int var7 = 0; var7 < 20.0F; ++var7) {
 			float rH = 90f;
 			float oH = 0f;
 			GL11.glPushMatrix();
@@ -132,18 +136,22 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 			tessellator.startDrawing(6);
 			float var8 = var6.nextFloat() * 2.0F + 2.0F + var5 * 0.5F;
 			float var9 = var6.nextFloat() * 2.0F + 1.0F + var5 * 2.0F;
-			if (!podium.getOverpowered())
+			if(!podium.getOverpowered()) {
 				tessellator.setColorRGBA_F(0.2f, 0.2f, 1.0f, 0.2f);
-			else
+			}
+			else {
 				tessellator.setColorRGBA_F(1.0f, 0.2f, 0.2f, 0.2f);
+			}
 			tessellator.addVertex(0.0D, 0.0D, 0.0D);
-			if (!podium.getOverpowered())
+			if(!podium.getOverpowered()) {
 				tessellator.setColorRGBA_F(0.2f, 0.2f, 1.0f, 0.0f);
-			else
+			}
+			else {
 				tessellator.setColorRGBA_F(1.0f, 0.2f, 0.2f, 0.0f);
+			}
 			tessellator.addVertex(-0.866D * var9, var8, -0.5F * var9);
 			tessellator.addVertex(0.866D * var9, var8, -0.5F * var9);
-			tessellator.addVertex(0.0D, var8, 1.0F * var9);
+			tessellator.addVertex(0.0D, var8, var9);
 			tessellator.addVertex(-0.866D * var9, var8, -0.5F * var9);
 			tessellator.draw();
 			GL11.glPopMatrix();
@@ -160,29 +168,31 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		RenderHelper.enableStandardItemLighting();
 	}
 
-	private void RenderBook(TileEntityLectern p_147539_1_, double p_147539_2_, double p_147539_4_, double p_147539_6_, float p_147539_8_, int meta){
+	private void RenderBook(TileEntityLectern p_147539_1_, double p_147539_2_, double p_147539_4_, double p_147539_6_, float p_147539_8_, int meta) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)p_147539_2_ + 0.5F, (float)p_147539_4_ + 0.75F, (float)p_147539_6_ + 0.5F);
 		float var9 = (float)p_147539_1_.field_145926_a + p_147539_8_;
 		GL11.glTranslatef(0.0F, 0.1F + MathHelper.sin(var9 * 0.01F) * 0.01F, 0.0F);
 		float f2;
 
-		for (f2 = p_147539_1_.field_145928_o - p_147539_1_.field_145925_p; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F)){
-			;
+		for(f2 = p_147539_1_.field_145928_o - p_147539_1_.field_145925_p; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F)) {
 		}
 
-		while (f2 < -(float)Math.PI){
+		while(f2 < -(float)Math.PI) {
 			f2 += ((float)Math.PI * 2F);
 		}
 
 		float var11 = p_147539_1_.field_145925_p + f2 * p_147539_8_;
 		//GL11.glRotatef(-var11 * 180.0F / (float)Math.PI, 0.0F, 1.0F, 0.0F);
-		if (meta == 1 || meta == 3)
+		if(meta == 1 || meta == 3) {
 			GL11.glRotatef(-90 * meta, 0.0F, 1.0F, 0.0F);
-		else if (meta == 2)
+		}
+		else if(meta == 2) {
 			GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
-		else
+		}
+		else {
 			GL11.glRotatef(-180, 0.0F, 1.0F, 0.0F);
+		}
 		GL11.glRotatef(80.0F, 0.0F, 0.0F, 1.0F);
 		//GL11.glRotatef(-9, 0, 0, 1);
 		bindTexture(book);
@@ -191,24 +201,24 @@ public class LecternRenderer extends TileEntitySpecialRenderer{
 		var12 = (var12 - MathHelper.truncateDoubleToInt(var12)) * 1.6F - 0.3F;
 		var13 = (var13 - MathHelper.truncateDoubleToInt(var13)) * 1.6F - 0.3F;
 
-		if (var12 < 0.0F){
+		if(var12 < 0.0F) {
 			var12 = 0.0F;
 		}
 
-		if (var13 < 0.0F){
+		if(var13 < 0.0F) {
 			var13 = 0.0F;
 		}
 
-		if (var12 > 1.0F){
+		if(var12 > 1.0F) {
 			var12 = 1.0F;
 		}
 
-		if (var13 > 1.0F){
+		if(var13 > 1.0F) {
 			var13 = 1.0F;
 		}
 
 		float var14 = p_147539_1_.field_145927_n + (p_147539_1_.field_145930_m - p_147539_1_.field_145927_n) * p_147539_8_;
-		this.enchantmentBook.setRotationAngles(var9, var12, var13, 1f, 0.0F, 0.0625F, (Entity)null);
+		this.enchantmentBook.setRotationAngles(var9, var12, var13, 1f, 0.0F, 0.0625F, null);
 		this.enchantmentBook.coverRight.render(0.0625F);
 		this.enchantmentBook.coverLeft.render(0.0625F);
 		this.enchantmentBook.bookSpine.render(0.0625F);

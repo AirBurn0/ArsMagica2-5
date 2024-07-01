@@ -5,13 +5,13 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.MathHelper;
 
-public class ParticleApproachEntity extends ParticleController{
+public class ParticleApproachEntity extends ParticleController {
 
 	private final Entity target;
 	private final double approachSpeed;
 	private final double targetDistance;
 
-	public ParticleApproachEntity(AMParticle particleEffect, Entity approachEntity, double approachSpeed, double targetDistance, int priority, boolean exclusive){
+	public ParticleApproachEntity(AMParticle particleEffect, Entity approachEntity, double approachSpeed, double targetDistance, int priority, boolean exclusive) {
 		super(particleEffect, priority, exclusive);
 		this.target = approachEntity;
 		this.approachSpeed = approachSpeed;
@@ -19,9 +19,9 @@ public class ParticleApproachEntity extends ParticleController{
 	}
 
 	@Override
-	public void doUpdate(){
+	public void doUpdate() {
 
-		if (target == null){
+		if(target == null) {
 			this.finish();
 			return;
 		}
@@ -42,12 +42,14 @@ public class ParticleApproachEntity extends ParticleController{
 		posZ = particle.posZ + (approachSpeed * Math.sin(radians));
 		double deltaY;
 
-		if (target instanceof EntityLiving){
+		if(target instanceof EntityLiving) {
 			EntityLiving entityliving = (EntityLiving)target;
 			deltaY = posY - (entityliving.posY + entityliving.getEyeHeight());
-		}else if (target instanceof EntityItem){
+		}
+		else if(target instanceof EntityItem) {
 			deltaY = posY - target.posY;
-		}else{
+		}
+		else {
 			deltaY = (target.boundingBox.minY + target.boundingBox.maxY) / 2D - posY;
 		}
 		double horizontalDistance = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
@@ -56,15 +58,16 @@ public class ParticleApproachEntity extends ParticleController{
 
 		posY = particle.posY - (approachSpeed * Math.sin(pitchRadians));
 
-		if (distanceToTarget <= (targetDistance * targetDistance)){
+		if(distanceToTarget <= (targetDistance * targetDistance)) {
 			this.finish();
-		}else{
+		}
+		else {
 			particle.setPosition(posX, posY, posZ);
 		}
 	}
 
 	@Override
-	public ParticleController clone(){
+	public ParticleController clone() {
 		return new ParticleApproachEntity(particle, target, approachSpeed, targetDistance, priority, exclusive);
 	}
 
