@@ -155,7 +155,7 @@ public class SpellScrollRenderer implements IItemRenderer {
 		GL11.glPopMatrix();
 	}
 
-	private void setupAffinityIcons() {
+	public void setupAffinityIcons() {
 		icons.put(Affinity.AIR, AMParticleIcons.instance.getIconByName("air_hand"));
 		icons.put(Affinity.ARCANE, AMParticleIcons.instance.getIconByName("arcane_hand"));
 		icons.put(Affinity.EARTH, AMParticleIcons.instance.getIconByName("earth_hand"));
