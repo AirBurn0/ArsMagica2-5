@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public abstract class TileEntityAMPower extends TileEntity implements IPowerNode {
 	protected int capacity;
 	private boolean canRequestPower = true;
-	private int tickCounter;
+	protected int tickCounter;
 
 	private static final int REQUEST_INTERVAL = 20;
 
