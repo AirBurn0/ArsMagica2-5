@@ -51,7 +51,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import java.io.File;
 
-@Mod(modid = "arsmagica2", modLanguage = "java", name = "Ars Magica 2", version = "1.4.0.009", dependencies = "required-after:AnimationAPI")
+@Mod(modid = "arsmagica2", name = "Ars Magica 2", version = "@VERSION@", dependencies = "required-after:AnimationAPI")
 public class AMCore{
 
 	@Instance(value = "arsmagica2")
@@ -130,12 +130,8 @@ public class AMCore{
 						FluidContainerRegistry.EMPTY_BUCKET));
 
 		SeventhSanctum.instance.init();
-		/*if (Loader.isModLoaded("BetterDungeons"))
-			BetterDungeons.init();*/
 		if (Loader.isModLoaded("Thaumcraft"))
 			TC4Interop.initialize();
-		/*if (Loader.isModLoaded("MineFactoryReloaded"))
-			MFRInterop.init();*/
 
 	}
 
@@ -281,7 +277,6 @@ public class AMCore{
 		ArsMagicaApi.instance.setColourblindMode(config.colourblindMode());
 		ArsMagicaApi.instance.setBuffHelper(BuffList.instance);
 		ArsMagicaApi.instance.setSpellUtils(SpellUtils.instance);
-
 		ArsMagicaApi.instance.setAffinityDataID(AffinityData.identifier);
 		ArsMagicaApi.instance.setSkillDataID(SkillData.identifier);
 		ArsMagicaApi.instance.setExtendedPropertiesID(ExtendedProperties.identifier);
