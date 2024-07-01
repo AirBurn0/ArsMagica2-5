@@ -432,7 +432,7 @@ public class AffinityData implements IExtendedEntityProperties, IAffinityData {
 		return list;
 	}
 
-	class AffinityEffectDescriptor {
+	public class AffinityEffectDescriptor {
 		private final boolean hasDepth;
 		private final String description;
 
