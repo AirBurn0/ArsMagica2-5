@@ -85,7 +85,7 @@ public class AMParticleIcons {
 		loadAndInitIcon(name, IIconPath, register, true);
 	}
 
-	private void loadAndInitIcon(String name, String IIconPath, IIconRegister register, boolean registerName) {
+	public void loadAndInitIcon(String name, String IIconPath, IIconRegister register, boolean registerName) {
 		IIcon icon = ResourceManager.RegisterTexture("particles/" + IIconPath, register);
 		if(registerName) {
 			if(icon != null) {
