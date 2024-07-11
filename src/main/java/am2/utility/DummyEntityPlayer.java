@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class DummyEntityPlayer extends EntityPlayer {
 
-	private EntityLivingBase trackEntity = null;
+	public EntityLivingBase trackEntity = null;
 
 	public DummyEntityPlayer(World world) {
 		this(world, "dummyplayer");
